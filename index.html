@@ -133,7 +133,7 @@
 
     .strategy-controls {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 0.5rem;
       margin-bottom: 1.25rem;
     }
@@ -237,6 +237,39 @@
     }
 
     /* Botón generate */
+
+
+    .generate-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.625rem;
+    }
+
+    .generate-row .generate-btn {
+      flex: 1;
+    }
+
+    .versions-select {
+      min-width: 72px;
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0 0.75rem;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+
+    .versions-select:hover,
+    .versions-select:focus-visible {
+      border-color: #d0d0d0;
+      background: var(--bg-primary);
+    }
+
     .generate-btn {
       width: 100%;
       background: var(--text-primary);
@@ -319,172 +352,102 @@
       letter-spacing: -0.01em;
     }
 
-    .actions {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
+
+    /* Output cards */
+    .output-cards {
+      display: grid;
+      gap: 0.875rem;
     }
 
-    .translate-dropdown {
-      position: relative;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s ease;
-    }
-
-    .translate-dropdown.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .copy-btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.5rem 1rem;
-      font-family: inherit;
-      font-size: 0.8125rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .copy-btn.visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .translate-dropdown.visible .translate-btn {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .translate-btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.5rem 0.875rem;
-      font-family: inherit;
-      font-size: 0.8125rem;
-      font-weight: 400;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      opacity: 0;
-      pointer-events: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-    }
-
-
-    .translate-btn:hover,
-    .translate-btn:focus-visible {
-      background: var(--bg-secondary);
-      border-color: #d0d0d0;
-      color: var(--text-primary);
-    }
-
-    .translate-btn:focus-visible,
-    .copy-btn:focus-visible,
-    .translate-option:focus-visible {
-      outline: 2px solid #c7c7c7;
-      outline-offset: 2px;
-    }
-
-    .translate-icon {
-      font-size: 0.625rem;
-      transition: transform 0.2s ease;
-    }
-
-    .translate-btn[aria-expanded="true"] .translate-icon {
-      transform: rotate(180deg);
-    }
-
-    .translate-menu {
-      position: absolute;
-      top: calc(100% + 0.4rem);
-      right: 0;
-      list-style: none;
-      width: 132px;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.375rem;
-      box-shadow: var(--shadow-md);
-      display: none;
-      z-index: 10;
-    }
-
-    .translate-menu.open {
-      display: block;
-    }
-
-    .translate-option {
-      width: 100%;
-      background: transparent;
-      border: none;
-      border-radius: 8px;
-      color: var(--text-primary);
-      text-align: left;
-      padding: 0.5rem 0.625rem;
-      font-family: inherit;
-      font-size: 0.8125rem;
-      cursor: pointer;
-    }
-
-    .translate-option:hover,
-    .translate-option:focus-visible {
-      background: var(--bg-primary);
-    }
-
-    .copy-btn:hover:not(:disabled) {
-      background: var(--bg-secondary);
-      border-color: #d0d0d0;
-      color: var(--text-primary);
-    }
-
-    .copy-btn.copied {
-      background: var(--text-primary);
-      color: var(--bg-secondary);
-      border-color: var(--text-primary);
-    }
-
-    /* Output box */
-    .output-box {
+    .output-empty,
+    .output-loading {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 14px;
       padding: 1.75rem;
-      min-height: 400px;
-      font-size: 0.875rem;
-      line-height: 1.7;
-      color: var(--text-primary);
-      white-space: pre-wrap;
-      word-wrap: break-word;
-      position: relative;
-    }
-
-    .output-box.empty {
+      min-height: 180px;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-tertiary);
-      font-size: 0.8125rem;
+      text-align: center;
+      position: relative;
     }
 
-    .output-box.loading::after {
+    .output-loading::after {
       content: '';
       position: absolute;
-      bottom: 1.75rem;
-      left: 1.75rem;
+      bottom: 1.25rem;
+      left: 1.25rem;
       width: 2px;
       height: 18px;
       background: var(--text-primary);
       animation: blink 1s infinite;
+    }
+
+    .version-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+    }
+
+    .version-label {
+      display: inline-block;
+      margin-bottom: 0.875rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .version-section {
+      margin-bottom: 0.875rem;
+    }
+
+    .version-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    .version-content {
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .version-copy-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.45rem 0.875rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .version-copy-btn:hover:not(:disabled),
+    .version-copy-btn:focus-visible {
+      background: var(--bg-primary);
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .version-copy-btn.copied {
+      background: var(--text-primary);
+      color: var(--bg-secondary);
+      border-color: var(--text-primary);
     }
 
     @keyframes blink {
@@ -549,7 +512,7 @@
       }
 
       .strategy-controls {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
       }
 
       .form-container,
@@ -623,78 +586,53 @@
 
           <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="formalidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuFormalidad">
-                <span class="strategy-title">Nivel de Formalidad</span>
+              <button class="strategy-btn" type="button" data-profile="tono" aria-haspopup="true" aria-expanded="false" aria-controls="menuTono">
+                <span class="strategy-title">Tono</span>
                 <span class="strategy-subtitle" data-role="selected-value">Automático</span>
               </button>
-              <ul class="strategy-menu" id="menuFormalidad" role="menu" aria-label="Opciones de nivel de formalidad">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="formalidad" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Directo">Directo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Formal">Formal</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Cercano">Cercano</button></li>
+              <ul class="strategy-menu" id="menuTono" role="menu" aria-label="Opciones de tono">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="tono" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tono" data-value="Directo">Directo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tono" data-value="Diplomático">Diplomático</button></li>
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="emocion" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmocion">
-                <span class="strategy-title">Carga Emocional</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              <button class="strategy-btn" type="button" data-profile="extension" aria-haspopup="true" aria-expanded="false" aria-controls="menuExtension">
+                <span class="strategy-title">Extensión</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automática</span>
               </button>
-              <ul class="strategy-menu" id="menuEmocion" role="menu" aria-label="Opciones de carga emocional">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="emocion" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Neutra">Neutra</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Empática">Empática</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Motivadora">Motivadora</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Asertiva">Asertiva</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Urgente">Urgente</button></li>
+              <ul class="strategy-menu" id="menuExtension" role="menu" aria-label="Opciones de extensión">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="extension" data-value="Automática">Automática</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="extension" data-value="Breve">Breve</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="extension" data-value="Detallada">Detallada</button></li>
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="enfoque" aria-haspopup="true" aria-expanded="false" aria-controls="menuEnfoque">
-                <span class="strategy-title">Enfoque Comunicacional</span>
+              <button class="strategy-btn" type="button" data-profile="emojis" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmojis">
+                <span class="strategy-title">Emojis</span>
                 <span class="strategy-subtitle" data-role="selected-value">Automático</span>
               </button>
-              <ul class="strategy-menu" id="menuEnfoque" role="menu" aria-label="Opciones de enfoque comunicacional">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="enfoque" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Informativo">Informativo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Persuasivo">Persuasivo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Resolutivo">Resolutivo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Comercial">Comercial</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Estratégico">Estratégico</button></li>
-              </ul>
-            </div>
-            <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="profundidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuProfundidad">
-                <span class="strategy-title">Nivel de Profundidad</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
-              </button>
-              <ul class="strategy-menu" id="menuProfundidad" role="menu" aria-label="Opciones de nivel de profundidad">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="profundidad" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Breve">Breve</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Estándar">Estándar</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Detallado">Detallado</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Ejecutivo">Ejecutivo</button></li>
-              </ul>
-            </div>
-            <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="visual" aria-haspopup="true" aria-expanded="false" aria-controls="menuVisual">
-                <span class="strategy-title">Elementos Visuales</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
-              </button>
-              <ul class="strategy-menu" id="menuVisual" role="menu" aria-label="Opciones de elementos visuales">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="visual" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Ninguno">Ninguno</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Discreto">Discreto</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Permitido">Permitido</button></li>
+              <ul class="strategy-menu" id="menuEmojis" role="menu" aria-label="Opciones de emojis">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="emojis" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Mínimo">Mínimo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Ninguno">Ninguno</button></li>
               </ul>
             </div>
           </div>
 
-          <button class="generate-btn" id="generateButton" type="button">
-            <span class="btn-content">
-              <span class="spinner"></span>
-              <span id="buttonText">Generar email</span>
-            </span>
-          </button>
+          <div class="generate-row">
+            <button class="generate-btn" id="generateButton" type="button">
+              <span class="btn-content">
+                <span class="spinner"></span>
+                <span id="buttonText">Generar</span>
+              </span>
+            </button>
+            <select class="versions-select" id="versionsSelect" aria-label="Cantidad de versiones">
+              <option value="1" selected>1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -702,38 +640,11 @@
       <div class="right-panel">
         <div class="output-container">
           <div class="output-header">
-            <h2>Email generado</h2>
-            <div class="actions">
-              <button class="copy-btn" id="copyButton" type="button">Copiar</button>
-              <div class="translate-dropdown" id="translateDropdown">
-                <button
-                  class="translate-btn"
-                  id="translateButton"
-                  type="button"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                  aria-controls="translateMenu"
-                >
-                  Traducir
-                  <span class="translate-icon" aria-hidden="true">▼</span>
-                </button>
-                <ul class="translate-menu" id="translateMenu" role="menu" aria-label="Seleccionar idioma">
-                  <li role="none">
-                    <button class="translate-option" type="button" role="menuitem" data-lang="en">Inglés</button>
-                  </li>
-                  <li role="none">
-                    <button class="translate-option" type="button" role="menuitem" data-lang="fr">Francés</button>
-                  </li>
-                  <li role="none">
-                    <button class="translate-option" type="button" role="menuitem" data-lang="de">Alemán</button>
-                  </li>
-                </ul>
-              </div>
-            </div>
+            <h2>Emails generados</h2>
           </div>
-          
-          <div id="output" class="output-box empty">
-            El email generado aparecerá aquí...
+
+          <div id="output" class="output-cards">
+            <div class="output-empty">El email generado aparecerá aquí...</div>
           </div>
         </div>
       </div>
@@ -747,56 +658,17 @@
     const outputEl = document.getElementById('output');
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
-    const copyButton = document.getElementById('copyButton');
-    const translateDropdown = document.getElementById('translateDropdown');
-    const translateButton = document.getElementById('translateButton');
-    const translateMenu = document.getElementById('translateMenu');
+    const versionsSelect = document.getElementById('versionsSelect');
     const charCount = document.getElementById('charCount');
     const strategyControls = document.querySelector('.strategy-controls');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
 
-    let communicationProfile = {
-      formalidad: 'Automático',
-      emocion: 'Automático',
-      enfoque: 'Automático',
-      profundidad: 'Automático',
-      visual: 'Automático'
+    const communicationProfile = {
+      tono: 'Automático',
+      extension: 'Automática',
+      emojis: 'Automático'
     };
-
-    let generatedText = '';
-    let isTranslating = false;
-
-    function setTranslateLoadingState(loading) {
-      isTranslating = loading;
-      translateButton.disabled = loading;
-      generateButton.disabled = loading;
-
-      if (loading) {
-        translateButton.dataset.originalLabel = translateButton.dataset.originalLabel || 'Traducir';
-        translateButton.childNodes[0].nodeValue = 'Traduciendo... ';
-      } else {
-        translateButton.childNodes[0].nodeValue = `${translateButton.dataset.originalLabel || 'Traducir'} `;
-      }
-    }
-
-    function openTranslateMenu() {
-      translateMenu.classList.add('open');
-      translateButton.setAttribute('aria-expanded', 'true');
-    }
-
-    function closeTranslateMenu() {
-      translateMenu.classList.remove('open');
-      translateButton.setAttribute('aria-expanded', 'false');
-    }
-
-    function toggleTranslateMenu() {
-      if (translateMenu.classList.contains('open')) {
-        closeTranslateMenu();
-      } else {
-        openTranslateMenu();
-      }
-    }
 
     function closeAllStrategyMenus() {
       strategyMenus.forEach((menu) => menu.classList.remove('open'));
@@ -828,77 +700,143 @@
       if (!profileKey || !selectedValue) return;
 
       communicationProfile[profileKey] = selectedValue;
-      const siblingOptions = document.querySelectorAll(`.strategy-option[data-profile="${profileKey}"]`);
-      siblingOptions.forEach((opt) => {
+      document.querySelectorAll(`.strategy-option[data-profile="${profileKey}"]`).forEach((opt) => {
         const selected = opt === optionButton;
         opt.classList.toggle('selected', selected);
         opt.setAttribute('aria-checked', selected ? 'true' : 'false');
       });
 
       const strategyButton = document.querySelector(`.strategy-btn[data-profile="${profileKey}"]`);
-      const subtitle = strategyButton?.querySelector('[data-role="selected-value"]');
-      if (subtitle) {
-        subtitle.textContent = selectedValue;
-      }
+      strategyButton?.querySelector('[data-role="selected-value"]')?.replaceChildren(document.createTextNode(selectedValue));
+      closeAllStrategyMenus();
     }
 
-    function getVisualInstruction(mode) {
-      if (mode === 'Ninguno') return 'No utilices emojis ni caracteres visuales decorativos.';
-      if (mode === 'Discreto') return 'Puedes usar hasta 2 emojis como máximo en total, solo si aportan claridad profesional.';
-      if (mode === 'Permitido') return 'Puedes usar emojis de forma moderada y profesional cuando mejoren la claridad del mensaje.';
-      return 'Si aplica, decide automáticamente el uso visual manteniendo un tono B2B profesional.';
+    function getEmojiInstruction(mode) {
+      if (mode === 'Ninguno') return 'No utilices emojis.';
+      if (mode === 'Mínimo') return 'Usa como máximo un emoji solo si aporta claridad profesional.';
+      return 'Si aplica, decide automáticamente si conviene usar emojis con criterio B2B.';
     }
 
-    function getDepthInstruction(mode) {
-      if (mode === 'Detallado' || mode === 'Ejecutivo') {
-        return 'Genera una salida amplia y estructurada con encabezados claros y viñetas cuando sea útil.';
-      }
-      return 'Ajusta la extensión según el contexto comercial y la opción elegida.';
-    }
-
-    function buildStrategicPrompt(userInputText) {
+    function buildStrategicPrompt(userInputText, versionCount) {
       const systemInstructions = `
 Actúa como asistente corporativo experto en comunicación B2B.
-Aplica el siguiente perfil de comunicación a la generación del texto:
 
-- Nivel de Formalidad: ${communicationProfile.formalidad}
-- Carga Emocional: ${communicationProfile.emocion}
-- Enfoque Comunicacional: ${communicationProfile.enfoque}
-- Nivel de Profundidad: ${communicationProfile.profundidad}
-- Elementos Visuales: ${communicationProfile.visual}
+Configura cada versión con este perfil estratégico:
+- Tono: ${communicationProfile.tono}
+- Extensión: ${communicationProfile.extension}
+- Emojis: ${communicationProfile.emojis}
 
 Reglas de negocio:
 - Si alguna categoría está en "Automático" o "Automática", decide ese aspecto según el contexto.
-- ${getDepthInstruction(communicationProfile.profundidad)}
-- ${getVisualInstruction(communicationProfile.visual)}
+- ${getEmojiInstruction(communicationProfile.emojis)}
+- Genera ${versionCount} versiones claramente diferenciadas entre sí.
 
-Respeta estrictamente estas preferencias.
+Formato obligatorio de salida:
+Versión 1
+Asunto: ...
+Cuerpo: ...
+
+Versión 2
+Asunto: ...
+Cuerpo: ...
+(repite hasta completar la cantidad solicitada).
 `.trim();
 
-      return `${systemInstructions}\n\n${userInputText}`;
+      return `${systemInstructions}
+
+${userInputText}`;
     }
 
-    async function translateText(text, targetLang) {
-      const res = await fetch('/api/translate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, targetLang })
+    function extractSubjectAndBody(text) {
+      const subjectMatch = text.match(/Asunto\s*:\s*([^\n]+)/i);
+      const bodyMatch = text.match(/Cuerpo\s*:\s*([\s\S]+)/i);
+      const subject = subjectMatch ? subjectMatch[1].trim() : 'Asunto no especificado';
+      const body = bodyMatch ? bodyMatch[1].trim() : text.trim();
+      return { subject, body };
+    }
+
+    function parseVersions(rawText, requestedCount) {
+      const cleaned = rawText.trim();
+      if (!cleaned) return [];
+
+      const chunks = cleaned.split(/(?=Versi[oó]n\s+\d+)/gi).map((part) => part.trim()).filter(Boolean);
+      const parsed = chunks.length > 1 || /Versi[oó]n\s+\d+/i.test(chunks[0] || '')
+        ? chunks.map((chunk, index) => {
+            const withoutLabel = chunk.replace(/^Versi[oó]n\s+\d+\s*/i, '').trim();
+            return { version: index + 1, ...extractSubjectAndBody(withoutLabel) };
+          })
+        : [extractSubjectAndBody(cleaned)].map((item, index) => ({ version: index + 1, ...item }));
+
+      const sliced = parsed.slice(0, requestedCount);
+      while (sliced.length < requestedCount && parsed.length > 0) {
+        const base = parsed[sliced.length % parsed.length];
+        sliced.push({
+          version: sliced.length + 1,
+          subject: base.subject,
+          body: base.body
+        });
+      }
+      return sliced;
+    }
+
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function renderPlaceholder(message, loading = false) {
+      outputEl.innerHTML = `<div class="${loading ? 'output-loading' : 'output-empty'}">${message}</div>`;
+    }
+
+    function handleCopyClick(event) {
+      const button = event.target.closest('.version-copy-btn');
+      if (!button) return;
+
+      const subject = decodeURIComponent(button.dataset.subject || '');
+      const body = decodeURIComponent(button.dataset.body || '');
+      const content = `Asunto: ${subject}
+
+${body}`.trim();
+
+      navigator.clipboard.writeText(content).then(() => {
+        const original = button.textContent;
+        button.textContent = 'Copiado ✓';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = original;
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
       });
-
-      const payload = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        throw new Error(payload.error || 'No se pudo traducir el email.');
-      }
-
-      if (!payload.text || typeof payload.text !== 'string') {
-        throw new Error('Respuesta de traducción inválida.');
-      }
-
-      return payload.text;
     }
 
-    // Contador de caracteres
+    function renderVersions(versions) {
+      outputEl.innerHTML = '';
+      versions.forEach((item, index) => {
+        const card = document.createElement('article');
+        card.className = 'version-card fade-in';
+        card.innerHTML = `
+          <span class="version-label">Versión ${index + 1}</span>
+          <div class="version-section">
+            <div class="version-title">Asunto</div>
+            <div class="version-content">${escapeHtml(item.subject)}</div>
+          </div>
+          <div class="version-section">
+            <div class="version-title">Cuerpo</div>
+            <div class="version-content">${escapeHtml(item.body)}</div>
+          </div>
+          <button class="version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">Copiar</button>
+        `;
+        outputEl.appendChild(card);
+      });
+    }
+
     instructionEl.addEventListener('input', () => {
       charCount.textContent = instructionEl.value.length;
     });
@@ -907,42 +845,46 @@ Respeta estrictamente estas preferencias.
       const instruction = instructionEl.value.trim();
       const senderName = senderNameEl.value.trim();
       const clientName = clientNameEl.value.trim();
+      const versions = Number(versionsSelect.value) || 1;
+
+      if (!instruction || !senderName || !clientName) return;
+
       const userInputText = `
 Instrucción principal: ${instruction}
 Nombre remitente: ${senderName}
 Nombre del cliente: ${clientName}
+Cantidad de versiones solicitadas: ${versions}
 `.trim();
-      const fullPrompt = buildStrategicPrompt(userInputText);
+      const fullPrompt = buildStrategicPrompt(userInputText, versions);
 
-      if (!instruction || !senderName || !clientName) return;
-
-        generateButton.disabled = true;
+      generateButton.disabled = true;
+      versionsSelect.disabled = true;
       buttonText.textContent = 'Generando...';
-      outputEl.textContent = '';
-      outputEl.classList.remove('empty', 'fade-in');
-      outputEl.classList.add('loading');
-      copyButton.classList.remove('visible', 'copied');
-      translateDropdown.classList.remove('visible');
-      closeTranslateMenu();
-      generatedText = '';
+      renderPlaceholder('Generando versiones...', true);
 
       try {
         const res = await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instruction, senderName, clientName, communicationProfile, fullPrompt })
+          body: JSON.stringify({
+            instruction,
+            senderName,
+            clientName,
+            communicationProfile,
+            versions,
+            fullPrompt
+          })
         });
 
         if (!res.ok || !res.body) {
-          outputEl.textContent = 'No se pudo generar el email.';
-          outputEl.classList.add('empty');
-          outputEl.classList.remove('loading');
+          renderPlaceholder('No se pudieron generar los emails.');
           return;
         }
 
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = '';
+        let generatedText = '';
 
         while (true) {
           const { done, value } = await reader.read();
@@ -960,11 +902,10 @@ Nombre del cliente: ${clientName}
               const payload = JSON.parse(line.slice(6));
               if (payload.type === 'chunk' && payload.text) {
                 generatedText += payload.text;
-                outputEl.textContent = generatedText;
               }
               if (payload.type === 'error') {
-                outputEl.textContent = payload.message || 'Error al generar el email.';
-                outputEl.classList.add('empty');
+                renderPlaceholder(payload.message || 'Error al generar los emails.');
+                return;
               }
             } catch {
               // ignorar evento inválido
@@ -972,75 +913,28 @@ Nombre del cliente: ${clientName}
           }
         }
 
-        if (generatedText) {
-          outputEl.classList.add('fade-in');
-          copyButton.classList.add('visible');
-          translateDropdown.classList.add('visible');
+        const parsedVersions = parseVersions(generatedText, versions);
+        if (parsedVersions.length === 0) {
+          renderPlaceholder('No se recibió contenido para mostrar.');
+          return;
         }
+        renderVersions(parsedVersions);
       } catch {
-        outputEl.textContent = 'Error de conexión.';
-        outputEl.classList.add('empty');
+        renderPlaceholder('Error de conexión.');
       } finally {
         generateButton.disabled = false;
-        buttonText.textContent = 'Generar email';
-        outputEl.classList.remove('loading');
-      }
-    }
-
-    async function handleTranslationSelection(event) {
-      const option = event.target.closest('.translate-option');
-      if (!option || !generatedText || isTranslating) return;
-
-      const targetLang = option.dataset.lang;
-      closeTranslateMenu();
-      setTranslateLoadingState(true);
-      outputEl.classList.add('loading');
-
-      try {
-        const translatedText = await translateText(generatedText, targetLang);
-        generatedText = translatedText;
-        outputEl.textContent = translatedText;
-        outputEl.classList.remove('empty');
-      } catch (err) {
-        console.error('Error al traducir:', err);
-        const message = err instanceof Error ? err.message : 'No se pudo traducir el email.';
-        outputEl.textContent = `${generatedText}
-
-⚠️ ${message}`;
-      } finally {
-        outputEl.classList.remove('loading');
-        setTranslateLoadingState(false);
-        translateButton.focus();
-      }
-    }
-
-    async function copyToClipboard() {
-      if (!generatedText) return;
-
-      try {
-        await navigator.clipboard.writeText(generatedText);
-        const originalText = copyButton.textContent;
-        copyButton.textContent = 'Copiado ✓';
-        copyButton.classList.add('copied');
-        
-        setTimeout(() => {
-          copyButton.textContent = originalText;
-          copyButton.classList.remove('copied');
-        }, 2000);
-      } catch (err) {
-        console.error('Error al copiar:', err);
+        versionsSelect.disabled = false;
+        buttonText.textContent = 'Generar';
       }
     }
 
     generateButton.addEventListener('click', generateEmail);
-    copyButton.addEventListener('click', copyToClipboard);
-    translateButton.addEventListener('click', toggleTranslateMenu);
-    translateMenu.addEventListener('click', handleTranslationSelection);
+    outputEl.addEventListener('click', handleCopyClick);
+
     strategyControls.addEventListener('click', (event) => {
       const option = event.target.closest('.strategy-option');
       if (option) {
         setStrategySelection(option);
-        closeAllStrategyMenus();
         return;
       }
 
@@ -1055,8 +949,7 @@ Nombre del cliente: ${clientName}
       if (button && (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ')) {
         event.preventDefault();
         openStrategyMenu(button);
-        const menu = document.getElementById(button.getAttribute('aria-controls'));
-        menu?.querySelector('.strategy-option')?.focus();
+        document.getElementById(button.getAttribute('aria-controls'))?.querySelector('.strategy-option')?.focus();
         return;
       }
 
@@ -1068,14 +961,12 @@ Nombre del cliente: ${clientName}
 
       if (event.key === 'ArrowDown') {
         event.preventDefault();
-        const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
-        options[nextIndex]?.focus();
+        options[(currentIndex + 1) % options.length]?.focus();
       }
 
       if (event.key === 'ArrowUp') {
         event.preventDefault();
-        const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-        options[prevIndex]?.focus();
+        options[(currentIndex - 1 + options.length) % options.length]?.focus();
       }
 
       if (event.key === 'Enter' || event.key === ' ') {
@@ -1083,23 +974,15 @@ Nombre del cliente: ${clientName}
         const focusedOption = document.activeElement.closest('.strategy-option');
         if (focusedOption) {
           setStrategySelection(focusedOption);
-          closeAllStrategyMenus();
-          const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
-          trigger?.focus();
         }
       }
 
       if (event.key === 'Escape') {
         closeAllStrategyMenus();
-        const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
-        trigger?.focus();
       }
     });
 
     document.addEventListener('click', (event) => {
-      if (!translateDropdown.contains(event.target)) {
-        closeTranslateMenu();
-      }
       if (!event.target.closest('.strategy-dropdown')) {
         closeAllStrategyMenus();
       }
@@ -1107,14 +990,12 @@ Nombre del cliente: ${clientName}
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
-        closeTranslateMenu();
         closeAllStrategyMenus();
       }
     });
 
-    // Submit con Enter (Ctrl/Cmd + Enter en textarea)
-    instructionEl.addEventListener('keydown', (e) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    instructionEl.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
         generateEmail();
       }
     });
