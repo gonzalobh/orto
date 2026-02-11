@@ -3,84 +3,150 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Corrección simple</title>
+  <title>Generador de emails profesionales</title>
   <style>
+    :root {
+      color-scheme: light;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      padding: 2rem 1rem;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-      color: #111;
+      background: #ffffff;
+      color: #111111;
+    }
+
+    main {
+      max-width: 840px;
+      margin: 0 auto;
+      display: grid;
+      gap: 1rem;
     }
 
     h1 {
-      margin-bottom: .25rem;
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
     }
 
     p {
-      color: #555;
-      margin-top: 0;
+      margin: 0;
+      color: #555555;
+      font-size: 0.95rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: #333333;
+    }
+
+    textarea,
+    input,
+    button {
+      width: 100%;
+      border: 1px solid #d9d9d9;
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      font: inherit;
+      color: inherit;
+      background: #ffffff;
     }
 
     textarea {
-      width: 100%;
-      min-height: 180px;
-      box-sizing: border-box;
-      margin: .5rem 0 1rem;
-      font-size: 16px;
+      resize: vertical;
+      min-height: 170px;
       line-height: 1.5;
-      padding: .75rem;
+    }
+
+    #output {
+      min-height: 220px;
+      background: #fafafa;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
     }
 
     button {
-      padding: .65rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #111;
-      color: white;
+      background: #111111;
+      color: #ffffff;
+      font-weight: 500;
       cursor: pointer;
+      transition: opacity 0.15s ease;
     }
 
     button:disabled {
-      opacity: .6;
+      opacity: 0.7;
       cursor: default;
+    }
+
+    @media (max-width: 640px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Corrección ortográfica y de puntuación</h1>
-  <p>App mínima usando la misma conexión a OpenAI del parafraseador de la raíz (<code>/api/summary</code>).</p>
+  <main>
+    <h1>Generador de emails profesionales</h1>
+    <p>Redacta correos claros y formales en segundos.</p>
 
-  <label for="entrada">Texto original</label>
-  <textarea id="entrada" placeholder="Escribe aquí tu texto..."></textarea>
+    <label for="instruction">Instrucción</label>
+    <textarea id="instruction" placeholder="Escribe un correo pidiendo feedback sobre el nuevo prototipo."></textarea>
 
-  <button id="corregir">Corregir</button>
+    <div class="grid">
+      <div>
+        <label for="senderName">Su nombre</label>
+        <input id="senderName" type="text" placeholder="Tu nombre" />
+      </div>
+      <div>
+        <label for="clientName">Nombre del cliente</label>
+        <input id="clientName" type="text" placeholder="Nombre del cliente" />
+      </div>
+    </div>
 
-  <label for="salida">Texto corregido</label>
-  <textarea id="salida" readonly placeholder="Aquí aparecerá el texto corregido..."></textarea>
+    <button id="generateButton" type="button">Generar email</button>
+
+    <label for="output">Email generado</label>
+    <textarea id="output" readonly placeholder="Aquí aparecerá el email generado..."></textarea>
+  </main>
 
   <script>
-    const entrada = document.getElementById('entrada');
-    const salida = document.getElementById('salida');
-    const boton = document.getElementById('corregir');
+    const instructionEl = document.getElementById('instruction');
+    const senderNameEl = document.getElementById('senderName');
+    const clientNameEl = document.getElementById('clientName');
+    const outputEl = document.getElementById('output');
+    const generateButton = document.getElementById('generateButton');
 
-    async function corregir() {
-      const text = entrada.value.trim();
-      if (!text) return;
+    async function generateEmail() {
+      const instruction = instructionEl.value.trim();
+      const senderName = senderNameEl.value.trim();
+      const clientName = clientNameEl.value.trim();
 
-      boton.disabled = true;
-      boton.textContent = 'Corrigiendo...';
-      salida.value = '';
+      if (!instruction || !senderName || !clientName) return;
+
+      generateButton.disabled = true;
+      generateButton.textContent = 'Generando...';
+      outputEl.value = '';
 
       try {
-        const res = await fetch('/api/summary', {
+        const res = await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, mode: 'correccion' })
+          body: JSON.stringify({ instruction, senderName, clientName })
         });
 
         if (!res.ok || !res.body) {
-          salida.value = 'No se pudo corregir el texto.';
+          outputEl.value = 'No se pudo generar el email.';
           return;
         }
 
@@ -103,10 +169,10 @@
             try {
               const payload = JSON.parse(line.slice(6));
               if (payload.type === 'chunk' && payload.text) {
-                salida.value += payload.text;
+                outputEl.value += payload.text;
               }
               if (payload.type === 'error') {
-                salida.value = payload.message || 'Error al corregir.';
+                outputEl.value = payload.message || 'Error al generar el email.';
               }
             } catch {
               // ignorar evento inválido
@@ -114,14 +180,14 @@
           }
         }
       } catch {
-        salida.value = 'Error de conexión.';
+        outputEl.value = 'Error de conexión.';
       } finally {
-        boton.disabled = false;
-        boton.textContent = 'Corregir';
+        generateButton.disabled = false;
+        generateButton.textContent = 'Generar email';
       }
     }
 
-    boton.addEventListener('click', corregir);
+    generateButton.addEventListener('click', generateEmail);
   </script>
 </body>
 </html>
