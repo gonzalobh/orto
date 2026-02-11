@@ -5,120 +5,444 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Generador de emails profesionales</title>
   <style>
-    :root {
-      color-scheme: light;
-    }
-
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #fafafa;
+      --bg-secondary: #ffffff;
+      --border-color: #e8e8e8;
+      --text-primary: #1a1a1a;
+      --text-secondary: #6b6b6b;
+      --text-tertiary: #a0a0a0;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
     body {
-      margin: 0;
-      padding: 2rem 1rem;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #ffffff;
-      color: #111111;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
-    main {
-      max-width: 840px;
-      margin: 0 auto;
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header super minimalista */
+    header {
+      padding: 1.25rem 2rem;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    header h1 {
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    /* Layout principal */
+    .main-content {
+      flex: 1;
       display: grid;
-      gap: 1rem;
+      grid-template-columns: 1fr;
     }
 
-    h1 {
-      margin: 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: -0.02em;
+    /* Panel izquierdo */
+    .left-panel {
+      background: var(--bg-secondary);
+      padding: 2.5rem 1.5rem;
+      border-right: 1px solid var(--border-color);
     }
 
-    p {
-      margin: 0;
-      color: #555555;
-      font-size: 0.95rem;
+    .form-container {
+      max-width: 520px;
+      margin: 0 auto;
     }
 
-    label {
-      font-size: 0.9rem;
-      color: #333333;
+    .section-label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.01em;
     }
 
+    .input-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.01em;
+    }
+
+    /* Inputs estilo the-good-ai */
     textarea,
-    input,
-    button {
+    input[type="text"] {
       width: 100%;
-      border: 1px solid #d9d9d9;
-      border-radius: 10px;
-      padding: 0.75rem 0.85rem;
-      font: inherit;
-      color: inherit;
-      background: #ffffff;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 0.875rem 1rem;
+      transition: all 0.15s ease;
+      outline: none;
+      resize: none;
     }
 
     textarea {
-      resize: vertical;
-      min-height: 170px;
-      line-height: 1.5;
+      min-height: 160px;
+      line-height: 1.6;
     }
 
-    #output {
-      min-height: 220px;
-      background: #fafafa;
+    textarea:focus,
+    input[type="text"]:focus {
+      border-color: #d0d0d0;
+      background: var(--bg-primary);
     }
 
-    .grid {
+    textarea::placeholder,
+    input[type="text"]::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    /* Grid para los dos inputs en fila */
+    .input-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
     }
 
-    button {
-      background: #111111;
-      color: #ffffff;
+    /* Contador de caracteres */
+    .char-counter {
+      text-align: right;
+      font-size: 0.6875rem;
+      color: var(--text-tertiary);
+      margin-top: 0.375rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Botón generate */
+    .generate-btn {
+      width: 100%;
+      background: var(--text-primary);
+      color: var(--bg-secondary);
+      border: none;
+      border-radius: 14px;
+      padding: 0.9375rem 1.5rem;
+      font-family: inherit;
+      font-size: 0.875rem;
       font-weight: 500;
       cursor: pointer;
-      transition: opacity 0.15s ease;
+      transition: all 0.2s ease;
+      letter-spacing: -0.01em;
     }
 
-    button:disabled {
-      opacity: 0.7;
-      cursor: default;
+    .generate-btn:hover:not(:disabled) {
+      background: #2a2a2a;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
-    @media (max-width: 640px) {
-      .grid {
-        grid-template-columns: 1fr;
+    .generate-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .generate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: var(--bg-secondary);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: none;
+    }
+
+    .generate-btn:disabled .spinner {
+      display: block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Panel derecho - Output */
+    .right-panel {
+      background: var(--bg-primary);
+      padding: 2.5rem 1.5rem;
+      overflow-y: auto;
+    }
+
+    .output-container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .output-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .output-header h2 {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .copy-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.5rem 1rem;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .copy-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .copy-btn:hover:not(:disabled) {
+      background: var(--bg-secondary);
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      background: var(--text-primary);
+      color: var(--bg-secondary);
+      border-color: var(--text-primary);
+    }
+
+    /* Output box */
+    .output-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      min-height: 400px;
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      position: relative;
+    }
+
+    .output-box.empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-tertiary);
+      font-size: 0.8125rem;
+    }
+
+    .output-box.loading::after {
+      content: '';
+      position: absolute;
+      bottom: 1.75rem;
+      left: 1.75rem;
+      width: 2px;
+      height: 18px;
+      background: var(--text-primary);
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
       }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (min-width: 1024px) {
+      .main-content {
+        grid-template-columns: 45% 55%;
+      }
+
+      .left-panel {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 3rem 2rem;
+      }
+
+      .right-panel {
+        padding: 3rem 2.5rem;
+      }
+    }
+
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .left-panel,
+      .right-panel {
+        padding: 2.5rem 2rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      header {
+        padding: 1rem 1.25rem;
+      }
+
+      .left-panel,
+      .right-panel {
+        padding: 2rem 1.25rem;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .form-container,
+      .output-container {
+        max-width: 100%;
+      }
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d0d0d0;
     }
   </style>
 </head>
 <body>
-  <main>
-    <h1>Generador de emails profesionales</h1>
-    <p>Redacta correos claros y formales en segundos.</p>
+  <div class="container">
+    <header>
+      <h1>Generador de emails profesionales</h1>
+    </header>
 
-    <label for="instruction">Instrucción</label>
-    <textarea id="instruction" placeholder="Escribe un correo pidiendo feedback sobre el nuevo prototipo."></textarea>
+    <div class="main-content">
+      <!-- Panel izquierdo -->
+      <div class="left-panel">
+        <div class="form-container">
+          <div class="section-label">Key points</div>
 
-    <div class="grid">
-      <div>
-        <label for="senderName">Su nombre</label>
-        <input id="senderName" type="text" placeholder="Tu nombre" />
+          <div class="input-group">
+            <label class="input-label" for="instruction">Instrucción</label>
+            <textarea 
+              id="instruction" 
+              placeholder="Enviar un email a mi cliente pidiéndole feedback sobre la versión más reciente del mockup del sitio web"
+              maxlength="500"
+            ></textarea>
+            <div class="char-counter">
+              <span id="charCount">0</span>/500
+            </div>
+          </div>
+
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label" for="senderName">Su nombre</label>
+              <input 
+                type="text"
+                id="senderName" 
+                placeholder="Juan Pérez" 
+              />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="clientName">Nombre del cliente</label>
+              <input 
+                type="text"
+                id="clientName" 
+                placeholder="María García" 
+              />
+            </div>
+          </div>
+
+          <button class="generate-btn" id="generateButton" type="button">
+            <span class="btn-content">
+              <span class="spinner"></span>
+              <span id="buttonText">Generar email</span>
+            </span>
+          </button>
+        </div>
       </div>
-      <div>
-        <label for="clientName">Nombre del cliente</label>
-        <input id="clientName" type="text" placeholder="Nombre del cliente" />
+
+      <!-- Panel derecho -->
+      <div class="right-panel">
+        <div class="output-container">
+          <div class="output-header">
+            <h2>Email generado</h2>
+            <button class="copy-btn" id="copyButton" type="button">Copiar</button>
+          </div>
+          
+          <div id="output" class="output-box empty">
+            El email generado aparecerá aquí...
+          </div>
+        </div>
       </div>
     </div>
-
-    <button id="generateButton" type="button">Generar email</button>
-
-    <label for="output">Email generado</label>
-    <textarea id="output" readonly placeholder="Aquí aparecerá el email generado..."></textarea>
-  </main>
+  </div>
 
   <script>
     const instructionEl = document.getElementById('instruction');
@@ -126,6 +450,16 @@
     const clientNameEl = document.getElementById('clientName');
     const outputEl = document.getElementById('output');
     const generateButton = document.getElementById('generateButton');
+    const buttonText = document.getElementById('buttonText');
+    const copyButton = document.getElementById('copyButton');
+    const charCount = document.getElementById('charCount');
+
+    let generatedText = '';
+
+    // Contador de caracteres
+    instructionEl.addEventListener('input', () => {
+      charCount.textContent = instructionEl.value.length;
+    });
 
     async function generateEmail() {
       const instruction = instructionEl.value.trim();
@@ -134,9 +468,13 @@
 
       if (!instruction || !senderName || !clientName) return;
 
-      generateButton.disabled = true;
-      generateButton.textContent = 'Generando...';
-      outputEl.value = '';
+        generateButton.disabled = true;
+      buttonText.textContent = 'Generando...';
+      outputEl.textContent = '';
+      outputEl.classList.remove('empty', 'fade-in');
+      outputEl.classList.add('loading');
+      copyButton.classList.remove('visible', 'copied');
+      generatedText = '';
 
       try {
         const res = await fetch('/api/email', {
@@ -146,7 +484,9 @@
         });
 
         if (!res.ok || !res.body) {
-          outputEl.value = 'No se pudo generar el email.';
+          outputEl.textContent = 'No se pudo generar el email.';
+          outputEl.classList.add('empty');
+          outputEl.classList.remove('loading');
           return;
         }
 
@@ -169,25 +509,60 @@
             try {
               const payload = JSON.parse(line.slice(6));
               if (payload.type === 'chunk' && payload.text) {
-                outputEl.value += payload.text;
+                generatedText += payload.text;
+                outputEl.textContent = generatedText;
               }
               if (payload.type === 'error') {
-                outputEl.value = payload.message || 'Error al generar el email.';
+                outputEl.textContent = payload.message || 'Error al generar el email.';
+                outputEl.classList.add('empty');
               }
             } catch {
               // ignorar evento inválido
             }
           }
         }
+
+        if (generatedText) {
+          outputEl.classList.add('fade-in');
+          copyButton.classList.add('visible');
+        }
       } catch {
-        outputEl.value = 'Error de conexión.';
+        outputEl.textContent = 'Error de conexión.';
+        outputEl.classList.add('empty');
       } finally {
         generateButton.disabled = false;
-        generateButton.textContent = 'Generar email';
+        buttonText.textContent = 'Generar email';
+        outputEl.classList.remove('loading');
+      }
+    }
+
+    async function copyToClipboard() {
+      if (!generatedText) return;
+
+      try {
+        await navigator.clipboard.writeText(generatedText);
+        const originalText = copyButton.textContent;
+        copyButton.textContent = 'Copiado ✓';
+        copyButton.classList.add('copied');
+        
+        setTimeout(() => {
+          copyButton.textContent = originalText;
+          copyButton.classList.remove('copied');
+        }, 2000);
+      } catch (err) {
+        console.error('Error al copiar:', err);
       }
     }
 
     generateButton.addEventListener('click', generateEmail);
+    copyButton.addEventListener('click', copyToClipboard);
+
+    // Submit con Enter (Ctrl/Cmd + Enter en textarea)
+    instructionEl.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        generateEmail();
+      }
+    });
   </script>
 </body>
 </html>
