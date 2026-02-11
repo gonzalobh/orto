@@ -1,8 +1,0 @@
-{
-  "name": "orto",
-  "version": "1.0.0",
-  "description": "Corrector ortográfico inteligente con IA",
-  "dependencies": {
-    "openai": "^4.20.1"
-  }
-}
