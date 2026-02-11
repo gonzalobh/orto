@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Tone Detector</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #ffffff;
+        color: #111111;
+      }
+
+      main {
+        width: min(860px, 92vw);
+        margin: 40px auto;
+        display: grid;
+        gap: 16px;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+      }
+
+      p {
+        margin: 0;
+        color: #444;
+      }
+
+      textarea {
+        width: 100%;
+        min-height: 240px;
+        padding: 14px;
+        border: 1px solid #d8d8d8;
+        border-radius: 10px;
+        resize: vertical;
+        font: inherit;
+        line-height: 1.5;
+        background: #fff;
+      }
+
+      textarea:focus {
+        outline: 2px solid #cfcfcf;
+        outline-offset: 1px;
+      }
+
+      button {
+        width: fit-content;
+        border: 1px solid #cfcfcf;
+        background: #111;
+        color: #fff;
+        border-radius: 10px;
+        padding: 10px 14px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      #results {
+        border: 1px solid #e0e0e0;
+        border-radius: 12px;
+        background: #fafafa;
+        padding: 16px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .result-item {
+        border: 1px solid #ececec;
+        border-radius: 8px;
+        padding: 10px 12px;
+        background: #fff;
+      }
+
+      .result-item h2 {
+        margin: 0 0 6px;
+        font-size: 0.95rem;
+      }
+
+      .muted {
+        color: #666;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 1.1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>AI Tone Detector</h1>
+        <p>Pega tu texto y detecta señales de tono generado por IA.</p>
+      </header>
+
+      <textarea
+        id="inputText"
+        placeholder="Escribe o pega aquí el texto a analizar..."
+        aria-label="Texto para analizar"
+      ></textarea>
+
+      <button id="analyzeBtn" type="button">Detectar tono IA</button>
+
+      <section id="results" aria-live="polite">
+        <div class="muted">Aún no hay resultados.</div>
+      </section>
+    </main>
+
+    <script>
+      const inputText = document.getElementById("inputText");
+      const analyzeBtn = document.getElementById("analyzeBtn");
+      const results = document.getElementById("results");
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function renderLoading() {
+        results.innerHTML = '<div class="muted">Analizando...</div>';
+      }
+
+      function renderError(message) {
+        results.innerHTML = `
+          <div class="result-item">
+            <h2>Error</h2>
+            <p>${escapeHtml(message)}</p>
+          </div>
+        `;
+      }
+
+      function renderSuccess(data) {
+        const patterns = Array.isArray(data.detected_patterns)
+          ? data.detected_patterns
+          : [];
+
+        const patternList = patterns.length
+          ? `<ul>${patterns
+              .map((item) => `<li>${escapeHtml(item)}</li>`)
+              .join("")}</ul>`
+          : '<p class="muted">Sin patrones detectados.</p>';
+
+        results.innerHTML = `
+          <div class="result-item">
+            <h2>AI Score</h2>
+            <p>${escapeHtml(data.ai_score ?? "N/A")}</p>
+          </div>
+
+          <div class="result-item">
+            <h2>Patrones detectados</h2>
+            ${patternList}
+          </div>
+
+          <div class="result-item">
+            <h2>Explicación breve</h2>
+            <p>${escapeHtml(data.why_it_sounds_ai ?? "Sin explicación.")}</p>
+          </div>
+
+          <div class="result-item">
+            <h2>Versión humanizada</h2>
+            <p>${escapeHtml(data.human_version ?? "Sin versión sugerida.")}</p>
+          </div>
+        `;
+      }
+
+      async function detectTone() {
+        const text = inputText.value.trim();
+
+        if (!text) {
+          renderError("Por favor, ingresa texto antes de analizar.");
+          return;
+        }
+
+        analyzeBtn.disabled = true;
+        renderLoading();
+
+        try {
+          // Nota de seguridad:
+          // En un frontend público no es seguro exponer secretos.
+          // Este valor puede existir solo si Vercel o el entorno lo inyecta explícitamente.
+          // Si no existe, se asume que la autenticación se valida en backend.
+          const ortoToken =
+            globalThis?.process?.env?.ORTO || globalThis?.ORTO || "";
+
+          const headers = {
+            "Content-Type": "application/json",
+          };
+
+          if (ortoToken) {
+            headers.Authorization = `Bearer ${ortoToken}`;
+          }
+
+          const response = await fetch("/api/detector", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ text }),
+          });
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(
+              errorText || `La API respondió con estado ${response.status}.`
+            );
+          }
+
+          const data = await response.json();
+          renderSuccess(data);
+        } catch (error) {
+          renderError(
+            error instanceof Error
+              ? error.message
+              : "No se pudo completar el análisis."
+          );
+        } finally {
+          analyzeBtn.disabled = false;
+        }
+      }
+
+      analyzeBtn.addEventListener("click", detectTone);
+    </script>
+  </body>
+</html>
