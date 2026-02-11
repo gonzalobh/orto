@@ -147,7 +147,7 @@
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 10px;
-      padding: 0.5rem 0.375rem;
+      padding: 0.5rem 0.45rem;
       font-size: 0.6875rem;
       line-height: 1.3;
       color: var(--text-secondary);
@@ -155,6 +155,22 @@
       text-align: center;
       cursor: pointer;
       transition: all 0.15s ease;
+    }
+
+    .strategy-title {
+      display: block;
+      color: var(--text-primary);
+      font-size: 0.675rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .strategy-subtitle {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--text-secondary);
+      font-size: 0.625rem;
+      font-weight: 400;
     }
 
     .strategy-btn:hover,
@@ -607,17 +623,22 @@
 
           <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="formalidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuFormalidad">Nivel de Formalidad</button>
+              <button class="strategy-btn" type="button" data-profile="formalidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuFormalidad">
+                <span class="strategy-title">Nivel de Formalidad</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              </button>
               <ul class="strategy-menu" id="menuFormalidad" role="menu" aria-label="Opciones de nivel de formalidad">
                 <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="formalidad" data-value="Automático">Automático</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Directo">Directo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Corporativo">Corporativo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Institucional">Institucional</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Ejecutivo">Ejecutivo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Formal">Formal</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Cercano">Cercano</button></li>
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="emocion" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmocion">Carga Emocional</button>
+              <button class="strategy-btn" type="button" data-profile="emocion" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmocion">
+                <span class="strategy-title">Carga Emocional</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              </button>
               <ul class="strategy-menu" id="menuEmocion" role="menu" aria-label="Opciones de carga emocional">
                 <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="emocion" data-value="Automático">Automático</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Neutra">Neutra</button></li>
@@ -628,7 +649,10 @@
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="enfoque" aria-haspopup="true" aria-expanded="false" aria-controls="menuEnfoque">Enfoque Comunicacional</button>
+              <button class="strategy-btn" type="button" data-profile="enfoque" aria-haspopup="true" aria-expanded="false" aria-controls="menuEnfoque">
+                <span class="strategy-title">Enfoque Comunicacional</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              </button>
               <ul class="strategy-menu" id="menuEnfoque" role="menu" aria-label="Opciones de enfoque comunicacional">
                 <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="enfoque" data-value="Automático">Automático</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Informativo">Informativo</button></li>
@@ -639,9 +663,12 @@
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="profundidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuProfundidad">Nivel de Profundidad</button>
+              <button class="strategy-btn" type="button" data-profile="profundidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuProfundidad">
+                <span class="strategy-title">Nivel de Profundidad</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              </button>
               <ul class="strategy-menu" id="menuProfundidad" role="menu" aria-label="Opciones de nivel de profundidad">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="profundidad" data-value="Automática">Automática</button></li>
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="profundidad" data-value="Automático">Automático</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Breve">Breve</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Estándar">Estándar</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Detallado">Detallado</button></li>
@@ -649,7 +676,10 @@
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="visual" aria-haspopup="true" aria-expanded="false" aria-controls="menuVisual">Elementos Visuales</button>
+              <button class="strategy-btn" type="button" data-profile="visual" aria-haspopup="true" aria-expanded="false" aria-controls="menuVisual">
+                <span class="strategy-title">Elementos Visuales</span>
+                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
+              </button>
               <ul class="strategy-menu" id="menuVisual" role="menu" aria-label="Opciones de elementos visuales">
                 <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="visual" data-value="Automático">Automático</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Ninguno">Ninguno</button></li>
@@ -722,6 +752,7 @@
     const translateButton = document.getElementById('translateButton');
     const translateMenu = document.getElementById('translateMenu');
     const charCount = document.getElementById('charCount');
+    const strategyControls = document.querySelector('.strategy-controls');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
 
@@ -729,7 +760,7 @@
       formalidad: 'Automático',
       emocion: 'Automático',
       enfoque: 'Automático',
-      profundidad: 'Automática',
+      profundidad: 'Automático',
       visual: 'Automático'
     };
 
@@ -803,6 +834,12 @@
         opt.classList.toggle('selected', selected);
         opt.setAttribute('aria-checked', selected ? 'true' : 'false');
       });
+
+      const strategyButton = document.querySelector(`.strategy-btn[data-profile="${profileKey}"]`);
+      const subtitle = strategyButton?.querySelector('[data-role="selected-value"]');
+      if (subtitle) {
+        subtitle.textContent = selectedValue;
+      }
     }
 
     function getVisualInstruction(mode) {
@@ -999,60 +1036,64 @@ Nombre del cliente: ${clientName}
     copyButton.addEventListener('click', copyToClipboard);
     translateButton.addEventListener('click', toggleTranslateMenu);
     translateMenu.addEventListener('click', handleTranslationSelection);
-    strategyButtons.forEach((button) => {
-      button.addEventListener('click', () => toggleStrategyMenu(button));
-      button.addEventListener('keydown', (event) => {
-        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openStrategyMenu(button);
-          const menu = document.getElementById(button.getAttribute('aria-controls'));
-          const firstOption = menu?.querySelector('.strategy-option');
-          firstOption?.focus();
-        }
-      });
-    });
-
-    strategyMenus.forEach((menu) => {
-      menu.addEventListener('click', (event) => {
-        const option = event.target.closest('.strategy-option');
-        if (!option) return;
+    strategyControls.addEventListener('click', (event) => {
+      const option = event.target.closest('.strategy-option');
+      if (option) {
         setStrategySelection(option);
         closeAllStrategyMenus();
-      });
+        return;
+      }
 
-      menu.addEventListener('keydown', (event) => {
-        const options = Array.from(menu.querySelectorAll('.strategy-option'));
-        const currentIndex = options.indexOf(document.activeElement);
+      const button = event.target.closest('.strategy-btn');
+      if (button) {
+        toggleStrategyMenu(button);
+      }
+    });
 
-        if (event.key === 'ArrowDown') {
-          event.preventDefault();
-          const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
-          options[nextIndex]?.focus();
-        }
+    strategyControls.addEventListener('keydown', (event) => {
+      const button = event.target.closest('.strategy-btn');
+      if (button && (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        openStrategyMenu(button);
+        const menu = document.getElementById(button.getAttribute('aria-controls'));
+        menu?.querySelector('.strategy-option')?.focus();
+        return;
+      }
 
-        if (event.key === 'ArrowUp') {
-          event.preventDefault();
-          const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
-          options[prevIndex]?.focus();
-        }
+      const menu = event.target.closest('.strategy-menu');
+      if (!menu) return;
 
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          const focusedOption = document.activeElement.closest('.strategy-option');
-          if (focusedOption) {
-            setStrategySelection(focusedOption);
-            closeAllStrategyMenus();
-            const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
-            trigger?.focus();
-          }
-        }
+      const options = Array.from(menu.querySelectorAll('.strategy-option'));
+      const currentIndex = options.indexOf(document.activeElement);
 
-        if (event.key === 'Escape') {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
+        options[nextIndex]?.focus();
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
+        options[prevIndex]?.focus();
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const focusedOption = document.activeElement.closest('.strategy-option');
+        if (focusedOption) {
+          setStrategySelection(focusedOption);
           closeAllStrategyMenus();
           const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
           trigger?.focus();
         }
-      });
+      }
+
+      if (event.key === 'Escape') {
+        closeAllStrategyMenus();
+        const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
+        trigger?.focus();
+      }
     });
 
     document.addEventListener('click', (event) => {
