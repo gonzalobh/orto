@@ -487,6 +487,14 @@
       cursor: not-allowed;
     }
 
+    .restore-original-btn {
+      display: none;
+    }
+
+    .restore-original-btn.visible {
+      display: inline-flex;
+    }
+
     .translate-menu {
       position: absolute;
       top: calc(100% + 0.35rem);
@@ -900,11 +908,20 @@ ${body}`.trim();
       const card = button.closest('.version-card');
       if (!card || !targetLang) return;
 
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
       const bodyEl = card.querySelector('[data-role="email-body"]');
-      if (!bodyEl) return;
+      if (!subjectEl || !bodyEl) return;
 
-      const bodyText = decodeURIComponent(card.dataset.body || '').trim();
-      if (!bodyText) return;
+      const subjectText = subjectEl.textContent.trim();
+      const bodyText = bodyEl.textContent.trim();
+      if (!subjectText || !bodyText) return;
+
+      if (!card.dataset.originalSubject) {
+        card.dataset.originalSubject = encodeURIComponent(subjectText);
+      }
+      if (!card.dataset.originalBody) {
+        card.dataset.originalBody = encodeURIComponent(bodyText);
+      }
 
       button.disabled = true;
       const originalLabel = button.textContent;
@@ -915,23 +932,32 @@ ${body}`.trim();
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: bodyText,
-            targetLang
+            subject: subjectText,
+            body: bodyText,
+            language: targetLang
           })
         });
 
         const data = await res.json().catch(() => null);
-        if (!res.ok || !data?.text) {
+        if (!res.ok || !data?.translatedSubject || !data?.translatedBody) {
           throw new Error('No se pudo traducir');
         }
 
-        const translatedBody = data.text.trim();
+        const translatedSubject = data.translatedSubject.trim();
+        const translatedBody = data.translatedBody.trim();
+        subjectEl.textContent = translatedSubject;
         bodyEl.textContent = translatedBody;
-        card.dataset.body = encodeURIComponent(translatedBody);
+        card.dataset.isTranslated = 'true';
 
         const copyButton = card.querySelector('.version-copy-btn');
         if (copyButton) {
+          copyButton.dataset.subject = encodeURIComponent(translatedSubject);
           copyButton.dataset.body = encodeURIComponent(translatedBody);
+        }
+
+        const restoreButton = card.querySelector('.restore-original-btn');
+        if (restoreButton) {
+          restoreButton.classList.add('visible');
         }
 
         button.textContent = 'Traducido ✓';
@@ -947,6 +973,31 @@ ${body}`.trim();
       } finally {
         button.disabled = false;
       }
+    }
+
+    function restoreOriginalVersion(button) {
+      const card = button.closest('.version-card');
+      if (!card) return;
+
+      const originalSubject = decodeURIComponent(card.dataset.originalSubject || '').trim();
+      const originalBody = decodeURIComponent(card.dataset.originalBody || '').trim();
+      if (!originalSubject || !originalBody) return;
+
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const bodyEl = card.querySelector('[data-role="email-body"]');
+      if (!subjectEl || !bodyEl) return;
+
+      subjectEl.textContent = originalSubject;
+      bodyEl.textContent = originalBody;
+      card.dataset.isTranslated = 'false';
+
+      const copyButton = card.querySelector('.version-copy-btn');
+      if (copyButton) {
+        copyButton.dataset.subject = encodeURIComponent(originalSubject);
+        copyButton.dataset.body = encodeURIComponent(originalBody);
+      }
+
+      button.classList.remove('visible');
     }
 
     async function handleOutputClick(event) {
@@ -976,6 +1027,12 @@ ${body}`.trim();
         return;
       }
 
+      const restoreButton = event.target.closest('.restore-original-btn');
+      if (restoreButton) {
+        restoreOriginalVersion(restoreButton);
+        return;
+      }
+
       handleCopyClick(event);
     }
 
@@ -984,12 +1041,11 @@ ${body}`.trim();
       versions.forEach((item, index) => {
         const card = document.createElement('article');
         card.className = 'version-card fade-in';
-        card.dataset.body = encodeURIComponent(item.body);
         card.innerHTML = `
           <span class="version-label">Versión ${index + 1}</span>
           <div class="version-section">
             <div class="version-title">Asunto</div>
-            <div class="version-content">${escapeHtml(item.subject)}</div>
+            <div class="version-content" data-role="email-subject">${escapeHtml(item.subject)}</div>
           </div>
           <div class="version-section">
             <div class="version-title">Cuerpo</div>
@@ -1000,11 +1056,12 @@ ${body}`.trim();
             <div class="translate-dropdown">
               <button class="translate-btn" type="button" aria-haspopup="true" aria-expanded="false">Traducir</button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
-                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="en">Inglés</button></li>
-                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="fr">Francés</button></li>
-                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="de">Alemán</button></li>
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="German">Alemán</button></li>
               </ul>
             </div>
+            <button class="version-copy-btn restore-original-btn" type="button">Volver al original</button>
           </div>
         `;
         outputEl.appendChild(card);
