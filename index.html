@@ -586,6 +586,20 @@
     const charCount = document.getElementById('charCount');
 
     let generatedText = '';
+    let isTranslating = false;
+
+    function setTranslateLoadingState(loading) {
+      isTranslating = loading;
+      translateButton.disabled = loading;
+      generateButton.disabled = loading;
+
+      if (loading) {
+        translateButton.dataset.originalLabel = translateButton.dataset.originalLabel || 'Traducir';
+        translateButton.childNodes[0].nodeValue = 'Traduciendo... ';
+      } else {
+        translateButton.childNodes[0].nodeValue = `${translateButton.dataset.originalLabel || 'Traducir'} `;
+      }
+    }
 
     function openTranslateMenu() {
       translateMenu.classList.add('open');
@@ -605,14 +619,24 @@
       }
     }
 
-    function translateText(text, targetLang) {
-      const translations = {
-        en: `[Translated to English]\n\n${text}`,
-        fr: `[Traduit en français]\n\n${text}`,
-        de: `[Ins Deutsche übersetzt]\n\n${text}`
-      };
+    async function translateText(text, targetLang) {
+      const res = await fetch('/api/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, targetLang })
+      });
 
-      return Promise.resolve(translations[targetLang] || text);
+      const payload = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(payload.error || 'No se pudo traducir el email.');
+      }
+
+      if (!payload.text || typeof payload.text !== 'string') {
+        throw new Error('Respuesta de traducción inválida.');
+      }
+
+      return payload.text;
     }
 
     // Contador de caracteres
@@ -700,14 +724,29 @@
 
     async function handleTranslationSelection(event) {
       const option = event.target.closest('.translate-option');
-      if (!option || !generatedText) return;
+      if (!option || !generatedText || isTranslating) return;
 
       const targetLang = option.dataset.lang;
-      const translatedText = await translateText(generatedText, targetLang);
-      generatedText = translatedText;
-      outputEl.textContent = translatedText;
       closeTranslateMenu();
-      translateButton.focus();
+      setTranslateLoadingState(true);
+      outputEl.classList.add('loading');
+
+      try {
+        const translatedText = await translateText(generatedText, targetLang);
+        generatedText = translatedText;
+        outputEl.textContent = translatedText;
+        outputEl.classList.remove('empty');
+      } catch (err) {
+        console.error('Error al traducir:', err);
+        const message = err instanceof Error ? err.message : 'No se pudo traducir el email.';
+        outputEl.textContent = `${generatedText}
+
+⚠️ ${message}`;
+      } finally {
+        outputEl.classList.remove('loading');
+        setTranslateLoadingState(false);
+        translateButton.focus();
+      }
     }
 
     async function copyToClipboard() {
