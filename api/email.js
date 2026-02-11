@@ -9,19 +9,34 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { instruction, senderName, clientName, communicationProfile, versions } = req.body || {};
+    const {
+      mode,
+      instruction,
+      originalEmail,
+      senderName,
+      recipientName,
+      clientName,
+      tone,
+      extension,
+      emojis,
+      communicationProfile,
+      versions,
+    } = req.body || {};
+    const safeMode = mode === "reply" ? "reply" : "compose";
     const safeInstruction = typeof instruction === "string" ? instruction.trim() : "";
+    const safeOriginalEmail = typeof originalEmail === "string" ? originalEmail.trim() : "";
     const safeSenderName = typeof senderName === "string" ? senderName.trim() : "";
-    const safeClientName = typeof clientName === "string" ? clientName.trim() : "";
+    const recipientValue = typeof recipientName === "string" ? recipientName : clientName;
+    const safeClientName = typeof recipientValue === "string" ? recipientValue.trim() : "";
     const safeVersions = Math.min(3, Math.max(1, Number(versions) || 1));
 
     const safeProfile = {
-      tono: typeof communicationProfile?.tono === "string" ? communicationProfile.tono : "Automático",
-      extension: typeof communicationProfile?.extension === "string" ? communicationProfile.extension : "Automática",
-      emojis: typeof communicationProfile?.emojis === "string" ? communicationProfile.emojis : "Automático",
+      tono: typeof tone === "string" ? tone : (typeof communicationProfile?.tono === "string" ? communicationProfile.tono : "Automático"),
+      extension: typeof extension === "string" ? extension : (typeof communicationProfile?.extension === "string" ? communicationProfile.extension : "Automática"),
+      emojis: typeof emojis === "string" ? emojis : (typeof communicationProfile?.emojis === "string" ? communicationProfile.emojis : "Automático"),
     };
 
-    if (!safeInstruction || !safeSenderName || !safeClientName) {
+    if (!safeInstruction || !safeSenderName || !safeClientName || (safeMode === "reply" && !safeOriginalEmail)) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
@@ -45,7 +60,18 @@ Reglas obligatorias:
 Atentamente,
 {NombreRemitente}`;
 
-    const userPrompt = `INSTRUCCIÓN:
+    const modePrompt = safeMode === "reply"
+      ? `El usuario recibió el siguiente email:
+---
+${safeOriginalEmail}
+---
+
+Redacta una respuesta profesional basada en ese mensaje,
+considerando también la instrucción adicional del usuario.
+Aplica el tono, extensión y configuración seleccionada.`
+      : "";
+
+    const userPrompt = `${safeMode === "reply" ? `${modePrompt}\n\n` : ""}INSTRUCCIÓN:
 ${safeInstruction}
 
 DATOS:

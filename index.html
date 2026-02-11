@@ -71,11 +71,44 @@
     }
 
     .section-label {
-      font-size: 0.8125rem;
-      font-weight: 500;
-      color: var(--text-primary);
       margin-bottom: 1.5rem;
-      letter-spacing: -0.01em;
+    }
+
+    .mode-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-toggle-btn {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      border-radius: 10px;
+      padding: 0.45rem 0.875rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-toggle-btn:hover,
+    .mode-toggle-btn:focus-visible {
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      outline: none;
+    }
+
+    .mode-toggle-btn.active {
+      background: var(--text-primary);
+      border-color: var(--text-primary);
+      color: var(--bg-secondary);
+    }
+
+    .input-group.mode-hidden {
+      display: none;
     }
 
     .input-group {
@@ -634,7 +667,20 @@
       <!-- Panel izquierdo -->
       <div class="left-panel">
         <div class="form-container">
-          <div class="section-label">Key points</div>
+          <div class="section-label">
+            <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
+              <button class="mode-toggle-btn active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">Redactar</button>
+              <button class="mode-toggle-btn" id="modeReply" type="button" data-mode="reply" role="tab" aria-selected="false">Responder</button>
+            </div>
+          </div>
+
+          <div class="input-group mode-hidden" id="originalEmailGroup">
+            <label class="input-label" for="originalEmail">Email original</label>
+            <textarea
+              id="originalEmail"
+              placeholder="Pega aquí el email que recibiste..."
+            ></textarea>
+          </div>
 
           <div class="input-group">
             <label class="input-label" for="instruction">Instrucción</label>
@@ -736,6 +782,8 @@
 
   <script>
     const instructionEl = document.getElementById('instruction');
+    const originalEmailEl = document.getElementById('originalEmail');
+    const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
     const outputEl = document.getElementById('output');
@@ -746,6 +794,9 @@
     const strategyControls = document.querySelector('.strategy-controls');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
+    const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
+
+    let currentMode = 'compose';
 
     const communicationProfile = {
       tono: 'Automático',
@@ -798,6 +849,20 @@
       if (mode === 'Ninguno') return 'No utilices emojis.';
       if (mode === 'Mínimo') return 'Usa como máximo un emoji solo si aporta claridad profesional.';
       return 'Si aplica, decide automáticamente si conviene usar emojis con criterio B2B.';
+    }
+
+    function setMode(mode) {
+      currentMode = mode === 'reply' ? 'reply' : 'compose';
+      const isReply = currentMode === 'reply';
+
+      originalEmailGroupEl.classList.toggle('mode-hidden', !isReply);
+      originalEmailEl.toggleAttribute('required', isReply);
+
+      modeButtons.forEach((button) => {
+        const isActive = button.dataset.mode === currentMode;
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
     }
 
     function buildStrategicPrompt(userInputText, versionCount) {
@@ -1074,11 +1139,13 @@ ${body}`.trim();
 
     async function generateEmail() {
       const instruction = instructionEl.value.trim();
+      const originalEmail = originalEmailEl.value.trim();
       const senderName = senderNameEl.value.trim();
       const clientName = clientNameEl.value.trim();
       const versions = Number(versionsSelect.value) || 1;
+      const isReplyMode = currentMode === 'reply';
 
-      if (!instruction || !senderName || !clientName) return;
+      if (!instruction || !senderName || !clientName || (isReplyMode && !originalEmail)) return;
 
       generateButton.disabled = true;
       versionsSelect.disabled = true;
@@ -1090,10 +1157,14 @@ ${body}`.trim();
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
+            mode: isReplyMode ? 'reply' : 'compose',
             instruction,
+            ...(isReplyMode ? { originalEmail } : {}),
             senderName,
-            clientName,
-            communicationProfile,
+            recipientName: clientName,
+            tone: communicationProfile.tono,
+            extension: communicationProfile.extension,
+            emojis: communicationProfile.emojis,
             versions
           })
         });
@@ -1130,6 +1201,12 @@ ${body}`.trim();
 
     generateButton.addEventListener('click', generateEmail);
     outputEl.addEventListener('click', handleOutputClick);
+
+    modeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setMode(button.dataset.mode);
+      });
+    });
 
     strategyControls.addEventListener('click', (event) => {
       const option = event.target.closest('.strategy-option');
@@ -1202,6 +1279,8 @@ ${body}`.trim();
         generateEmail();
       }
     });
+
+    setMode('compose');
   </script>
 </body>
 </html>
