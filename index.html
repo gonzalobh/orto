@@ -131,6 +131,86 @@
       margin-bottom: 1.25rem;
     }
 
+    .strategy-controls {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .strategy-dropdown {
+      position: relative;
+    }
+
+    .strategy-btn {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.5rem 0.375rem;
+      font-size: 0.6875rem;
+      line-height: 1.3;
+      color: var(--text-secondary);
+      font-family: inherit;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .strategy-btn:hover,
+    .strategy-btn:focus-visible,
+    .strategy-btn[aria-expanded="true"] {
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+    }
+
+    .strategy-btn:focus-visible,
+    .strategy-option:focus-visible {
+      outline: 2px solid #c7c7c7;
+      outline-offset: 2px;
+    }
+
+    .strategy-menu {
+      position: absolute;
+      top: calc(100% + 0.3rem);
+      left: 0;
+      min-width: 168px;
+      list-style: none;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.375rem;
+      box-shadow: var(--shadow-md);
+      display: none;
+      z-index: 20;
+    }
+
+    .strategy-menu.open {
+      display: block;
+    }
+
+    .strategy-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .strategy-option:hover,
+    .strategy-option:focus-visible,
+    .strategy-option.selected {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
     /* Contador de caracteres */
     .char-counter {
       text-align: right;
@@ -452,6 +532,10 @@
         gap: 1.25rem;
       }
 
+      .strategy-controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
       .form-container,
       .output-container {
         max-width: 100%;
@@ -521,6 +605,60 @@
             </div>
           </div>
 
+          <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
+            <div class="strategy-dropdown">
+              <button class="strategy-btn" type="button" data-profile="formalidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuFormalidad">Nivel de Formalidad</button>
+              <ul class="strategy-menu" id="menuFormalidad" role="menu" aria-label="Opciones de nivel de formalidad">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="formalidad" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Directo">Directo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Corporativo">Corporativo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Institucional">Institucional</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="formalidad" data-value="Ejecutivo">Ejecutivo</button></li>
+              </ul>
+            </div>
+            <div class="strategy-dropdown">
+              <button class="strategy-btn" type="button" data-profile="emocion" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmocion">Carga Emocional</button>
+              <ul class="strategy-menu" id="menuEmocion" role="menu" aria-label="Opciones de carga emocional">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="emocion" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Neutra">Neutra</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Empática">Empática</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Motivadora">Motivadora</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Asertiva">Asertiva</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emocion" data-value="Urgente">Urgente</button></li>
+              </ul>
+            </div>
+            <div class="strategy-dropdown">
+              <button class="strategy-btn" type="button" data-profile="enfoque" aria-haspopup="true" aria-expanded="false" aria-controls="menuEnfoque">Enfoque Comunicacional</button>
+              <ul class="strategy-menu" id="menuEnfoque" role="menu" aria-label="Opciones de enfoque comunicacional">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="enfoque" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Informativo">Informativo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Persuasivo">Persuasivo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Resolutivo">Resolutivo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Comercial">Comercial</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="enfoque" data-value="Estratégico">Estratégico</button></li>
+              </ul>
+            </div>
+            <div class="strategy-dropdown">
+              <button class="strategy-btn" type="button" data-profile="profundidad" aria-haspopup="true" aria-expanded="false" aria-controls="menuProfundidad">Nivel de Profundidad</button>
+              <ul class="strategy-menu" id="menuProfundidad" role="menu" aria-label="Opciones de nivel de profundidad">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="profundidad" data-value="Automática">Automática</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Breve">Breve</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Estándar">Estándar</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Detallado">Detallado</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="profundidad" data-value="Ejecutivo">Ejecutivo</button></li>
+              </ul>
+            </div>
+            <div class="strategy-dropdown">
+              <button class="strategy-btn" type="button" data-profile="visual" aria-haspopup="true" aria-expanded="false" aria-controls="menuVisual">Elementos Visuales</button>
+              <ul class="strategy-menu" id="menuVisual" role="menu" aria-label="Opciones de elementos visuales">
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="visual" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Ninguno">Ninguno</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Discreto">Discreto</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="visual" data-value="Permitido">Permitido</button></li>
+              </ul>
+            </div>
+          </div>
+
           <button class="generate-btn" id="generateButton" type="button">
             <span class="btn-content">
               <span class="spinner"></span>
@@ -584,6 +722,16 @@
     const translateButton = document.getElementById('translateButton');
     const translateMenu = document.getElementById('translateMenu');
     const charCount = document.getElementById('charCount');
+    const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
+    const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
+
+    let communicationProfile = {
+      formalidad: 'Automático',
+      emocion: 'Automático',
+      enfoque: 'Automático',
+      profundidad: 'Automática',
+      visual: 'Automático'
+    };
 
     let generatedText = '';
     let isTranslating = false;
@@ -619,6 +767,80 @@
       }
     }
 
+    function closeAllStrategyMenus() {
+      strategyMenus.forEach((menu) => menu.classList.remove('open'));
+      strategyButtons.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    }
+
+    function openStrategyMenu(button) {
+      closeAllStrategyMenus();
+      const menu = document.getElementById(button.getAttribute('aria-controls'));
+      if (!menu) return;
+      menu.classList.add('open');
+      button.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleStrategyMenu(button) {
+      const menu = document.getElementById(button.getAttribute('aria-controls'));
+      if (!menu) return;
+      const isOpen = menu.classList.contains('open');
+      closeAllStrategyMenus();
+      if (!isOpen) {
+        menu.classList.add('open');
+        button.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function setStrategySelection(optionButton) {
+      const profileKey = optionButton.dataset.profile;
+      const selectedValue = optionButton.dataset.value;
+      if (!profileKey || !selectedValue) return;
+
+      communicationProfile[profileKey] = selectedValue;
+      const siblingOptions = document.querySelectorAll(`.strategy-option[data-profile="${profileKey}"]`);
+      siblingOptions.forEach((opt) => {
+        const selected = opt === optionButton;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+      });
+    }
+
+    function getVisualInstruction(mode) {
+      if (mode === 'Ninguno') return 'No utilices emojis ni caracteres visuales decorativos.';
+      if (mode === 'Discreto') return 'Puedes usar hasta 2 emojis como máximo en total, solo si aportan claridad profesional.';
+      if (mode === 'Permitido') return 'Puedes usar emojis de forma moderada y profesional cuando mejoren la claridad del mensaje.';
+      return 'Si aplica, decide automáticamente el uso visual manteniendo un tono B2B profesional.';
+    }
+
+    function getDepthInstruction(mode) {
+      if (mode === 'Detallado' || mode === 'Ejecutivo') {
+        return 'Genera una salida amplia y estructurada con encabezados claros y viñetas cuando sea útil.';
+      }
+      return 'Ajusta la extensión según el contexto comercial y la opción elegida.';
+    }
+
+    function buildStrategicPrompt(userInputText) {
+      const systemInstructions = `
+Actúa como asistente corporativo experto en comunicación B2B.
+Aplica el siguiente perfil de comunicación a la generación del texto:
+
+- Nivel de Formalidad: ${communicationProfile.formalidad}
+- Carga Emocional: ${communicationProfile.emocion}
+- Enfoque Comunicacional: ${communicationProfile.enfoque}
+- Nivel de Profundidad: ${communicationProfile.profundidad}
+- Elementos Visuales: ${communicationProfile.visual}
+
+Reglas de negocio:
+- Si alguna categoría está en "Automático" o "Automática", decide ese aspecto según el contexto.
+- ${getDepthInstruction(communicationProfile.profundidad)}
+- ${getVisualInstruction(communicationProfile.visual)}
+
+Respeta estrictamente estas preferencias.
+`.trim();
+
+      return `${systemInstructions}\n\n${userInputText}`;
+    }
+
     async function translateText(text, targetLang) {
       const res = await fetch('/api/translate', {
         method: 'POST',
@@ -648,6 +870,12 @@
       const instruction = instructionEl.value.trim();
       const senderName = senderNameEl.value.trim();
       const clientName = clientNameEl.value.trim();
+      const userInputText = `
+Instrucción principal: ${instruction}
+Nombre remitente: ${senderName}
+Nombre del cliente: ${clientName}
+`.trim();
+      const fullPrompt = buildStrategicPrompt(userInputText);
 
       if (!instruction || !senderName || !clientName) return;
 
@@ -665,7 +893,7 @@
         const res = await fetch('/api/email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ instruction, senderName, clientName })
+          body: JSON.stringify({ instruction, senderName, clientName, communicationProfile, fullPrompt })
         });
 
         if (!res.ok || !res.body) {
@@ -771,16 +999,75 @@
     copyButton.addEventListener('click', copyToClipboard);
     translateButton.addEventListener('click', toggleTranslateMenu);
     translateMenu.addEventListener('click', handleTranslationSelection);
+    strategyButtons.forEach((button) => {
+      button.addEventListener('click', () => toggleStrategyMenu(button));
+      button.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openStrategyMenu(button);
+          const menu = document.getElementById(button.getAttribute('aria-controls'));
+          const firstOption = menu?.querySelector('.strategy-option');
+          firstOption?.focus();
+        }
+      });
+    });
+
+    strategyMenus.forEach((menu) => {
+      menu.addEventListener('click', (event) => {
+        const option = event.target.closest('.strategy-option');
+        if (!option) return;
+        setStrategySelection(option);
+        closeAllStrategyMenus();
+      });
+
+      menu.addEventListener('keydown', (event) => {
+        const options = Array.from(menu.querySelectorAll('.strategy-option'));
+        const currentIndex = options.indexOf(document.activeElement);
+
+        if (event.key === 'ArrowDown') {
+          event.preventDefault();
+          const nextIndex = currentIndex < options.length - 1 ? currentIndex + 1 : 0;
+          options[nextIndex]?.focus();
+        }
+
+        if (event.key === 'ArrowUp') {
+          event.preventDefault();
+          const prevIndex = currentIndex > 0 ? currentIndex - 1 : options.length - 1;
+          options[prevIndex]?.focus();
+        }
+
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          const focusedOption = document.activeElement.closest('.strategy-option');
+          if (focusedOption) {
+            setStrategySelection(focusedOption);
+            closeAllStrategyMenus();
+            const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
+            trigger?.focus();
+          }
+        }
+
+        if (event.key === 'Escape') {
+          closeAllStrategyMenus();
+          const trigger = strategyButtons.find((btn) => btn.getAttribute('aria-controls') === menu.id);
+          trigger?.focus();
+        }
+      });
+    });
 
     document.addEventListener('click', (event) => {
       if (!translateDropdown.contains(event.target)) {
         closeTranslateMenu();
+      }
+      if (!event.target.closest('.strategy-dropdown')) {
+        closeAllStrategyMenus();
       }
     });
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         closeTranslateMenu();
+        closeAllStrategyMenus();
       }
     });
 
