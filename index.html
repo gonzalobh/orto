@@ -223,6 +223,24 @@
       letter-spacing: -0.01em;
     }
 
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .translate-dropdown {
+      position: relative;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .translate-dropdown.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
     .copy-btn {
       background: transparent;
       color: var(--text-secondary);
@@ -241,6 +259,90 @@
     .copy-btn.visible {
       opacity: 1;
       pointer-events: auto;
+    }
+
+    .translate-dropdown.visible .translate-btn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .translate-btn {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.5rem 0.875rem;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      opacity: 0;
+      pointer-events: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+
+    .translate-btn:hover,
+    .translate-btn:focus-visible {
+      background: var(--bg-secondary);
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+    }
+
+    .translate-btn:focus-visible,
+    .copy-btn:focus-visible,
+    .translate-option:focus-visible {
+      outline: 2px solid #c7c7c7;
+      outline-offset: 2px;
+    }
+
+    .translate-icon {
+      font-size: 0.625rem;
+      transition: transform 0.2s ease;
+    }
+
+    .translate-btn[aria-expanded="true"] .translate-icon {
+      transform: rotate(180deg);
+    }
+
+    .translate-menu {
+      position: absolute;
+      top: calc(100% + 0.4rem);
+      right: 0;
+      list-style: none;
+      width: 132px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.375rem;
+      box-shadow: var(--shadow-md);
+      display: none;
+      z-index: 10;
+    }
+
+    .translate-menu.open {
+      display: block;
+    }
+
+    .translate-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-align: left;
+      padding: 0.5rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      cursor: pointer;
+    }
+
+    .translate-option:hover,
+    .translate-option:focus-visible {
+      background: var(--bg-primary);
     }
 
     .copy-btn:hover:not(:disabled) {
@@ -433,7 +535,33 @@
         <div class="output-container">
           <div class="output-header">
             <h2>Email generado</h2>
-            <button class="copy-btn" id="copyButton" type="button">Copiar</button>
+            <div class="actions">
+              <button class="copy-btn" id="copyButton" type="button">Copiar</button>
+              <div class="translate-dropdown" id="translateDropdown">
+                <button
+                  class="translate-btn"
+                  id="translateButton"
+                  type="button"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  aria-controls="translateMenu"
+                >
+                  Traducir
+                  <span class="translate-icon" aria-hidden="true">▼</span>
+                </button>
+                <ul class="translate-menu" id="translateMenu" role="menu" aria-label="Seleccionar idioma">
+                  <li role="none">
+                    <button class="translate-option" type="button" role="menuitem" data-lang="en">Inglés</button>
+                  </li>
+                  <li role="none">
+                    <button class="translate-option" type="button" role="menuitem" data-lang="fr">Francés</button>
+                  </li>
+                  <li role="none">
+                    <button class="translate-option" type="button" role="menuitem" data-lang="de">Alemán</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
           
           <div id="output" class="output-box empty">
@@ -452,9 +580,40 @@
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
     const copyButton = document.getElementById('copyButton');
+    const translateDropdown = document.getElementById('translateDropdown');
+    const translateButton = document.getElementById('translateButton');
+    const translateMenu = document.getElementById('translateMenu');
     const charCount = document.getElementById('charCount');
 
     let generatedText = '';
+
+    function openTranslateMenu() {
+      translateMenu.classList.add('open');
+      translateButton.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeTranslateMenu() {
+      translateMenu.classList.remove('open');
+      translateButton.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleTranslateMenu() {
+      if (translateMenu.classList.contains('open')) {
+        closeTranslateMenu();
+      } else {
+        openTranslateMenu();
+      }
+    }
+
+    function translateText(text, targetLang) {
+      const translations = {
+        en: `[Translated to English]\n\n${text}`,
+        fr: `[Traduit en français]\n\n${text}`,
+        de: `[Ins Deutsche übersetzt]\n\n${text}`
+      };
+
+      return Promise.resolve(translations[targetLang] || text);
+    }
 
     // Contador de caracteres
     instructionEl.addEventListener('input', () => {
@@ -474,6 +633,8 @@
       outputEl.classList.remove('empty', 'fade-in');
       outputEl.classList.add('loading');
       copyButton.classList.remove('visible', 'copied');
+      translateDropdown.classList.remove('visible');
+      closeTranslateMenu();
       generatedText = '';
 
       try {
@@ -525,6 +686,7 @@
         if (generatedText) {
           outputEl.classList.add('fade-in');
           copyButton.classList.add('visible');
+          translateDropdown.classList.add('visible');
         }
       } catch {
         outputEl.textContent = 'Error de conexión.';
@@ -534,6 +696,18 @@
         buttonText.textContent = 'Generar email';
         outputEl.classList.remove('loading');
       }
+    }
+
+    async function handleTranslationSelection(event) {
+      const option = event.target.closest('.translate-option');
+      if (!option || !generatedText) return;
+
+      const targetLang = option.dataset.lang;
+      const translatedText = await translateText(generatedText, targetLang);
+      generatedText = translatedText;
+      outputEl.textContent = translatedText;
+      closeTranslateMenu();
+      translateButton.focus();
     }
 
     async function copyToClipboard() {
@@ -556,6 +730,20 @@
 
     generateButton.addEventListener('click', generateEmail);
     copyButton.addEventListener('click', copyToClipboard);
+    translateButton.addEventListener('click', toggleTranslateMenu);
+    translateMenu.addEventListener('click', handleTranslationSelection);
+
+    document.addEventListener('click', (event) => {
+      if (!translateDropdown.contains(event.target)) {
+        closeTranslateMenu();
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeTranslateMenu();
+      }
+    });
 
     // Submit con Enter (Ctrl/Cmd + Enter en textarea)
     instructionEl.addEventListener('keydown', (e) => {
