@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Email Generator</title>
+  <title>Redactar.ai</title>
   <style>
     * {
       box-sizing: border-box;
@@ -163,6 +163,10 @@
       line-height: 1.6;
     }
 
+    #instruction {
+      min-height: 100px;
+    }
+
     textarea:focus,
     input[type="text"]:focus {
       border-color: var(--text-primary);
@@ -300,11 +304,34 @@
       flex: 1;
     }
 
+    .versions-control {
+      min-width: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.15rem;
+    }
+
+    .versions-title {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .versions-subtitle {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      line-height: 1;
+    }
+
     .versions-select {
       min-width: 80px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      padding: 0 0.875rem;
+      padding: 0.35rem 0.875rem;
       background: var(--bg-primary);
       color: var(--text-primary);
       font-family: inherit;
@@ -531,7 +558,7 @@
     }
 
     /* Tips contextuales */
-    .tips-card {
+    .tips-panel {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -540,7 +567,7 @@
       overflow: hidden;
     }
 
-    .tips-card::before {
+    .tips-panel::before {
       content: '';
       position: absolute;
       top: 0;
@@ -584,7 +611,7 @@
     }
 
     /* Ejemplos de casos de uso */
-    .examples-card {
+    .examples-panel {
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 12px;
@@ -1064,7 +1091,7 @@
 <body>
   <div class="container">
     <header>
-      <h1>Generador de emails profesionales</h1>
+      <h1>Redactar.ai</h1>
     </header>
 
     <div class="main-content">
@@ -1091,16 +1118,16 @@
             <textarea 
               id="instruction" 
               placeholder="Enviar un email a mi cliente pidiéndole feedback sobre la versión más reciente del mockup del sitio web"
-              maxlength="500"
+              maxlength="300"
             ></textarea>
             <div class="char-counter">
-              <span id="charCount">0</span>/500
+              <span id="charCount">0</span>/300
             </div>
           </div>
 
           <div class="input-row">
             <div class="input-group">
-              <label class="input-label" for="senderName">Su nombre</label>
+              <label class="input-label" for="senderName">De</label>
               <input 
                 type="text"
                 id="senderName" 
@@ -1108,7 +1135,7 @@
               />
             </div>
             <div class="input-group">
-              <label class="input-label" for="clientName">Nombre del cliente</label>
+              <label class="input-label" for="clientName">Para</label>
               <input 
                 type="text"
                 id="clientName" 
@@ -1160,11 +1187,15 @@
                 <span id="buttonText">Generar</span>
               </span>
             </button>
-            <select class="versions-select" id="versionsSelect" aria-label="Cantidad de versiones">
-              <option value="1" selected>1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select>
+            <div class="versions-control">
+              <span class="versions-title">Variantes</span>
+              <span class="versions-subtitle" id="versionsSubtitle">1</span>
+              <select class="versions-select" id="versionsSelect" aria-label="Cantidad de versiones">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -1194,6 +1225,7 @@
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
     const versionsSelect = document.getElementById('versionsSelect');
+    const versionsSubtitle = document.getElementById('versionsSubtitle');
     const charCount = document.getElementById('charCount');
     const strategyControls = document.querySelector('.strategy-controls');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
@@ -1476,7 +1508,7 @@ ${userInputText}`;
           </div>
 
           <!-- Tips contextuales -->
-          <div class="tips-card">
+          <div class="tips-panel">
             <svg class="tips-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
             </svg>
@@ -1485,7 +1517,7 @@ ${userInputText}`;
           </div>
 
           <!-- Ejemplos de casos de uso -->
-          <div class="examples-card">
+          <div class="examples-panel">
             <div class="examples-header">Casos de uso populares</div>
             <div class="examples-grid">
               ${examples.map(example => `
@@ -1987,6 +2019,10 @@ ${body}`.trim();
     instructionEl.addEventListener('input', () => {
       charCount.textContent = instructionEl.value.length;
       updatePreviewIfEmpty();
+    });
+
+    versionsSelect.addEventListener('change', () => {
+      versionsSubtitle.textContent = versionsSelect.value;
     });
 
     senderNameEl.addEventListener('input', updatePreviewIfEmpty);
