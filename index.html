@@ -212,6 +212,11 @@
       transition: all 0.15s ease;
     }
 
+    .strategy-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
     .strategy-title {
       display: block;
       color: var(--text-primary);
@@ -306,45 +311,12 @@
 
     .versions-control {
       min-width: 110px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.15rem;
+      position: relative;
     }
 
-    .versions-title {
-      font-size: 0.6875rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      line-height: 1;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .versions-subtitle {
-      font-size: 0.6875rem;
-      color: var(--text-secondary);
-      line-height: 1;
-    }
-
-    .versions-select {
-      min-width: 80px;
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.35rem 0.875rem;
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-family: inherit;
-      font-size: 0.9375rem;
-      font-weight: 500;
-      cursor: pointer;
-      outline: none;
-      transition: all 0.15s ease;
-    }
-
-    .versions-select:hover,
-    .versions-select:focus-visible {
-      border-color: var(--text-primary);
+    .versions-menu {
+      right: 0;
+      left: auto;
     }
 
     .generate-btn {
@@ -1187,14 +1159,16 @@
                 <span id="buttonText">Generar</span>
               </span>
             </button>
-            <div class="versions-control">
-              <span class="versions-title">Variantes</span>
-              <span class="versions-subtitle" id="versionsSubtitle">1</span>
-              <select class="versions-select" id="versionsSelect" aria-label="Cantidad de versiones">
-                <option value="1" selected>1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-              </select>
+            <div class="versions-control strategy-dropdown">
+              <button class="strategy-btn" id="versionsButton" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
+                <span class="strategy-title">Variantes</span>
+                <span class="strategy-subtitle" id="versionsSubtitle" data-role="selected-value">1</span>
+              </button>
+              <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
+                <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
+                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="2">2</button></li>
+                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">3</button></li>
+              </ul>
             </div>
           </div>
         </div>
@@ -1224,8 +1198,11 @@
     const outputEl = document.getElementById('output');
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
-    const versionsSelect = document.getElementById('versionsSelect');
+    const versionsControl = document.querySelector('.versions-control');
+    const versionsButton = document.getElementById('versionsButton');
     const versionsSubtitle = document.getElementById('versionsSubtitle');
+    const versionsMenu = document.getElementById('versionsMenu');
+    const versionsOptions = Array.from(document.querySelectorAll('.versions-option'));
     const charCount = document.getElementById('charCount');
     const strategyControls = document.querySelector('.strategy-controls');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
@@ -1234,6 +1211,7 @@
     const SELECTION_MIN_LENGTH = 3;
 
     let currentMode = 'compose';
+    let selectedVersions = 1;
     let selectionPopoverEl = null;
     let currentSelectionState = null;
     let currentRange = null;
@@ -1296,6 +1274,39 @@
           badges[2].textContent = communicationProfile.emojis;
         }
       }
+    }
+
+    function closeVersionsMenu() {
+      versionsMenu?.classList.remove('open');
+      versionsButton?.setAttribute('aria-expanded', 'false');
+    }
+
+    function openVersionsMenu() {
+      closeAllStrategyMenus();
+      versionsMenu?.classList.add('open');
+      versionsButton?.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleVersionsMenu() {
+      const isOpen = versionsMenu?.classList.contains('open');
+      closeVersionsMenu();
+      if (!isOpen) {
+        openVersionsMenu();
+      }
+    }
+
+    function setVersionsSelection(optionButton) {
+      const selectedValue = Number(optionButton.dataset.value);
+      if (!selectedValue) return;
+
+      selectedVersions = selectedValue;
+      versionsSubtitle.textContent = String(selectedVersions);
+      versionsOptions.forEach((opt) => {
+        const selected = opt === optionButton;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+      });
+      closeVersionsMenu();
     }
 
     function getEmojiInstruction(mode) {
@@ -2004,8 +2015,54 @@ ${body}`.trim();
       updatePreviewIfEmpty();
     });
 
-    versionsSelect.addEventListener('change', () => {
-      versionsSubtitle.textContent = versionsSelect.value;
+    versionsControl?.addEventListener('click', (event) => {
+      const option = event.target.closest('.versions-option');
+      if (option) {
+        setVersionsSelection(option);
+        return;
+      }
+
+      if (event.target.closest('#versionsButton')) {
+        toggleVersionsMenu();
+      }
+    });
+
+    versionsControl?.addEventListener('keydown', (event) => {
+      const button = event.target.closest('#versionsButton');
+      if (button && (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        openVersionsMenu();
+        versionsMenu?.querySelector('.versions-option')?.focus();
+        return;
+      }
+
+      const menu = event.target.closest('#versionsMenu');
+      if (!menu) return;
+
+      const options = Array.from(menu.querySelectorAll('.versions-option'));
+      const currentIndex = options.indexOf(document.activeElement);
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        options[(currentIndex + 1) % options.length]?.focus();
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        options[(currentIndex - 1 + options.length) % options.length]?.focus();
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const focusedOption = document.activeElement.closest('.versions-option');
+        if (focusedOption) {
+          setVersionsSelection(focusedOption);
+        }
+      }
+
+      if (event.key === 'Escape') {
+        closeVersionsMenu();
+      }
     });
 
     senderNameEl.addEventListener('input', updatePreviewIfEmpty);
@@ -2045,13 +2102,13 @@ ${body}`.trim();
       const senderName = senderInput || 'El equipo';
       const clientGreeting = clientInput ? `Hola ${clientInput},` : 'Hola,';
       const clientName = clientInput || 'cliente';
-      const versions = Number(versionsSelect.value) || 1;
+      const versions = selectedVersions;
       const isReplyMode = currentMode === 'reply';
 
       if (!instruction || (isReplyMode && !originalEmail)) return;
 
       generateButton.disabled = true;
-      versionsSelect.disabled = true;
+      versionsButton.disabled = true;
       buttonText.textContent = 'Generando...';
       renderPlaceholder('Generando versiones...', true);
 
@@ -2098,7 +2155,7 @@ ${body}`.trim();
         renderPlaceholder('Error de conexión.');
       } finally {
         generateButton.disabled = false;
-        versionsSelect.disabled = false;
+        versionsButton.disabled = false;
         buttonText.textContent = 'Generar';
       }
     }
@@ -2183,6 +2240,9 @@ ${body}`.trim();
       if (!event.target.closest('.strategy-dropdown')) {
         closeAllStrategyMenus();
       }
+      if (!event.target.closest('.versions-control')) {
+        closeVersionsMenu();
+      }
       if (selectionPopoverEl && !event.target.closest('.selection-popover')) {
         if (!hasValidSelection()) {
           hideSelectionPopover();
@@ -2205,6 +2265,7 @@ ${body}`.trim();
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         closeAllStrategyMenus();
+        closeVersionsMenu();
         hideSelectionPopover();
       }
     });
