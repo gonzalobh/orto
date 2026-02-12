@@ -887,6 +887,7 @@
     let currentMode = 'compose';
     let selectionPopoverEl = null;
     let currentSelectionState = null;
+    let currentRange = null;
     let isMouseSelectionActive = false;
 
     const communicationProfile = {
@@ -1102,6 +1103,7 @@ ${body}`.trim();
       if (proposalWrap) proposalWrap.classList.remove('visible');
       if (statusEl) statusEl.textContent = '';
       currentSelectionState = null;
+      currentRange = null;
     }
 
     function showSelectionPopover(rect) {
@@ -1172,6 +1174,14 @@ ${body}`.trim();
       return Boolean(getSelectionDetails());
     }
 
+    function matchCase(original, result) {
+      if (!original) return result;
+      if (original[0] === original[0].toLowerCase()) {
+        return result.charAt(0).toLowerCase() + result.slice(1);
+      }
+      return result;
+    }
+
     function handleSelection() {
       const selectionDetails = getSelectionDetails();
       if (!selectionDetails) {
@@ -1181,9 +1191,9 @@ ${body}`.trim();
         return;
       }
 
+      currentRange = selectionDetails.range.cloneRange();
       currentSelectionState = {
         text: selectionDetails.text,
-        range: selectionDetails.range.cloneRange(),
         bodyEl: selectionDetails.bodyEl,
         improvedText: ''
       };
@@ -1226,24 +1236,16 @@ ${body}`.trim();
     }
 
     function replaceSelectedTextWithProposal() {
-      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl) return;
+      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentRange) return;
 
-      const { range, improvedText, bodyEl } = currentSelectionState;
-      const safeRange = range.cloneRange();
-      safeRange.deleteContents();
-      const textNode = document.createTextNode(improvedText);
-      safeRange.insertNode(textNode);
+      const { improvedText, bodyEl } = currentSelectionState;
+      currentRange.deleteContents();
+      currentRange.insertNode(document.createTextNode(improvedText));
 
-      const afterRange = document.createRange();
-      afterRange.setStartAfter(textNode);
-      afterRange.collapse(true);
-
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(afterRange);
-
+      window.getSelection().removeAllRanges();
       syncCardAfterBodyEdit(bodyEl);
       hideSelectionPopover();
+      currentRange = null;
     }
 
     async function requestSelectionImprovement(mode) {
@@ -1262,7 +1264,8 @@ ${body}`.trim();
           throw new Error('No se pudo mejorar el texto seleccionado');
         }
 
-        currentSelectionState.improvedText = data.improvedText.trim();
+        const improvedText = data.improvedText.trim();
+        currentSelectionState.improvedText = matchCase(currentSelectionState.text, improvedText);
         const proposalWrap = selectionPopoverEl?.querySelector('[data-role="proposal-wrap"]');
         const proposalText = selectionPopoverEl?.querySelector('[data-role="proposal-text"]');
         if (proposalText) {
