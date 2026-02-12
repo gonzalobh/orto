@@ -1244,11 +1244,14 @@ ${body}`.trim();
     }
 
     function replaceSelectedTextWithProposal() {
-      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentRange) return;
+      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentSelectionState.text) return;
 
-      const { improvedText, bodyEl } = currentSelectionState;
-      currentRange.deleteContents();
-      currentRange.insertNode(document.createTextNode(improvedText));
+      const { improvedText, bodyEl, text } = currentSelectionState;
+      const currentContent = bodyEl.textContent;
+      
+      // Reemplazar la primera ocurrencia del texto seleccionado
+      const newContent = currentContent.replace(text, improvedText);
+      bodyEl.textContent = newContent;
 
       window.getSelection().removeAllRanges();
       syncCardAfterBodyEdit(bodyEl);
