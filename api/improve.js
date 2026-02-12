@@ -28,7 +28,7 @@ export default async function handler(req, res) {
 
     const systemPrompt =
       "Eres un editor profesional de textos. Sigue exactamente las instrucciones y responde solo con el resultado final.";
-    const userPrompt = `${MODE_PROMPTS[safeMode]}\n\nInstrucciones obligatorias:\n- No agregues explicaciones.\n- Devuelve solo el texto final.\n- Mantén el idioma original.\n\nTexto:\n${safeText}`;
+    const userPrompt = `${MODE_PROMPTS[safeMode]}\n\nInstrucciones obligatorias:\n- No agregues explicaciones.\n- Devuelve solo el texto final.\n- Mantén el idioma original.\n- Mantén exactamente el mismo uso de mayúsculas y minúsculas que el texto original.\n\nTexto:\n${safeText}`;
 
     const upstreamResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
