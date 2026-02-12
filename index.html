@@ -889,6 +889,7 @@
     let currentSelectionState = null;
     let currentRange = null;
     let isMouseSelectionActive = false;
+    let isInteractingWithPopover = false;
 
     const communicationProfile = {
       tono: 'Automático',
@@ -1085,7 +1086,14 @@ ${body}`.trim();
       `;
 
       selectionPopoverEl.addEventListener('mousedown', (event) => {
+        isInteractingWithPopover = true;
+        event.preventDefault();
         event.stopPropagation();
+      });
+      selectionPopoverEl.addEventListener('mouseup', () => {
+        setTimeout(() => {
+          isInteractingWithPopover = false;
+        }, 0);
       });
       selectionPopoverEl.addEventListener('click', handleSelectionPopoverClick);
       selectionPopoverEl.addEventListener('click', (event) => {
@@ -1245,7 +1253,6 @@ ${body}`.trim();
       window.getSelection().removeAllRanges();
       syncCardAfterBodyEdit(bodyEl);
       hideSelectionPopover();
-      currentRange = null;
     }
 
     async function requestSelectionImprovement(mode) {
@@ -1588,6 +1595,8 @@ ${body}`.trim();
     });
 
     document.addEventListener('click', (event) => {
+      if (event.target.closest('.selection-popover')) return;
+
       if (!event.target.closest('.translate-dropdown')) {
         closeAllTranslateMenus();
       }
@@ -1621,6 +1630,7 @@ ${body}`.trim();
     });
 
     document.addEventListener('selectionchange', () => {
+      if (isInteractingWithPopover) return;
       window.requestAnimationFrame(handleSelection);
     });
 
