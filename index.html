@@ -1095,9 +1095,9 @@ ${body}`.trim();
           isInteractingWithPopover = false;
         }, 0);
       });
-      selectionPopoverEl.addEventListener('click', handleSelectionPopoverClick);
       selectionPopoverEl.addEventListener('click', (event) => {
         event.stopPropagation();
+        handleSelectionPopoverClick(event);
       });
       document.body.appendChild(selectionPopoverEl);
       return selectionPopoverEl;
