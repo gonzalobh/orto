@@ -566,6 +566,93 @@
       outline: none;
     }
 
+    .selection-popover {
+      position: fixed;
+      z-index: 60;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      padding: 0.45rem;
+      display: none;
+      min-width: 180px;
+    }
+
+    .selection-popover.visible { display: block; }
+
+    .selection-actions {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .selection-action-btn {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 0.6875rem;
+      font-family: inherit;
+      padding: 0.32rem 0.48rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .selection-action-btn:hover:not(:disabled),
+    .selection-action-btn:focus-visible {
+      border-color: #d0d0d0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .selection-action-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .selection-status {
+      margin-top: 0.35rem;
+      font-size: 0.67rem;
+      color: var(--text-tertiary);
+    }
+
+    .selection-proposal {
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.5rem;
+      display: none;
+    }
+
+    .selection-proposal.visible { display: block; }
+
+    .selection-proposal-label {
+      font-size: 0.67rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .selection-proposal-text {
+      font-size: 0.75rem;
+      color: var(--text-primary);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.45rem;
+      max-height: 140px;
+      overflow: auto;
+    }
+
+    .selection-proposal-actions {
+      margin-top: 0.4rem;
+      display: flex;
+      gap: 0.35rem;
+    }
+
     @keyframes blink {
       0%, 50% { opacity: 1; }
       51%, 100% { opacity: 0; }
@@ -795,8 +882,11 @@
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
     const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
+    const SELECTION_MIN_LENGTH = 3;
 
     let currentMode = 'compose';
+    let selectionPopoverEl = null;
+    let currentSelectionState = null;
 
     const communicationProfile = {
       tono: 'Automático',
@@ -938,6 +1028,7 @@ ${userInputText}`;
     }
 
     function renderPlaceholder(message, loading = false) {
+      hideSelectionPopover();
       outputEl.innerHTML = `<div class="${loading ? 'output-loading' : 'output-empty'}">${message}</div>`;
     }
 
@@ -967,6 +1058,211 @@ ${body}`.trim();
     function closeAllTranslateMenus() {
       outputEl.querySelectorAll('.translate-menu.open').forEach((menu) => menu.classList.remove('open'));
       outputEl.querySelectorAll('.translate-btn[aria-expanded="true"]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    }
+
+    function createSelectionPopover() {
+      if (selectionPopoverEl) return selectionPopoverEl;
+
+      selectionPopoverEl = document.createElement('div');
+      selectionPopoverEl.className = 'selection-popover';
+      selectionPopoverEl.innerHTML = `
+        <div class="selection-actions">
+          <button type="button" class="selection-action-btn" data-mode="improve">Mejorar texto</button>
+          <button type="button" class="selection-action-btn" data-mode="expand">Expandir</button>
+          <button type="button" class="selection-action-btn" data-mode="simplify">Simplificar</button>
+        </div>
+        <div class="selection-status" data-role="status"></div>
+        <div class="selection-proposal" data-role="proposal-wrap">
+          <div class="selection-proposal-label">Propuesta</div>
+          <div class="selection-proposal-text" data-role="proposal-text"></div>
+          <div class="selection-proposal-actions">
+            <button type="button" class="selection-action-btn" data-action="replace">Reemplazar</button>
+            <button type="button" class="selection-action-btn" data-action="cancel">Cancelar</button>
+          </div>
+        </div>
+      `;
+
+      selectionPopoverEl.addEventListener('click', handleSelectionPopoverClick);
+      document.body.appendChild(selectionPopoverEl);
+      return selectionPopoverEl;
+    }
+
+    function hideSelectionPopover() {
+      if (!selectionPopoverEl) return;
+      selectionPopoverEl.classList.remove('visible');
+      const proposalWrap = selectionPopoverEl.querySelector('[data-role="proposal-wrap"]');
+      const statusEl = selectionPopoverEl.querySelector('[data-role="status"]');
+      if (proposalWrap) proposalWrap.classList.remove('visible');
+      if (statusEl) statusEl.textContent = '';
+      currentSelectionState = null;
+    }
+
+    function showSelectionPopover(rect) {
+      const popover = createSelectionPopover();
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+      popover.classList.add('visible');
+
+      const tentativeLeft = rect.left + (rect.width / 2);
+      const tentativeTop = rect.bottom + 10;
+      const maxLeft = viewportWidth - popover.offsetWidth - 12;
+      const left = Math.min(maxLeft, Math.max(12, tentativeLeft - (popover.offsetWidth / 2)));
+      const top = Math.min(viewportHeight - popover.offsetHeight - 12, Math.max(12, tentativeTop));
+
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    }
+
+    function isValidSelectionTarget(node) {
+      if (!node) return false;
+      if (node.nodeType === Node.TEXT_NODE) {
+        return isValidSelectionTarget(node.parentElement);
+      }
+      if (!(node instanceof HTMLElement)) return false;
+      if (node.closest('input, textarea, [contenteditable="true"]')) return false;
+      return Boolean(node.closest('.version-content[data-role="email-body"]'));
+    }
+
+    function handleTextSelection() {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        hideSelectionPopover();
+        return;
+      }
+
+      const range = selection.getRangeAt(0);
+      const selectedText = selection.toString().trim();
+      if (selectedText.length <= SELECTION_MIN_LENGTH) {
+        hideSelectionPopover();
+        return;
+      }
+
+      const anchorNode = selection.anchorNode;
+      const focusNode = selection.focusNode;
+      if (!isValidSelectionTarget(anchorNode) || !isValidSelectionTarget(focusNode)) {
+        hideSelectionPopover();
+        return;
+      }
+
+      const bodyEl = (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode)?.closest('.version-content[data-role="email-body"]');
+      if (!bodyEl) {
+        hideSelectionPopover();
+        return;
+      }
+
+      const rangeRect = range.getBoundingClientRect();
+      const targetRect = (rangeRect.width || rangeRect.height) ? rangeRect : bodyEl.getBoundingClientRect();
+
+      currentSelectionState = {
+        text: selectedText,
+        range: range.cloneRange(),
+        bodyEl,
+        improvedText: ''
+      };
+
+      const popover = createSelectionPopover();
+      const proposalWrap = popover.querySelector('[data-role="proposal-wrap"]');
+      const statusEl = popover.querySelector('[data-role="status"]');
+      if (proposalWrap) proposalWrap.classList.remove('visible');
+      if (statusEl) statusEl.textContent = '';
+      showSelectionPopover(targetRect);
+    }
+
+    function setPopoverLoading(isLoading, message = '') {
+      if (!selectionPopoverEl) return;
+      selectionPopoverEl.querySelectorAll('[data-mode]').forEach((button) => {
+        button.disabled = isLoading;
+      });
+      const statusEl = selectionPopoverEl.querySelector('[data-role="status"]');
+      if (statusEl) statusEl.textContent = message;
+    }
+
+    function syncCardAfterBodyEdit(bodyEl) {
+      const card = bodyEl.closest('.version-card');
+      if (!card) return;
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const copyButton = card.querySelector('.version-copy-btn');
+      const currentSubject = subjectEl?.textContent?.trim() || '';
+      const currentBody = bodyEl.textContent.trim();
+
+      if (copyButton) {
+        copyButton.dataset.subject = encodeURIComponent(currentSubject);
+        copyButton.dataset.body = encodeURIComponent(currentBody);
+      }
+
+      const isTranslated = card.dataset.isTranslated === 'true';
+      if (!isTranslated) {
+        card.dataset.originalSubject = encodeURIComponent(currentSubject);
+        card.dataset.originalBody = encodeURIComponent(currentBody);
+      }
+    }
+
+    function replaceSelectedTextWithProposal() {
+      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl) return;
+
+      const { range, improvedText, bodyEl } = currentSelectionState;
+      const safeRange = range.cloneRange();
+      safeRange.deleteContents();
+      const textNode = document.createTextNode(improvedText);
+      safeRange.insertNode(textNode);
+
+      const afterRange = document.createRange();
+      afterRange.setStartAfter(textNode);
+      afterRange.collapse(true);
+
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(afterRange);
+
+      syncCardAfterBodyEdit(bodyEl);
+      hideSelectionPopover();
+    }
+
+    async function requestSelectionImprovement(mode) {
+      if (!currentSelectionState?.text) return;
+      setPopoverLoading(true, 'Procesando...');
+
+      try {
+        const res = await fetch('/api/improve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: currentSelectionState.text, mode })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok || typeof data?.improvedText !== 'string') {
+          throw new Error('No se pudo mejorar el texto seleccionado');
+        }
+
+        currentSelectionState.improvedText = data.improvedText.trim();
+        const proposalWrap = selectionPopoverEl?.querySelector('[data-role="proposal-wrap"]');
+        const proposalText = selectionPopoverEl?.querySelector('[data-role="proposal-text"]');
+        if (proposalText) {
+          proposalText.textContent = currentSelectionState.improvedText || currentSelectionState.text;
+        }
+        if (proposalWrap) proposalWrap.classList.add('visible');
+        setPopoverLoading(false, '');
+      } catch (error) {
+        console.error('Error en mejora de selección:', error);
+        setPopoverLoading(false, 'No se pudo generar propuesta.');
+      }
+    }
+
+    function handleSelectionPopoverClick(event) {
+      const modeButton = event.target.closest('[data-mode]');
+      if (modeButton) {
+        requestSelectionImprovement(modeButton.dataset.mode);
+        return;
+      }
+
+      const actionButton = event.target.closest('[data-action]');
+      if (!actionButton) return;
+      if (actionButton.dataset.action === 'replace') {
+        replaceSelectedTextWithProposal();
+      }
+      if (actionButton.dataset.action === 'cancel') {
+        hideSelectionPopover();
+      }
     }
 
     async function translateVersion(button, targetLang) {
@@ -1102,6 +1398,7 @@ ${body}`.trim();
     }
 
     function renderVersions(versions) {
+      hideSelectionPopover();
       outputEl.innerHTML = '';
       versions.forEach((item, index) => {
         const card = document.createElement('article');
@@ -1266,12 +1563,20 @@ ${body}`.trim();
       if (!event.target.closest('.strategy-dropdown')) {
         closeAllStrategyMenus();
       }
+      if (selectionPopoverEl && !event.target.closest('.selection-popover')) {
+        hideSelectionPopover();
+      }
     });
 
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape') {
         closeAllStrategyMenus();
+        hideSelectionPopover();
       }
+    });
+
+    document.addEventListener('selectionchange', () => {
+      window.requestAnimationFrame(handleTextSelection);
     });
 
     instructionEl.addEventListener('keydown', (event) => {
