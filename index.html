@@ -395,9 +395,10 @@
 
     .output-header {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
     }
 
     .output-header h2 {
@@ -407,6 +408,55 @@
       letter-spacing: -0.02em;
     }
 
+    .output-tabs {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .output-tab {
+      position: relative;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 0.4rem 0.2rem 0.55rem;
+      margin-right: 1.1rem;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .output-tab:hover,
+    .output-tab:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .output-tab.active {
+      color: var(--text-primary);
+    }
+
+    .output-tab.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+    }
+
+    .output-panels {
+      width: 100%;
+    }
+
+    .output-panel[hidden] {
+      display: none;
+    }
 
     /* Output cards */
     .output-cards {
@@ -723,6 +773,65 @@
       height: 18px;
       background: var(--text-primary);
       animation: blink 1s infinite;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 0.875rem;
+    }
+
+    .history-item {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+    }
+
+    .history-item:hover,
+    .history-item:focus-visible {
+      border-color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .history-item-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+      line-height: 1.35;
+    }
+
+    .history-item-time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .history-item-snippet {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      word-break: break-word;
+    }
+
+    .history-empty {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      min-height: 180px;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
     .version-card {
@@ -1179,10 +1288,21 @@
         <div class="output-container">
           <div class="output-header">
             <h2>Emails generados</h2>
+            <div class="output-tabs" role="tablist" aria-label="Salida de emails">
+              <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
+              <button id="tabHistory" class="output-tab" type="button" role="tab" aria-selected="false" aria-controls="panelHistory">Historial</button>
+            </div>
           </div>
 
-          <div id="output" class="output-cards">
-            <div class="output-empty">El email generado aparecerá aquí...</div>
+          <div class="output-panels">
+            <div id="panelNew" class="output-panel" role="tabpanel">
+              <div id="output" class="output-cards">
+                <div class="output-empty">El email generado aparecerá aquí...</div>
+              </div>
+            </div>
+            <div id="panelHistory" class="output-panel" role="tabpanel" hidden>
+              <div id="historyList" class="history-list"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1196,6 +1316,11 @@
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
     const outputEl = document.getElementById('output');
+    const tabNewBtn = document.getElementById('tabNew');
+    const tabHistoryBtn = document.getElementById('tabHistory');
+    const panelNewEl = document.getElementById('panelNew');
+    const panelHistoryEl = document.getElementById('panelHistory');
+    const historyListEl = document.getElementById('historyList');
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
     const versionsControl = document.querySelector('.versions-control');
@@ -1223,6 +1348,8 @@
       extension: 'Automática',
       emojis: 'Automático'
     };
+    const HISTORY_KEY = 'emails_history_v1';
+    let currentOutputTab = 'new';
 
     function closeAllStrategyMenus() {
       strategyMenus.forEach((menu) => menu.classList.remove('open'));
@@ -1405,6 +1532,106 @@ ${userInputText}`;
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#39;');
+    }
+
+    function setActiveOutputTab(tab) {
+      const isNewTab = tab === 'new';
+      currentOutputTab = isNewTab ? 'new' : 'history';
+
+      tabNewBtn?.classList.toggle('active', isNewTab);
+      tabHistoryBtn?.classList.toggle('active', !isNewTab);
+      tabNewBtn?.setAttribute('aria-selected', isNewTab ? 'true' : 'false');
+      tabHistoryBtn?.setAttribute('aria-selected', !isNewTab ? 'true' : 'false');
+
+      if (panelNewEl) panelNewEl.hidden = !isNewTab;
+      if (panelHistoryEl) panelHistoryEl.hidden = isNewTab;
+
+      if (!isNewTab) {
+        renderHistory();
+      }
+    }
+
+    function initOutputTabs() {
+      setActiveOutputTab('new');
+      tabNewBtn?.addEventListener('click', () => setActiveOutputTab('new'));
+      tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveToHistory(entry) {
+      const history = loadHistory();
+      const updated = [entry, ...history].slice(0, 30);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+    }
+
+    function formatRelativeTime(ts) {
+      if (!ts) return 'Ahora';
+      const diffSeconds = Math.floor((Date.now() - ts) / 1000);
+      if (diffSeconds < 60) return 'Ahora';
+      if (diffSeconds < 3600) return `Hace ${Math.floor(diffSeconds / 60)} min`;
+      if (diffSeconds < 86400) return `Hace ${Math.floor(diffSeconds / 3600)} h`;
+      const diffDays = Math.floor(diffSeconds / 86400);
+      if (diffDays <= 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+      const date = new Date(ts);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function renderHistory() {
+      if (!historyListEl) return;
+      const history = loadHistory();
+      if (history.length === 0) {
+        historyListEl.innerHTML = '<div class="history-empty">Todavía no hay emails en el historial.</div>';
+        return;
+      }
+
+      historyListEl.innerHTML = history
+        .map((entry, index) => {
+          const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
+          const title = (entry.instruction || 'Sin instrucción').trim();
+          const subject = firstVersion?.subject || 'Sin asunto';
+          const body = firstVersion?.body || '';
+          const snippetBase = `Asunto: ${subject}: ${body}`;
+          const snippet = snippetBase.length > 120 ? `${snippetBase.slice(0, 120)}...` : snippetBase;
+          return `
+            <button class="history-item" type="button" data-index="${index}">
+              <div class="history-item-title">${escapeHtml(title)}</div>
+              <div class="history-item-time">${escapeHtml(formatRelativeTime(entry.createdAt))}</div>
+              <div class="history-item-snippet">${escapeHtml(snippet)}</div>
+            </button>
+          `;
+        })
+        .join('');
+    }
+
+    function handleHistoryClick(event) {
+      const item = event.target.closest('.history-item');
+      if (!item) return;
+      const history = loadHistory();
+      const index = Number(item.dataset.index);
+      const entry = history[index];
+      if (!entry || !Array.isArray(entry.versions) || entry.versions.length === 0) return;
+
+      setActiveOutputTab('new');
+      renderVersions(entry.versions);
+
+      if (typeof entry.instruction === 'string') {
+        instructionEl.value = entry.instruction;
+        charCount.textContent = instructionEl.value.length;
+        updatePreviewIfEmpty();
+      }
     }
 
     // Tips contextuales que rotan
@@ -2151,6 +2378,19 @@ ${body}`.trim();
           return;
         }
         renderVersions(parsedVersions);
+        const historyEntry = {
+          id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : String(Date.now()),
+          createdAt: Date.now(),
+          instruction,
+          mode: currentMode,
+          senderName,
+          clientInput,
+          versions: parsedVersions
+        };
+        saveToHistory(historyEntry);
+        if (currentOutputTab === 'history') {
+          renderHistory();
+        }
       } catch {
         renderPlaceholder('Error de conexión.');
       } finally {
@@ -2162,6 +2402,7 @@ ${body}`.trim();
 
     generateButton.addEventListener('click', generateEmail);
     outputEl.addEventListener('click', handleOutputClick);
+    historyListEl?.addEventListener('click', handleHistoryClick);
 
     // Event delegation para ejemplos clicables
     outputEl.addEventListener('click', (event) => {
@@ -2282,6 +2523,7 @@ ${body}`.trim();
     });
 
     setMode('compose');
+    initOutputTabs();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
   </script>
 </body>
