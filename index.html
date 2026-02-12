@@ -1191,6 +1191,12 @@ ${body}`.trim();
     }
 
     function handleSelection() {
+      // No procesar selecciones si hay una propuesta visible
+      const proposalWrap = selectionPopoverEl?.querySelector('[data-role="proposal-wrap"]');
+      if (proposalWrap?.classList.contains('visible')) {
+        return;
+      }
+      
       const selectionDetails = getSelectionDetails();
       if (!selectionDetails) {
         if (!isMouseSelectionActive) {
@@ -1207,7 +1213,6 @@ ${body}`.trim();
       };
 
       const popover = createSelectionPopover();
-      const proposalWrap = popover.querySelector('[data-role="proposal-wrap"]');
       const statusEl = popover.querySelector('[data-role="status"]');
       if (proposalWrap) proposalWrap.classList.remove('visible');
       if (statusEl) statusEl.textContent = '';
@@ -1244,7 +1249,9 @@ ${body}`.trim();
     }
 
     function replaceSelectedTextWithProposal() {
-      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentSelectionState.text) return;
+      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentSelectionState.text) {
+        return;
+      }
 
       const { improvedText, bodyEl, text } = currentSelectionState;
       const currentContent = bodyEl.textContent;
@@ -1298,6 +1305,7 @@ ${body}`.trim();
 
       const actionButton = event.target.closest('[data-action]');
       if (!actionButton) return;
+      
       if (actionButton.dataset.action === 'replace') {
         replaceSelectedTextWithProposal();
       }
