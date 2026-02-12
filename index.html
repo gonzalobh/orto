@@ -887,6 +887,7 @@
     let currentMode = 'compose';
     let selectionPopoverEl = null;
     let currentSelectionState = null;
+    let isMouseSelectionActive = false;
 
     const communicationProfile = {
       tono: 'Automático',
@@ -1082,7 +1083,13 @@ ${body}`.trim();
         </div>
       `;
 
+      selectionPopoverEl.addEventListener('mousedown', (event) => {
+        event.stopPropagation();
+      });
       selectionPopoverEl.addEventListener('click', handleSelectionPopoverClick);
+      selectionPopoverEl.addEventListener('click', (event) => {
+        event.stopPropagation();
+      });
       document.body.appendChild(selectionPopoverEl);
       return selectionPopoverEl;
     }
@@ -1123,40 +1130,61 @@ ${body}`.trim();
       return Boolean(node.closest('.version-content[data-role="email-body"]'));
     }
 
-    function handleTextSelection() {
+    function getSelectionDetails() {
       const selection = window.getSelection();
       if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
-        hideSelectionPopover();
-        return;
+        return null;
       }
 
       const range = selection.getRangeAt(0);
       const selectedText = selection.toString().trim();
       if (selectedText.length <= SELECTION_MIN_LENGTH) {
-        hideSelectionPopover();
-        return;
+        return null;
       }
 
       const anchorNode = selection.anchorNode;
       const focusNode = selection.focusNode;
       if (!isValidSelectionTarget(anchorNode) || !isValidSelectionTarget(focusNode)) {
-        hideSelectionPopover();
-        return;
+        return null;
       }
 
       const bodyEl = (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode)?.closest('.version-content[data-role="email-body"]');
       if (!bodyEl) {
-        hideSelectionPopover();
-        return;
+        return null;
+      }
+
+      if (!bodyEl.contains(range.commonAncestorContainer)) {
+        return null;
       }
 
       const rangeRect = range.getBoundingClientRect();
       const targetRect = (rangeRect.width || rangeRect.height) ? rangeRect : bodyEl.getBoundingClientRect();
 
-      currentSelectionState = {
+      return {
         text: selectedText,
-        range: range.cloneRange(),
+        range,
         bodyEl,
+        targetRect
+      };
+    }
+
+    function hasValidSelection() {
+      return Boolean(getSelectionDetails());
+    }
+
+    function handleSelection() {
+      const selectionDetails = getSelectionDetails();
+      if (!selectionDetails) {
+        if (!isMouseSelectionActive) {
+          hideSelectionPopover();
+        }
+        return;
+      }
+
+      currentSelectionState = {
+        text: selectionDetails.text,
+        range: selectionDetails.range.cloneRange(),
+        bodyEl: selectionDetails.bodyEl,
         improvedText: ''
       };
 
@@ -1165,7 +1193,7 @@ ${body}`.trim();
       const statusEl = popover.querySelector('[data-role="status"]');
       if (proposalWrap) proposalWrap.classList.remove('visible');
       if (statusEl) statusEl.textContent = '';
-      showSelectionPopover(targetRect);
+      showSelectionPopover(selectionDetails.targetRect);
     }
 
     function setPopoverLoading(isLoading, message = '') {
@@ -1564,8 +1592,22 @@ ${body}`.trim();
         closeAllStrategyMenus();
       }
       if (selectionPopoverEl && !event.target.closest('.selection-popover')) {
-        hideSelectionPopover();
+        if (!hasValidSelection()) {
+          hideSelectionPopover();
+        } else {
+          handleSelection();
+        }
       }
+    });
+
+    document.addEventListener('mousedown', (event) => {
+      if (event.target.closest('.selection-popover')) return;
+      isMouseSelectionActive = true;
+    });
+
+    document.addEventListener('mouseup', () => {
+      isMouseSelectionActive = false;
+      handleSelection();
     });
 
     document.addEventListener('keydown', (event) => {
@@ -1576,7 +1618,7 @@ ${body}`.trim();
     });
 
     document.addEventListener('selectionchange', () => {
-      window.requestAnimationFrame(handleTextSelection);
+      window.requestAnimationFrame(handleSelection);
     });
 
     instructionEl.addEventListener('keydown', (event) => {
