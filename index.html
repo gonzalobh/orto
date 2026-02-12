@@ -1486,12 +1486,16 @@ ${body}`.trim();
     async function generateEmail() {
       const instruction = instructionEl.value.trim();
       const originalEmail = originalEmailEl.value.trim();
-      const senderName = senderNameEl.value.trim();
-      const clientName = clientNameEl.value.trim();
+      const senderInput = senderNameEl.value.trim();
+      const clientInput = clientNameEl.value.trim();
+
+      const senderName = senderInput || 'El equipo';
+      const clientGreeting = clientInput ? `Hola ${clientInput},` : 'Hola,';
+      const clientName = clientInput || 'cliente';
       const versions = Number(versionsSelect.value) || 1;
       const isReplyMode = currentMode === 'reply';
 
-      if (!instruction || !senderName || !clientName || (isReplyMode && !originalEmail)) return;
+      if (!instruction || (isReplyMode && !originalEmail)) return;
 
       generateButton.disabled = true;
       versionsSelect.disabled = true;
@@ -1507,6 +1511,7 @@ ${body}`.trim();
             instruction,
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
+            clientGreeting,
             recipientName: clientName,
             tone: communicationProfile.tono,
             extension: communicationProfile.extension,
