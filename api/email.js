@@ -15,9 +15,6 @@ export default async function handler(req, res) {
       originalEmail,
       senderName,
       clientName,
-      tone,
-      length,
-      emojis,
       recipientRegion,
       senderRole,
       recipientRole,
@@ -101,7 +98,7 @@ ${safeOriginalEmail}
 
 Redacta una respuesta profesional basada en ese mensaje,
 considerando también la instrucción adicional del usuario.
-Aplica el tono, extensión y configuración seleccionada.`
+Aplica la configuración seleccionada.`
       : "";
 
     const businessContext = `
@@ -199,11 +196,6 @@ ${rolesAndFormalityPrompt}
 
 ### EMAIL REQUEST
 Instruction: ${safeInstruction}
-
-### PARAMETERS
-Tone: ${tone || "Automatic"}
-Length: ${length || "Automatic"}
-Emojis: ${emojis || "Automatic"}
 
 Sender Name: ${safeSenderName || "El equipo"}
 Recipient Name: ${safeClientName || ""}
