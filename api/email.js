@@ -19,7 +19,6 @@ export default async function handler(req, res) {
       length,
       emojis,
       recipientRegion,
-      industry,
       versions,
     } = req.body || {};
 
@@ -29,6 +28,18 @@ export default async function handler(req, res) {
     const safeSenderName = typeof senderName === "string" ? senderName.trim() : "";
     const safeClientName = typeof clientName === "string" ? clientName.trim() : "";
     const safeVersions = Math.min(3, Math.max(1, Number(versions) || 1));
+
+    const regionMap = {
+      españa: "Spain",
+      spain: "Spain",
+      méxico: "Mexico",
+      mexico: "Mexico",
+      argentina: "Argentina",
+      chile: "Chile",
+      colombia: "Colombia",
+    };
+    const rawRegion = typeof recipientRegion === "string" ? recipientRegion.trim() : "";
+    const safeRecipientRegion = regionMap[rawRegion.toLowerCase()] || rawRegion || "Not specified";
 
     if (!safeInstruction || !safeSenderName || !safeClientName || (safeMode === "reply" && !safeOriginalEmail)) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
@@ -81,8 +92,7 @@ Aplica el tono, extensión y configuración seleccionada.`
     const businessContext = `
 ### REGIONAL LOCALIZATION SETTINGS
 
-Target Region: ${recipientRegion || "Not specified"}
-Industry: ${industry || "General"}
+Target Region: ${safeRecipientRegion}
 
 Apply STRICT localization rules:
 
@@ -148,22 +158,21 @@ Keep structure clean and practical.
 
 ---
 
-Always adapt vocabulary slightly to the industry when relevant.
 `;
 
     const userPrompt = `
 ${businessContext}
 
 ### EMAIL REQUEST
-Instruction: ${instruction}
+Instruction: ${safeInstruction}
 
 ### PARAMETERS
 Tone: ${tone || "Automatic"}
 Length: ${length || "Automatic"}
 Emojis: ${emojis || "Automatic"}
 
-Sender Name: ${senderName || "El equipo"}
-Recipient Name: ${clientName || ""}
+Sender Name: ${safeSenderName || "El equipo"}
+Recipient Name: ${safeClientName || ""}
 `;
 
     const finalUserPrompt = `${safeMode === "reply" ? `${modePrompt}\n\n` : ""}${userPrompt}

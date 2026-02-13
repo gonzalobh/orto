@@ -1334,11 +1334,11 @@
               </div>
 
               <div class="section-label-end">
-                <span class="section-label-title">Recipient Region</span>
+                <span class="section-label-title">Región del destinatario</span>
                 <select id="recipientRegion">
-                  <option value="" selected>Not specified</option>
-                  <option value="Spain">Spain</option>
-                  <option value="Mexico">Mexico</option>
+                  <option value="" selected>No especificada</option>
+                  <option value="Spain">España</option>
+                  <option value="Mexico">México</option>
                   <option value="Argentina">Argentina</option>
                   <option value="Chile">Chile</option>
                   <option value="Colombia">Colombia</option>
@@ -1384,19 +1384,6 @@
                 placeholder="María García" 
               />
             </div>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="industry">Industry</label>
-            <select id="industry">
-              <option value="" selected>General</option>
-              <option value="Technology / SaaS">Technology / SaaS</option>
-              <option value="Sales">Sales</option>
-              <option value="Legal">Legal</option>
-              <option value="Finance">Finance</option>
-              <option value="Hospitality">Hospitality</option>
-              <option value="Consulting">Consulting</option>
-            </select>
           </div>
 
           <div class="generate-row">
@@ -1607,7 +1594,7 @@
 
       if (panelNewEl) panelNewEl.hidden = !isNewTab;
       if (panelHistoryEl) panelHistoryEl.hidden = isNewTab;
-      if (clearHistoryBtn) clearHistoryBtn.hidden = isNewTab;
+      if (clearHistoryBtn) clearHistoryBtn.hidden = currentOutputTab !== 'history';
 
       if (!isNewTab) {
         renderHistory();
@@ -2476,7 +2463,6 @@ ${body}`.trim();
             senderName,
             clientName,
             recipientRegion: document.getElementById("recipientRegion")?.value || "",
-            industry: document.getElementById("industry")?.value || "",
             versions
           })
         });
