@@ -19,6 +19,9 @@ export default async function handler(req, res) {
       length,
       emojis,
       recipientRegion,
+      senderRole,
+      recipientRole,
+      formality,
       versions,
     } = req.body || {};
 
@@ -28,6 +31,18 @@ export default async function handler(req, res) {
     const safeSenderName = typeof senderName === "string" ? senderName.trim() : "";
     const safeClientName = typeof clientName === "string" ? clientName.trim() : "";
     const safeVersions = Math.min(3, Math.max(1, Number(versions) || 1));
+
+    const safeSenderRole = typeof senderRole === "string" ? senderRole.trim() : "";
+    const safeRecipientRole = typeof recipientRole === "string" ? recipientRole.trim() : "";
+    const rawFormalityPreference = typeof formality?.preference === "string" ? formality.preference.trim().toLowerCase() : "auto";
+    const rawFormalityDetected = typeof formality?.detected === "string" ? formality.detected.trim().toLowerCase() : "";
+    const rawFormalityResolved = typeof formality?.resolved === "string" ? formality.resolved.trim().toLowerCase() : "";
+    const safeFormalityPreference = ["auto", "tu", "usted"].includes(rawFormalityPreference) ? rawFormalityPreference : "auto";
+    const safeFormalityDetected = ["tu", "usted"].includes(rawFormalityDetected) ? rawFormalityDetected : "usted";
+    const safeFormalityResolvedCandidate = ["tu", "usted"].includes(rawFormalityResolved) ? rawFormalityResolved : "";
+    const safeFormalityResolved = safeFormalityPreference === "auto"
+      ? (safeFormalityResolvedCandidate || safeFormalityDetected)
+      : safeFormalityPreference;
 
     const regionMap = {
       españa: "Spain",
@@ -160,8 +175,27 @@ Keep structure clean and practical.
 
 `;
 
+
+    const rolesAndFormalityPrompt = `
+### ROLES & FORMALITY GUIDELINES
+Sender Role: ${safeSenderRole || "Not specified"}
+Recipient Role: ${safeRecipientRole || "Not specified"}
+Formality Preference: ${safeFormalityPreference}
+Detected Formality: ${safeFormalityDetected}
+Resolved Formality (must apply): ${safeFormalityResolved}
+
+- Usa los cargos para ajustar enfoque, jerarquía y nivel de detalle.
+- No menciones los cargos explícitamente salvo que suene natural.
+- Si Resolved Formality = "usted": usa USTED/LE/SU con tono profesional formal.
+- Si Resolved Formality = "tu": usa TÚ/TE/TU con tono cercano-profesional.
+- Regla crítica: NO mezclar tuteo y ustedeo en el mismo email.
+- Si la preferencia fue "auto" y hay duda en contexto profesional, prioriza "usted".
+- Si es reply, intenta respetar la formalidad percibida del correo original, salvo que el usuario fuerce otra opción.
+`;
+
     const userPrompt = `
 ${businessContext}
+${rolesAndFormalityPrompt}
 
 ### EMAIL REQUEST
 Instruction: ${safeInstruction}
