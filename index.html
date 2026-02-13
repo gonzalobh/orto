@@ -23,6 +23,7 @@
       --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --ease-smooth: cubic-bezier(.2,.8,.2,1);
     }
 
     body {
@@ -34,6 +35,10 @@
       -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
       position: relative;
+    }
+
+    body.bg-gray-50 {
+      background: #f9fafb;
     }
 
     .container {
@@ -87,15 +92,88 @@
     /* Layout principal */
     .main-content {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-auto-rows: 1fr;
-      gap: 2rem;
       padding: 2rem;
       max-width: 1400px;
       margin: 0 auto;
       width: 100%;
-      align-items: stretch;
+      transition: all 0.35s var(--ease-smooth);
+    }
+
+    #appLayout {
+      display: block;
+      transition: all 0.35s var(--ease-smooth);
+    }
+
+    #focusContainer {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    #focusInner {
+      width: 100%;
+      max-width: 42rem;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    #workspace {
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s var(--ease-smooth);
+    }
+
+    .workspace-panel {
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.35s var(--ease-smooth);
+    }
+
+    body[data-ui-state="focus"] #workspace {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    body[data-ui-state="focus"] textarea {
+      border: 1px solid #e5e7eb;
+      box-shadow: none;
+    }
+
+    body[data-ui-state="editing"] #appLayout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    body[data-ui-state="editing"] #workspace {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+      grid-column: 1 / -1;
+    }
+
+    body[data-ui-state="editing"] #focusContainer {
+      min-height: auto;
+      align-items: flex-start;
+      padding-top: 3rem;
+      grid-column: 1 / -1;
+    }
+
+    body[data-ui-state="editing"] #focusInner {
+      max-width: none;
+    }
+
+    body[data-ui-state="editing"] .workspace-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    body[data-ui-state="editing"] textarea {
+      border: 1px solid #d1d5db;
     }
 
     /* Panel izquierdo limpio */
@@ -1398,17 +1476,9 @@
     }
 
     /* Responsive */
-    @media (min-width: 1024px) {
-      .main-content {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
     @media (max-width: 1023px) {
       .main-content {
-        grid-template-columns: 1fr;
         padding: 1.5rem;
-        gap: 1.5rem;
       }
 
       .left-panel,
@@ -1485,7 +1555,7 @@
     }
   </style>
 </head>
-<body>
+<body class="bg-gray-50" data-ui-state="focus">
   <div class="container">
     <header>
       <h1>Redactar.ai</h1>
@@ -1525,121 +1595,127 @@
     </div>
 
     <div class="main-content">
-      <!-- Panel izquierdo -->
-      <div class="left-panel">
-        <div class="form-container">
-
-          <div class="input-group collapsible-group mode-hidden" id="originalEmailGroup">
-            <label class="input-label" for="originalEmail">Email original</label>
-            <textarea
-              id="originalEmail"
-              placeholder="Pega aquí el email que recibiste..."
-            ></textarea>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
-            <textarea 
-              id="instruction" 
-              placeholder="Escribe la idea en pocas palabras…"
-              maxlength="300"
-            ></textarea>
-            <div class="char-counter">
-              <span id="charCount">0</span>/300
-            </div>
-          </div>
-
-          <div class="input-row">
+      <div id="appLayout">
+        <div id="focusContainer" class="min-h-screen flex items-center justify-center transition-all duration-300">
+          <div id="focusInner" class="w-full max-w-2xl px-6">
             <div class="input-group">
-              <label class="input-label" for="senderName">De</label>
-              <input 
-                type="text"
-                id="senderName" 
-                placeholder="Juan Pérez" 
-              />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="clientName">Para</label>
-              <input 
-                type="text"
-                id="clientName" 
-                placeholder="María García" 
-              />
-            </div>
-          </div>
-
-          <div class="input-row">
-            <div class="input-group">
-              <label class="input-label" for="senderRole">Cargo (opcional)</label>
-              <input
-                type="text"
-                id="senderRole"
-                placeholder="Gerente de Ventas"
-              />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="recipientRole">Cargo (opcional)</label>
-              <input
-                type="text"
-                id="recipientRole"
-                placeholder="Directora de RRHH"
-              />
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="formalityPreference">Nivel de formalidad</label>
-            <div class="segmented-control" role="radiogroup" aria-label="Nivel de formalidad">
-              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="tu">Tú (cercano)</button>
-              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="usted">Usted (formal)</button>
-              <button class="formality-btn active" type="button" role="radio" aria-checked="true" data-formality="auto">Automático</button>
-            </div>
-            <input type="hidden" id="formalityPreference" value="auto" />
-          </div>
-
-          <div class="generate-row">
-            <button class="generate-btn" id="generateButton" type="button">
-              <span class="btn-content">
-                <span class="spinner"></span>
-                <span id="buttonText">Generar</span>
-              </span>
-            </button>
-            <div class="versions-control strategy-dropdown">
-              <button class="strategy-btn" id="versionsButton" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
-                <span class="strategy-title">Variantes</span>
-                <span class="strategy-subtitle" id="versionsSubtitle" data-role="selected-value">1</span>
-              </button>
-              <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
-                <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
-                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">+2</button></li>
-              </ul>
+              <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
+              <textarea
+                id="instruction"
+                placeholder="Escribe la idea en pocas palabras…"
+                maxlength="300"
+              ></textarea>
+              <div class="char-counter">
+                <span id="charCount">0</span>/300
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Panel derecho -->
-      <div class="right-panel">
-        <div class="output-container">
-          <div class="output-header">
-            <h2>Emails generados</h2>
-            <div class="output-header-top">
-              <div class="output-tabs" role="tablist" aria-label="Salida de emails">
-                <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
-                <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
+        <div id="workspace" class="opacity-0 pointer-events-none transition-all duration-300 ease-out">
+          <div class="left-panel workspace-panel">
+            <div class="form-container">
+
+              <div class="input-group collapsible-group mode-hidden" id="originalEmailGroup">
+                <label class="input-label" for="originalEmail">Email original</label>
+                <textarea
+                  id="originalEmail"
+                  placeholder="Pega aquí el email que recibiste..."
+                ></textarea>
               </div>
-              <button id="clearHistoryBtn" class="icon-btn history-clear-btn" type="button" aria-label="Borrar historial" hidden><i data-lucide="trash-2"></i><span>Borrar historial</span></button>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label" for="senderName">De</label>
+                  <input
+                    type="text"
+                    id="senderName"
+                    placeholder="Juan Pérez"
+                  />
+                </div>
+                <div class="input-group">
+                  <label class="input-label" for="clientName">Para</label>
+                  <input
+                    type="text"
+                    id="clientName"
+                    placeholder="María García"
+                  />
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div class="input-group">
+                  <label class="input-label" for="senderRole">Cargo (opcional)</label>
+                  <input
+                    type="text"
+                    id="senderRole"
+                    placeholder="Gerente de Ventas"
+                  />
+                </div>
+                <div class="input-group">
+                  <label class="input-label" for="recipientRole">Cargo (opcional)</label>
+                  <input
+                    type="text"
+                    id="recipientRole"
+                    placeholder="Directora de RRHH"
+                  />
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label class="input-label" for="formalityPreference">Nivel de formalidad</label>
+                <div class="segmented-control" role="radiogroup" aria-label="Nivel de formalidad">
+                  <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="tu">Tú (cercano)</button>
+                  <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="usted">Usted (formal)</button>
+                  <button class="formality-btn active" type="button" role="radio" aria-checked="true" data-formality="auto">Automático</button>
+                </div>
+                <input type="hidden" id="formalityPreference" value="auto" />
+              </div>
+
+              <div class="generate-row">
+                <button class="generate-btn" id="generateButton" type="button">
+                  <span class="btn-content">
+                    <span class="spinner"></span>
+                    <span id="buttonText">Generar</span>
+                  </span>
+                </button>
+                <div class="versions-control strategy-dropdown">
+                  <button class="strategy-btn" id="versionsButton" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
+                    <span class="strategy-title">Variantes</span>
+                    <span class="strategy-subtitle" id="versionsSubtitle" data-role="selected-value">1</span>
+                  </button>
+                  <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
+                    <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
+                    <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">+2</button></li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="output-panels">
-            <div id="panelNew" class="output-panel" role="tabpanel">
-              <div id="output" class="output-cards">
-                <div class="output-empty">El email generado aparecerá aquí...</div>
+          <div class="right-panel workspace-panel">
+            <div class="output-container">
+              <div class="output-header">
+                <h2>Emails generados</h2>
+                <div class="output-header-top">
+                  <div class="output-tabs" role="tablist" aria-label="Salida de emails">
+                    <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
+                    <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
+                  </div>
+                  <button id="clearHistoryBtn" class="icon-btn history-clear-btn" type="button" aria-label="Borrar historial" hidden><i data-lucide="trash-2"></i><span>Borrar historial</span></button>
+                </div>
               </div>
-            </div>
-            <div id="panelHistory" class="output-panel" role="tabpanel" hidden>
-              <div id="historyList" class="history-list"></div>
+
+              <div class="output-panels">
+                <div id="panelNew" class="output-panel" role="tabpanel">
+                  <div id="output" class="output-cards">
+                    <div class="output-empty">El email generado aparecerá aquí...</div>
+                  </div>
+                </div>
+                <div id="panelHistory" class="output-panel" role="tabpanel" hidden>
+                  <div id="historyList" class="history-list"></div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -1688,6 +1764,26 @@
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
     let isGenerating = false;
+
+
+    const input = document.getElementById('mainInput') || instructionEl;
+    let activated = false;
+
+    input?.addEventListener('input', () => {
+      if (!activated && input.value.trim().length > 0) {
+        activated = true;
+
+        document.body.setAttribute('data-ui-state', 'editing');
+
+        setTimeout(() => {
+          document.querySelectorAll('.workspace-panel')[0]?.classList.add('visible');
+        }, 120);
+
+        setTimeout(() => {
+          document.querySelectorAll('.workspace-panel')[1]?.classList.add('visible');
+        }, 220);
+      }
+    });
 
     function normalizeText(value) {
       return (value || '')
@@ -2078,13 +2174,13 @@
       if (!tipsContent) return;
 
       tipsContent.classList.add('fade-out');
-      
+
       setTimeout(() => {
         currentTipIndex = (currentTipIndex + 1) % tips.length;
         tipsContent.textContent = tips[currentTipIndex];
         tipsContent.classList.remove('fade-out');
         tipsContent.classList.add('fade-in');
-        
+
         setTimeout(() => {
           tipsContent.classList.remove('fade-in');
         }, 400);
@@ -2111,7 +2207,7 @@
     function renderEmptyState() {
       hideSelectionPopover();
       stopTipsRotation();
-      
+
       const instruction = instructionEl.value.trim();
       const senderName = senderNameEl.value.trim() || 'Tu nombre';
       const clientName = clientNameEl.value.trim() || 'Destinatario';
@@ -2144,7 +2240,7 @@
           </div>
 
 
-    
+
       `;
 
       // Iniciar rotación de tips
@@ -2157,7 +2253,7 @@
     function renderLoadingState(substatusText) {
       hideSelectionPopover();
       stopTipsRotation();
-      
+
       outputEl.innerHTML = `
         <div class="skeleton-loader">
           <div class="skeleton-progress">
@@ -2165,7 +2261,7 @@
             <div class="skeleton-status">Analizando contexto...</div>
             <div class="skeleton-substatus">${substatusText || 'Generando email profesional'}</div>
           </div>
-          
+
           <div class="skeleton-card">
             <div class="skeleton-line title"></div>
             <div class="skeleton-line long"></div>
@@ -2355,7 +2451,7 @@ ${body}`.trim();
       if (proposalWrap?.classList.contains('visible')) {
         return;
       }
-      
+
       const selectionDetails = getSelectionDetails();
       if (!selectionDetails) {
         if (!isMouseSelectionActive) {
@@ -2418,7 +2514,7 @@ ${body}`.trim();
 
       const { improvedText, bodyEl, text } = currentSelectionState;
       const currentContent = bodyEl.textContent;
-      
+
       // Reemplazar la primera ocurrencia del texto seleccionado
       const newContent = currentContent.replace(text, improvedText);
       bodyEl.textContent = newContent;
@@ -2468,7 +2564,7 @@ ${body}`.trim();
 
       const actionButton = event.target.closest('[data-action]');
       if (!actionButton) return;
-      
+
       if (actionButton.dataset.action === 'replace') {
         replaceSelectedTextWithProposal();
       }
