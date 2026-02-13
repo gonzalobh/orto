@@ -1611,8 +1611,7 @@
               </button>
               <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
                 <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
-                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="2">2</button></li>
-                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">3</button></li>
+                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">+2</button></li>
               </ul>
             </div>
           </div>
@@ -1852,7 +1851,7 @@
       if (!selectedValue) return;
 
       selectedVersions = selectedValue;
-      versionsSubtitle.textContent = String(selectedVersions);
+      versionsSubtitle.textContent = selectedVersions === 3 ? '+2' : '1';
       versionsOptions.forEach((opt) => {
         const selected = opt === optionButton;
         opt.classList.toggle('selected', selected);
@@ -2155,7 +2154,7 @@
       }, 100);
     }
 
-    function renderLoadingState() {
+    function renderLoadingState(substatusText) {
       hideSelectionPopover();
       stopTipsRotation();
       
@@ -2164,7 +2163,7 @@
           <div class="skeleton-progress">
             <div class="skeleton-spinner"></div>
             <div class="skeleton-status">Analizando contexto...</div>
-            <div class="skeleton-substatus">Generando versiones profesionales</div>
+            <div class="skeleton-substatus">${substatusText || 'Generando email profesional'}</div>
           </div>
           
           <div class="skeleton-card">
@@ -2186,7 +2185,7 @@
 
     function renderPlaceholder(message, loading = false) {
       if (loading) {
-        renderLoadingState();
+        renderLoadingState(message);
       } else {
         renderEmptyState();
       }
@@ -2807,7 +2806,10 @@ ${body}`.trim();
       generateButton.classList.add('generating');
       versionsButton.disabled = true;
       buttonText.textContent = 'Generando...';
-      renderPlaceholder('Generando versiones...', true);
+      const loadingSub = (selectedVersions === 3)
+        ? 'Generando +2 variantes profesionales'
+        : 'Generando email profesional';
+      renderPlaceholder(loadingSub, true);
 
       try {
         const res = await fetch('/api/email', {
