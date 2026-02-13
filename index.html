@@ -427,6 +427,40 @@
       margin-bottom: 1.25rem;
     }
 
+    .segmented-control {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.375rem;
+      padding: 0.25rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+    }
+
+    .formality-btn {
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      padding: 0.5rem 0.625rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .formality-btn:hover,
+    .formality-btn:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .formality-btn.active {
+      background: var(--text-primary);
+      color: white;
+    }
+
     .strategy-dropdown {
       position: relative;
     }
@@ -1534,6 +1568,35 @@
             </div>
           </div>
 
+          <div class="input-row">
+            <div class="input-group">
+              <label class="input-label" for="senderRole">Cargo (opcional)</label>
+              <input
+                type="text"
+                id="senderRole"
+                placeholder="Gerente de Ventas"
+              />
+            </div>
+            <div class="input-group">
+              <label class="input-label" for="recipientRole">Cargo (opcional)</label>
+              <input
+                type="text"
+                id="recipientRole"
+                placeholder="Directora de RRHH"
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="formalityPreference">Nivel de formalidad</label>
+            <div class="segmented-control" role="radiogroup" aria-label="Nivel de formalidad">
+              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="tu">Tú (cercano)</button>
+              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="usted">Usted (formal)</button>
+              <button class="formality-btn active" type="button" role="radio" aria-checked="true" data-formality="auto">Automático</button>
+            </div>
+            <input type="hidden" id="formalityPreference" value="auto" />
+          </div>
+
           <div class="generate-row">
             <button class="generate-btn" id="generateButton" type="button">
               <span class="btn-content">
@@ -1591,6 +1654,10 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
+    const senderRoleEl = document.getElementById('senderRole');
+    const recipientRoleEl = document.getElementById('recipientRole');
+    const formalityPrefEl = document.getElementById('formalityPreference');
+    const formalityBtns = Array.from(document.querySelectorAll('.formality-btn'));
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('historyBtn');
@@ -1622,6 +1689,91 @@
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
     let isGenerating = false;
+
+    function normalizeText(value) {
+      return (value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function setFormalityPreference(value) {
+      const next = value === 'tu' || value === 'usted' ? value : 'auto';
+      if (formalityPrefEl) {
+        formalityPrefEl.value = next;
+      }
+      formalityBtns.forEach((btn) => {
+        const selected = btn.dataset.formality === next;
+        btn.classList.toggle('active', selected);
+        btn.setAttribute('aria-checked', selected ? 'true' : 'false');
+      });
+    }
+
+    function detectFormality({ instruction, senderRole, recipientRole, originalEmail, mode }) {
+      const context = normalizeText([instruction, senderRole, recipientRole].filter(Boolean).join(' '));
+      const original = normalizeText(originalEmail || '');
+      let ustedScore = 0;
+      let tuScore = 0;
+
+      const ustedSignals = [
+        /\busted\b/,
+        /\ble\b/,
+        /\bsu\b/,
+        /agradeceria/,
+        /quedo a su disposicion/,
+        /atentamente/,
+        /cordialmente/,
+        /estimad[oa]/
+      ];
+      const tuSignals = [
+        /\btu\b/,
+        /\bte\b/,
+        /\btu\s+\w+/,
+        /\bhola\b/,
+        /\bque tal\b/
+      ];
+      const seniorRoleSignals = [
+        /director/,
+        /gerent/,
+        /\bceo\b/,
+        /\bcfo\b/,
+        /\bcto\b/,
+        /president/,
+        /abogad/,
+        /notari/,
+        /rrhh/,
+        /\bjef/,
+        /recursos humanos/
+      ];
+      const closeSignals = [/interno/, /colega/, /equipo/, /companer/];
+
+      if (ustedSignals.some((r) => r.test(context))) ustedScore += 2;
+      if (tuSignals.some((r) => r.test(context))) tuScore += 2;
+      if (seniorRoleSignals.some((r) => r.test(normalizeText(recipientRole)))) ustedScore += 2;
+      if (closeSignals.some((r) => r.test(context))) tuScore += 1;
+
+      if (mode === 'reply' && original) {
+        if (/\busted\b|\bsu\b|\ble\b|agradeceria/.test(original)) ustedScore += 3;
+        if (/\btu\b|\bte\b|\bhola\b/.test(original)) tuScore += 2;
+      }
+
+      return ustedScore >= tuScore ? 'usted' : 'tu';
+    }
+
+    function resolveFormality() {
+      const preference = formalityPrefEl?.value || 'auto';
+      const detected = detectFormality({
+        instruction: instructionEl?.value || '',
+        senderRole: senderRoleEl?.value || '',
+        recipientRole: recipientRoleEl?.value || '',
+        originalEmail: originalEmailEl?.value || '',
+        mode: currentMode
+      });
+      const resolved = preference === 'auto' ? detected : preference;
+      return { preference, detected: preference === 'auto' ? detected : resolved, resolved };
+    }
 
     function shouldDisableGenerateButton() {
       const instruction = instructionEl?.value.trim() || '';
@@ -2524,9 +2676,35 @@ ${body}`.trim();
       charCount.textContent = instructionEl.value.length;
       updatePreviewIfEmpty();
       updateGenerateButtonState();
+      if ((formalityPrefEl?.value || 'auto') === 'auto') {
+        resolveFormality();
+      }
     });
 
-    originalEmailEl?.addEventListener('input', updateGenerateButtonState);
+    originalEmailEl?.addEventListener('input', () => {
+      updateGenerateButtonState();
+      if ((formalityPrefEl?.value || 'auto') === 'auto') {
+        resolveFormality();
+      }
+    });
+
+    formalityBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        setFormalityPreference(btn.dataset.formality);
+      });
+    });
+
+    senderRoleEl?.addEventListener('input', () => {
+      if ((formalityPrefEl?.value || 'auto') === 'auto') {
+        resolveFormality();
+      }
+    });
+
+    recipientRoleEl?.addEventListener('input', () => {
+      if ((formalityPrefEl?.value || 'auto') === 'auto') {
+        resolveFormality();
+      }
+    });
 
     versionsControl?.addEventListener('click', (event) => {
       const option = event.target.closest('.versions-option');
@@ -2581,6 +2759,8 @@ ${body}`.trim();
     senderNameEl.addEventListener('input', updatePreviewIfEmpty);
     clientNameEl.addEventListener('input', updatePreviewIfEmpty);
 
+    setFormalityPreference(formalityPrefEl?.value || 'auto');
+
     function updatePreviewIfEmpty() {
       // Solo actualizar si estamos en estado vacío
       const emptyState = outputEl.querySelector('.empty-state');
@@ -2611,6 +2791,9 @@ ${body}`.trim();
       const originalEmail = originalEmailEl.value.trim();
       const senderInput = senderNameEl.value.trim();
       const clientInput = clientNameEl.value.trim();
+      const senderRole = senderRoleEl?.value.trim() || '';
+      const recipientRole = recipientRoleEl?.value.trim() || '';
+      const formality = resolveFormality();
 
       const senderName = senderInput || 'El equipo';
       const clientName = clientInput || 'cliente';
@@ -2637,6 +2820,9 @@ ${body}`.trim();
             senderName,
             clientName,
             recipientRegion: document.getElementById("recipientRegion")?.value || "",
+            senderRole,
+            recipientRole,
+            formality,
             versions
           })
         });
