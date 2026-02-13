@@ -93,6 +93,28 @@
       margin-bottom: 1.5rem;
     }
 
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .section-label-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .section-label-row select {
+      max-width: 180px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
     .mode-toggle {
       display: inline-flex;
       align-items: center;
@@ -262,10 +284,25 @@
     }
 
     .icon-btn {
+      border: 0;
+      background: transparent;
+      padding: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.65;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
+      font: inherit;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.04);
+      outline: none;
     }
 
     .icon-only {
@@ -508,11 +545,30 @@
       letter-spacing: -0.02em;
     }
 
-    .output-tabs {
+    .output-header-top {
       width: 100%;
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
       border-bottom: 1px solid var(--border-color);
+    }
+
+    .output-tabs {
+      display: flex;
+      align-items: center;
+    }
+
+    .history-clear-btn {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .history-clear-btn i,
+    .history-delete i {
+      width: 14px;
+      height: 14px;
     }
 
     .output-tab {
@@ -889,6 +945,7 @@
       padding: 1rem;
       cursor: pointer;
       transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+      position: relative;
     }
 
     .history-item:hover,
@@ -918,6 +975,13 @@
       color: var(--text-secondary);
       line-height: 1.45;
       word-break: break-word;
+      padding-right: 1.75rem;
+    }
+
+    .history-delete {
+      position: absolute;
+      top: 10px;
+      right: 10px;
     }
 
     .history-empty {
@@ -1329,72 +1393,33 @@
             </div>
           </div>
 
-          <button id="advancedBtn" class="advanced-toggle icon-left" type="button"><i data-lucide="sliders-horizontal"></i><span>Opciones avanzadas</span></button>
-
-          <div id="advancedPanel" class="advanced-hidden">
-            <div class="personalization-panel" aria-label="Panel de personalización">
-              <div class="personalization-title">Personalización</div>
-              <div class="personalization-grid">
-                <div class="input-group">
-                  <label class="input-label" for="recipientRegion">Recipient Region</label>
-                  <select id="recipientRegion">
-                    <option value="" selected>Not specified</option>
-                    <option value="Spain">Spain</option>
-                    <option value="Mexico">Mexico</option>
-                    <option value="Argentina">Argentina</option>
-                    <option value="Chile">Chile</option>
-                    <option value="Colombia">Colombia</option>
-                  </select>
-                </div>
-                <div class="input-group">
-                  <label class="input-label" for="industry">Industry</label>
-                  <select id="industry">
-                    <option value="" selected>General</option>
-                    <option value="Technology / SaaS">Technology / SaaS</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Legal">Legal</option>
-                    <option value="Finance">Finance</option>
-                    <option value="Hospitality">Hospitality</option>
-                    <option value="Consulting">Consulting</option>
-                  </select>
-                </div>
+          <div class="personalization-panel" aria-label="Panel de personalización">
+            <div class="section-label">
+              <div class="section-label-row">
+                <span class="section-label-title">Recipient Region</span>
+                <select id="recipientRegion">
+                  <option value="" selected>Not specified</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Colombia">Colombia</option>
+                </select>
               </div>
             </div>
-
-            <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
-            <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="tone" aria-haspopup="true" aria-expanded="false" aria-controls="menuTono">
-                <span class="strategy-title">Tono</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
-              </button>
-              <ul class="strategy-menu" id="menuTono" role="menu" aria-label="Opciones de tono">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="tone" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tone" data-value="Directo">Directo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tone" data-value="Diplomático">Diplomático</button></li>
-              </ul>
-            </div>
-            <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="length" aria-haspopup="true" aria-expanded="false" aria-controls="menuExtension">
-                <span class="strategy-title">Extensión</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automática</span>
-              </button>
-              <ul class="strategy-menu" id="menuExtension" role="menu" aria-label="Opciones de extensión">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="length" data-value="Automática">Automática</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="length" data-value="Breve">Breve</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="length" data-value="Detallada">Detallada</button></li>
-              </ul>
-            </div>
-            <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="emojis" aria-haspopup="true" aria-expanded="false" aria-controls="menuEmojis">
-                <span class="strategy-title">Emojis</span>
-                <span class="strategy-subtitle" data-role="selected-value">Automático</span>
-              </button>
-              <ul class="strategy-menu" id="menuEmojis" role="menu" aria-label="Opciones de emojis">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="emojis" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Mínimo">Mínimo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Ninguno">Ninguno</button></li>
-              </ul>
-            </div>
+            <div class="personalization-grid">
+              <div class="input-group">
+                <label class="input-label" for="industry">Industry</label>
+                <select id="industry">
+                  <option value="" selected>General</option>
+                  <option value="Technology / SaaS">Technology / SaaS</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Legal">Legal</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Hospitality">Hospitality</option>
+                  <option value="Consulting">Consulting</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -1425,9 +1450,12 @@
         <div class="output-container">
           <div class="output-header">
             <h2>Emails generados</h2>
-            <div class="output-tabs" role="tablist" aria-label="Salida de emails">
-              <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
-              <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
+            <div class="output-header-top">
+              <div class="output-tabs" role="tablist" aria-label="Salida de emails">
+                <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
+                <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
+              </div>
+              <button id="clearHistoryBtn" class="icon-btn history-clear-btn" type="button" aria-label="Borrar historial"><i data-lucide="trash-2"></i><span>Borrar historial</span></button>
             </div>
           </div>
 
@@ -1452,14 +1480,13 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
-    const toggleAdvancedBtn = document.getElementById('advancedBtn');
-    const advancedPanelEl = document.getElementById('advancedPanel');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('historyBtn');
     const panelNewEl = document.getElementById('panelNew');
     const panelHistoryEl = document.getElementById('panelHistory');
     const historyListEl = document.getElementById('historyList');
+    const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const generateButton = document.getElementById('generateButton');
     const buttonText = document.getElementById('buttonText');
     const versionsControl = document.querySelector('.versions-control');
@@ -1468,9 +1495,8 @@
     const versionsMenu = document.getElementById('versionsMenu');
     const versionsOptions = Array.from(document.querySelectorAll('.versions-option'));
     const charCount = document.getElementById('charCount');
-    const strategyControls = document.querySelector('.strategy-controls');
-    const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn'));
-    const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu'));
+    const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn:not(#versionsButton)'));
+    const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu:not(#versionsMenu)'));
     const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
     const SELECTION_MIN_LENGTH = 3;
 
@@ -1482,11 +1508,6 @@
     let isMouseSelectionActive = false;
     let isInteractingWithPopover = false;
 
-    const communicationProfile = {
-      tone: 'Automático',
-      length: 'Automática',
-      emojis: 'Automático'
-    };
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
 
@@ -1522,53 +1543,6 @@
     function closeAllStrategyMenus() {
       strategyMenus.forEach((menu) => menu.classList.remove('open'));
       strategyButtons.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
-    }
-
-    function openStrategyMenu(button) {
-      closeAllStrategyMenus();
-      const menu = document.getElementById(button.getAttribute('aria-controls'));
-      if (!menu) return;
-      menu.classList.add('open');
-      button.setAttribute('aria-expanded', 'true');
-    }
-
-    function toggleStrategyMenu(button) {
-      const menu = document.getElementById(button.getAttribute('aria-controls'));
-      if (!menu) return;
-      const isOpen = menu.classList.contains('open');
-      closeAllStrategyMenus();
-      if (!isOpen) {
-        menu.classList.add('open');
-        button.setAttribute('aria-expanded', 'true');
-      }
-    }
-
-    function setStrategySelection(optionButton) {
-      const profileKey = optionButton.dataset.profile;
-      const selectedValue = optionButton.dataset.value;
-      if (!profileKey || !selectedValue) return;
-
-      communicationProfile[profileKey] = selectedValue;
-      document.querySelectorAll(`.strategy-option[data-profile="${profileKey}"]`).forEach((opt) => {
-        const selected = opt === optionButton;
-        opt.classList.toggle('selected', selected);
-        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
-      });
-
-      const strategyButton = document.querySelector(`.strategy-btn[data-profile="${profileKey}"]`);
-      strategyButton?.querySelector('[data-role="selected-value"]')?.replaceChildren(document.createTextNode(selectedValue));
-      closeAllStrategyMenus();
-
-      // Actualizar preview si estamos en estado vacío
-      const emptyState = outputEl.querySelector('.empty-state');
-      if (emptyState) {
-        const badges = emptyState.querySelectorAll('.preview-badge');
-        if (badges.length >= 3) {
-          badges[0].textContent = communicationProfile.tone;
-          badges[1].textContent = communicationProfile.length;
-          badges[2].textContent = communicationProfile.emojis;
-        }
-      }
     }
 
     function closeVersionsMenu() {
@@ -1669,21 +1643,46 @@
       tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
     }
 
+    function createHistoryId() {
+      if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+      return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+
     function loadHistory() {
       try {
         const raw = localStorage.getItem(HISTORY_KEY);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map((entry) => ({ ...entry, id: entry?.id || createHistoryId() }));
       } catch {
         return [];
       }
     }
 
+    function saveHistory(list) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    }
+
     function saveToHistory(entry) {
       const history = loadHistory();
-      const updated = [entry, ...history].slice(0, 30);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(updated));
+      const updated = [{ ...entry, id: entry.id || createHistoryId() }, ...history].slice(0, 30);
+      saveHistory(updated);
+    }
+
+    function deleteHistoryItem(id) {
+      if (!id) return;
+      const list = loadHistory().filter((entry) => entry.id !== id);
+      saveHistory(list);
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if (!window.confirm('¿Borrar todo el historial?')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
     }
 
     function formatRelativeTime(ts) {
@@ -1710,7 +1709,7 @@
       }
 
       historyListEl.innerHTML = history
-        .map((entry, index) => {
+        .map((entry) => {
           const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
           const title = (entry.instruction || 'Sin instrucción').trim();
           const subject = firstVersion?.subject || 'Sin asunto';
@@ -1718,22 +1717,35 @@
           const snippetBase = `Asunto: ${subject}: ${body}`;
           const snippet = snippetBase.length > 120 ? `${snippetBase.slice(0, 120)}...` : snippetBase;
           return `
-            <button class="history-item" type="button" data-index="${index}">
+            <div class="history-item" role="button" tabindex="0" data-id="${escapeHtml(entry.id)}">
+              <button class="icon-btn history-delete" type="button" data-id="${escapeHtml(entry.id)}" aria-label="Borrar">
+                <i data-lucide="trash-2"></i>
+              </button>
               <div class="history-item-title">${escapeHtml(title)}</div>
               <div class="history-item-time">${escapeHtml(formatRelativeTime(entry.createdAt))}</div>
               <div class="history-item-snippet">${escapeHtml(snippet)}</div>
-            </button>
+            </div>
           `;
         })
         .join('');
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
     }
 
     function handleHistoryClick(event) {
+      const deleteButton = event.target.closest('.history-delete');
+      if (deleteButton) {
+        event.stopPropagation();
+        deleteHistoryItem(deleteButton.dataset.id);
+        return;
+      }
+
       const item = event.target.closest('.history-item');
       if (!item) return;
       const history = loadHistory();
-      const index = Number(item.dataset.index);
-      const entry = history[index];
+      const entry = history.find((historyItem) => historyItem.id === item.dataset.id);
       if (!entry || !Array.isArray(entry.versions) || entry.versions.length === 0) return;
 
       setActiveOutputTab('new');
@@ -1844,17 +1856,7 @@
             <div class="preview-context ${instruction ? '' : 'empty'}">
               ${instruction || 'Escribe tu instrucción para ver un preview...'}
             </div>
-            <div class="preview-meta">
-              <div class="preview-meta-item">
-                <span class="preview-badge">${communicationProfile.tone}</span>
-              </div>
-              <div class="preview-meta-item">
-                <span class="preview-badge">${communicationProfile.length}</span>
-              </div>
-              <div class="preview-meta-item">
-                <span class="preview-badge">${communicationProfile.emojis}</span>
-              </div>
-            </div>
+            <div class="preview-meta"></div>
           </div>
 
 
@@ -2496,9 +2498,6 @@ ${body}`.trim();
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
             clientName,
-            tone: communicationProfile.tone,
-            length: communicationProfile.length,
-            emojis: communicationProfile.emojis,
             recipientRegion: document.getElementById("recipientRegion")?.value || "",
             industry: document.getElementById("industry")?.value || "",
             versions
@@ -2527,7 +2526,7 @@ ${body}`.trim();
         }
         renderVersions(parsedVersions);
         const historyEntry = {
-          id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : String(Date.now()),
+          id: createHistoryId(),
           createdAt: Date.now(),
           instruction,
           mode: currentMode,
@@ -2549,15 +2548,10 @@ ${body}`.trim();
     }
 
 
-    if (toggleAdvancedBtn && advancedPanelEl) {
-      toggleAdvancedBtn.addEventListener('click', () => {
-        advancedPanelEl.classList.toggle('visible');
-      });
-    }
-
     generateButton.addEventListener('click', generateEmail);
     outputEl.addEventListener('click', handleOutputClick);
     historyListEl?.addEventListener('click', handleHistoryClick);
+    clearHistoryBtn?.addEventListener('click', clearHistory);
 
     // Event delegation para ejemplos clicables
     outputEl.addEventListener('click', (event) => {
@@ -2576,56 +2570,15 @@ ${body}`.trim();
       });
     });
 
-    strategyControls.addEventListener('click', (event) => {
-      const option = event.target.closest('.strategy-option');
-      if (option) {
-        setStrategySelection(option);
-        return;
-      }
-
-      const button = event.target.closest('.strategy-btn');
-      if (button) {
-        toggleStrategyMenu(button);
-      }
-    });
-
-    strategyControls.addEventListener('keydown', (event) => {
-      const button = event.target.closest('.strategy-btn');
-      if (button && (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ')) {
-        event.preventDefault();
-        openStrategyMenu(button);
-        document.getElementById(button.getAttribute('aria-controls'))?.querySelector('.strategy-option')?.focus();
-        return;
-      }
-
-      const menu = event.target.closest('.strategy-menu');
-      if (!menu) return;
-
-      const options = Array.from(menu.querySelectorAll('.strategy-option'));
-      const currentIndex = options.indexOf(document.activeElement);
-
-      if (event.key === 'ArrowDown') {
-        event.preventDefault();
-        options[(currentIndex + 1) % options.length]?.focus();
-      }
-
-      if (event.key === 'ArrowUp') {
-        event.preventDefault();
-        options[(currentIndex - 1 + options.length) % options.length]?.focus();
-      }
-
+    historyListEl?.addEventListener('keydown', (event) => {
+      const item = event.target.closest('.history-item');
+      if (!item) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
-        const focusedOption = document.activeElement.closest('.strategy-option');
-        if (focusedOption) {
-          setStrategySelection(focusedOption);
-        }
-      }
-
-      if (event.key === 'Escape') {
-        closeAllStrategyMenus();
+        item.click();
       }
     });
+
 
     document.addEventListener('click', (event) => {
       if (event.target.closest('.selection-popover')) return;
