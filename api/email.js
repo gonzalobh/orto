@@ -34,12 +34,29 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
-    const systemPrompt = `Eres un asistente experto en redacción de correos profesionales en español B2B.
+    const systemPrompt = `
+Eres un especialista en redacción de emails profesionales adaptados culturalmente.
 
-Reglas obligatorias:
-- Responde EXCLUSIVAMENTE en JSON válido.
-- No agregues texto fuera del JSON.
-- Usa este formato JSON EXACTO:
+NO escribes en español neutro.
+SIEMPRE localizas el idioma según la región indicada.
+
+Tu objetivo es que el email parezca escrito por un profesional local,
+no por un sistema traducido.
+
+REGLAS CRÍTICAS:
+- Nunca uses español internacional genérico.
+- El saludo, tono, vocabulario y cierre deben adaptarse al país.
+- Evita fórmulas universales.
+- Prioriza naturalidad empresarial local.
+- No sobre-explicar.
+- No sonar robótico.
+- No usar estructuras latinoamericanas si la región es España.
+- No usar estructuras peninsulares si la región es LATAM.
+
+El estilo debe coincidir con cómo realmente escriben ejecutivos en ese país.
+
+Responde SIEMPRE en JSON válido:
+
 {
   "versions": [
     {
@@ -48,11 +65,7 @@ Reglas obligatorias:
     }
   ]
 }
-- El arreglo "versions" debe incluir exactamente la cantidad solicitada.
-- En cada "body" usa saludo "Hola, {NombreCliente}:" y cierre:
-
-Atentamente,
-{NombreRemitente}`;
+`;
 
     const modePrompt = safeMode === "reply"
       ? `El usuario recibió el siguiente email:
@@ -66,33 +79,91 @@ Aplica el tono, extensión y configuración seleccionada.`
       : "";
 
     const businessContext = `
-### BUSINESS CONTEXT (STRICT)
+### REGIONAL LOCALIZATION SETTINGS
 
-Recipient Region: ${recipientRegion || "Not specified"}
+Target Region: ${recipientRegion || "Not specified"}
 Industry: ${industry || "General"}
 
-Adapt the email to:
-- cultural norms of the region
-- expected professionalism level
-- industry-specific vocabulary
-- business etiquette typical of that market
+Apply STRICT localization rules:
 
-This context has priority over stylistic creativity.
+---
+
+If Target Region is Spain:
+Use Peninsular Spanish (es-ES).
+Professional tone typical of Spain.
+Prefer:
+- "Buenos días"
+- "Nos gustaría"
+- "Quedamos a la espera"
+- "Un saludo"
+
+Avoid:
+- "se encuentren"
+- "cordialmente"
+- "estimado cliente"
+- overly warm LATAM tone
+
+Write concisely. Spain uses shorter, more direct phrasing.
+
+---
+
+If Target Region is Mexico:
+Use Mexican professional Spanish.
+Tone slightly more relational but still formal.
+Prefer:
+- "Estimado/a"
+- "Con gusto"
+- "Quedamos atentos"
+- "Saludos cordiales"
+
+Allow polite cushioning language common in Mexico.
+Do NOT use Spain phrasing like "Un saludo" or "Quedamos a la espera".
+
+---
+
+If Target Region is Chile:
+Use Chilean professional Spanish (neutral-formal).
+Tone direct but respectful.
+Prefer:
+- "Estimado/a"
+- "Junto con saludar"
+- "Quedamos atentos"
+- "Saludos"
+
+Avoid Mexican warmth and avoid Spain brevity.
+Balance clarity + formality.
+
+---
+
+If Target Region is US Hispanic:
+Use clear international Spanish influenced by U.S. business communication.
+Prioritize clarity and efficiency.
+Prefer:
+- "Hello" style structure translated naturally
+- direct purpose statements
+- neutral but not LATAM-heavy tone
+
+Avoid regional idioms.
+Keep structure clean and practical.
+
+---
+
+Always adapt vocabulary slightly to the industry when relevant.
 `;
 
     const userPrompt = `
 ${businessContext}
 
 ### EMAIL REQUEST
-Instruction: ${safeInstruction}
+Instruction: ${instruction}
 
 ### PARAMETERS
 Tone: ${tone || "Automatic"}
 Length: ${length || "Automatic"}
 Emojis: ${emojis || "Automatic"}
 
-Sender Name: ${safeSenderName || "El equipo"}
-Recipient Name: ${safeClientName || ""}
+Sender Name: ${senderName || "El equipo"}
+Recipient Name: ${clientName || ""}
 `;
 
     const finalUserPrompt = `${safeMode === "reply" ? `${modePrompt}\n\n` : ""}${userPrompt}
