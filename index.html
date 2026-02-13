@@ -245,6 +245,39 @@
       color: #111;
     }
 
+    /* Lucide icons must inherit text color */
+    .lucide {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.5;
+      color: currentColor;
+      opacity: 0.75;
+      vertical-align: middle;
+      transition: opacity 0.15s ease;
+    }
+
+    /* Slight emphasis on hover */
+    button:hover .lucide {
+      opacity: 1;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .icon-only {
+      padding: 6px;
+    }
+
+    .icon-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     /* Grid para los dos inputs en fila */
     .input-row {
       display: grid;
@@ -1253,7 +1286,7 @@
           <div class="section-label">
             <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
               <button class="mode-toggle-btn active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">Redactar</button>
-              <button class="mode-toggle-btn" id="modeReply" type="button" data-mode="reply" role="tab" aria-selected="false">Responder</button>
+              <button class="mode-toggle-btn icon-left" id="replyBtn" type="button" data-mode="reply" role="tab" aria-selected="false"><i data-lucide="sparkles"></i><span>Responder</span></button>
             </div>
           </div>
 
@@ -1296,7 +1329,7 @@
             </div>
           </div>
 
-          <button id="toggleAdvanced" class="advanced-toggle" type="button">Opciones avanzadas</button>
+          <button id="advancedBtn" class="advanced-toggle icon-left" type="button"><i data-lucide="sliders-horizontal"></i><span>Opciones avanzadas</span></button>
 
           <div id="advancedPanel" class="advanced-hidden">
             <div class="personalization-panel" aria-label="Panel de personalización">
@@ -1394,7 +1427,7 @@
             <h2>Emails generados</h2>
             <div class="output-tabs" role="tablist" aria-label="Salida de emails">
               <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
-              <button id="tabHistory" class="output-tab" type="button" role="tab" aria-selected="false" aria-controls="panelHistory">Historial</button>
+              <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
             </div>
           </div>
 
@@ -1419,11 +1452,11 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
-    const toggleAdvancedBtn = document.getElementById('toggleAdvanced');
+    const toggleAdvancedBtn = document.getElementById('advancedBtn');
     const advancedPanelEl = document.getElementById('advancedPanel');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
-    const tabHistoryBtn = document.getElementById('tabHistory');
+    const tabHistoryBtn = document.getElementById('historyBtn');
     const panelNewEl = document.getElementById('panelNew');
     const panelHistoryEl = document.getElementById('panelHistory');
     const historyListEl = document.getElementById('historyList');
@@ -1883,12 +1916,15 @@
 ${body}`.trim();
 
       navigator.clipboard.writeText(content).then(() => {
-        const original = button.textContent;
+        const originalHtml = button.innerHTML;
         button.textContent = 'Copiado ✓';
         button.classList.add('copied');
         setTimeout(() => {
-          button.textContent = original;
+          button.innerHTML = originalHtml;
           button.classList.remove('copied');
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
         }, 2000);
       }).catch((err) => {
         console.error('Error al copiar:', err);
@@ -2329,10 +2365,10 @@ ${body}`.trim();
             <div class="version-content" data-role="email-body">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
-            <button class="version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">Copiar</button>
+            <button id="copyBtn" class="version-copy-btn icon-btn icon-only" type="button" title="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}"><i data-lucide="copy"></i></button>
             <button class="version-copy-btn version-accept-btn" type="button" data-body="${encodeURIComponent(item.body)}">Aceptar</button>
             <div class="translate-dropdown">
-              <button class="translate-btn" type="button" aria-haspopup="true" aria-expanded="false">Traducir</button>
+              <button class="translate-btn icon-left" type="button" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
@@ -2344,6 +2380,9 @@ ${body}`.trim();
         `;
         outputEl.appendChild(card);
       });
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
     }
 
     instructionEl.addEventListener('input', () => {
@@ -2641,6 +2680,10 @@ ${body}`.trim();
     setMode('compose');
     initOutputTabs();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    lucide.createIcons();
   </script>
 </body>
 </html>
