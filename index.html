@@ -98,6 +98,15 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-label-end {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: flex-end;
     }
 
     .section-label-title {
@@ -147,8 +156,20 @@
       color: white;
     }
 
-    .input-group.mode-hidden {
-      display: none;
+    .collapsible-group {
+      max-height: 320px;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      transition: max-height 0.25s ease, opacity 0.25s ease, transform 0.25s ease, margin-bottom 0.25s ease;
+    }
+
+    .collapsible-group.mode-hidden {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-6px);
+      margin-bottom: 0;
+      pointer-events: none;
     }
 
     .input-group {
@@ -199,49 +220,6 @@
 
     textarea::placeholder,
     input[type="text"]::placeholder {
-      color: var(--text-tertiary);
-    }
-
-    .personalization-panel {
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.875rem;
-      margin-bottom: 1.25rem;
-      display: grid;
-      gap: 0.75rem;
-    }
-
-    .personalization-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-
-    .personalization-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.8125rem;
-      color: var(--text-primary);
-    }
-
-    .checkbox-row input[type="checkbox"] {
-      width: 14px;
-      height: 14px;
-      accent-color: var(--text-primary);
-    }
-
-    .personalization-help {
-      font-size: 0.6875rem;
       color: var(--text-tertiary);
     }
 
@@ -1303,10 +1281,6 @@
         gap: 1rem;
       }
 
-      .personalization-grid {
-        grid-template-columns: 1fr;
-      }
-
       .strategy-controls {
         grid-template-columns: 1fr;
       }
@@ -1348,13 +1322,32 @@
       <div class="left-panel">
         <div class="form-container">
           <div class="section-label">
-            <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
-              <button class="mode-toggle-btn active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">Redactar</button>
-              <button class="mode-toggle-btn icon-left" id="replyBtn" type="button" data-mode="reply" role="tab" aria-selected="false"><i data-lucide="sparkles"></i><span>Responder</span></button>
+            <div class="section-label-row">
+              <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
+                <button class="mode-toggle-btn icon-left active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">
+                  <i data-lucide="pencil"></i><span>Redactar</span>
+                </button>
+
+                <button class="mode-toggle-btn icon-left" id="replyBtn" type="button" data-mode="reply" role="tab" aria-selected="false">
+                  <i data-lucide="reply"></i><span>Responder</span>
+                </button>
+              </div>
+
+              <div class="section-label-end">
+                <span class="section-label-title">Recipient Region</span>
+                <select id="recipientRegion">
+                  <option value="" selected>Not specified</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Colombia">Colombia</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div class="input-group mode-hidden" id="originalEmailGroup">
+          <div class="input-group collapsible-group mode-hidden" id="originalEmailGroup">
             <label class="input-label" for="originalEmail">Email original</label>
             <textarea
               id="originalEmail"
@@ -1363,10 +1356,10 @@
           </div>
 
           <div class="input-group">
-            <label class="input-label" for="instruction">Instrucción</label>
+            <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
             <textarea 
               id="instruction" 
-              placeholder="Enviar un email a mi cliente pidiéndole feedback sobre la versión más reciente del mockup del sitio web"
+              placeholder="Escribe la idea en pocas palabras…"
               maxlength="300"
             ></textarea>
             <div class="char-counter">
@@ -1393,34 +1386,17 @@
             </div>
           </div>
 
-          <div class="personalization-panel" aria-label="Panel de personalización">
-            <div class="section-label">
-              <div class="section-label-row">
-                <span class="section-label-title">Recipient Region</span>
-                <select id="recipientRegion">
-                  <option value="" selected>Not specified</option>
-                  <option value="Spain">Spain</option>
-                  <option value="Mexico">Mexico</option>
-                  <option value="Argentina">Argentina</option>
-                  <option value="Chile">Chile</option>
-                  <option value="Colombia">Colombia</option>
-                </select>
-              </div>
-            </div>
-            <div class="personalization-grid">
-              <div class="input-group">
-                <label class="input-label" for="industry">Industry</label>
-                <select id="industry">
-                  <option value="" selected>General</option>
-                  <option value="Technology / SaaS">Technology / SaaS</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Legal">Legal</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Hospitality">Hospitality</option>
-                  <option value="Consulting">Consulting</option>
-                </select>
-              </div>
-            </div>
+          <div class="input-group">
+            <label class="input-label" for="industry">Industry</label>
+            <select id="industry">
+              <option value="" selected>General</option>
+              <option value="Technology / SaaS">Technology / SaaS</option>
+              <option value="Sales">Sales</option>
+              <option value="Legal">Legal</option>
+              <option value="Finance">Finance</option>
+              <option value="Hospitality">Hospitality</option>
+              <option value="Consulting">Consulting</option>
+            </select>
           </div>
 
           <div class="generate-row">
@@ -1455,7 +1431,7 @@
                 <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
                 <button id="historyBtn" class="output-tab icon-left" type="button" role="tab" aria-selected="false" aria-controls="panelHistory"><i data-lucide="history"></i><span>Historial</span></button>
               </div>
-              <button id="clearHistoryBtn" class="icon-btn history-clear-btn" type="button" aria-label="Borrar historial"><i data-lucide="trash-2"></i><span>Borrar historial</span></button>
+              <button id="clearHistoryBtn" class="icon-btn history-clear-btn" type="button" aria-label="Borrar historial" hidden><i data-lucide="trash-2"></i><span>Borrar historial</span></button>
             </div>
           </div>
 
@@ -1529,7 +1505,7 @@
       if (instructionEl) {
         instructionEl.placeholder = isReply
           ? 'Indica cómo quieres responder al email recibido…'
-          : 'Describe el email que quieres redactar…';
+          : 'Escribe la idea en pocas palabras…';
       }
 
       const outputContainer = document.getElementById('outputContainer');
@@ -1631,6 +1607,7 @@
 
       if (panelNewEl) panelNewEl.hidden = !isNewTab;
       if (panelHistoryEl) panelHistoryEl.hidden = isNewTab;
+      if (clearHistoryBtn) clearHistoryBtn.hidden = isNewTab;
 
       if (!isNewTab) {
         renderHistory();
