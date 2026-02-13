@@ -223,6 +223,28 @@
       color: var(--text-tertiary);
     }
 
+    .advanced-hidden {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .advanced-hidden.visible {
+      display: block;
+    }
+
+    .advanced-toggle {
+      background: none;
+      border: none;
+      color: #777;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px 0;
+    }
+
+    .advanced-toggle:hover {
+      color: #111;
+    }
+
     /* Grid para los dos inputs en fila */
     .input-row {
       display: grid;
@@ -1274,61 +1296,59 @@
             </div>
           </div>
 
-          <div class="personalization-panel" aria-label="Panel de personalización">
-            <div class="personalization-title">Personalización</div>
-            <div class="personalization-grid">
-              <div class="input-group">
-                <label class="input-label" for="recipientRegion">Recipient Region</label>
-                <select id="recipientRegion">
-                  <option value="Neutral" selected>Neutral</option>
-                  <option value="Spain">Spain</option>
-                  <option value="Mexico">Mexico</option>
-                  <option value="Argentina">Argentina</option>
-                  <option value="Chile">Chile</option>
-                  <option value="Colombia">Colombia</option>
-                </select>
-              </div>
-              <div class="input-group">
-                <label class="input-label" for="industry">Industry</label>
-                <select id="industry">
-                  <option value="General" selected>General</option>
-                  <option value="Technology / SaaS">Technology / SaaS</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Legal">Legal</option>
-                  <option value="Finance">Finance</option>
-                  <option value="Hospitality">Hospitality</option>
-                  <option value="Consulting">Consulting</option>
-                </select>
+          <button id="toggleAdvanced" class="advanced-toggle" type="button">Opciones avanzadas</button>
+
+          <div id="advancedPanel" class="advanced-hidden">
+            <div class="personalization-panel" aria-label="Panel de personalización">
+              <div class="personalization-title">Personalización</div>
+              <div class="personalization-grid">
+                <div class="input-group">
+                  <label class="input-label" for="recipientRegion">Recipient Region</label>
+                  <select id="recipientRegion">
+                    <option value="" selected>Not specified</option>
+                    <option value="Spain">Spain</option>
+                    <option value="Mexico">Mexico</option>
+                    <option value="Argentina">Argentina</option>
+                    <option value="Chile">Chile</option>
+                    <option value="Colombia">Colombia</option>
+                  </select>
+                </div>
+                <div class="input-group">
+                  <label class="input-label" for="industry">Industry</label>
+                  <select id="industry">
+                    <option value="" selected>General</option>
+                    <option value="Technology / SaaS">Technology / SaaS</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Hospitality">Hospitality</option>
+                    <option value="Consulting">Consulting</option>
+                  </select>
+                </div>
               </div>
             </div>
-            <label class="checkbox-row" for="rememberStyle">
-              <input type="checkbox" id="rememberStyle" checked />
-              Remember my writing style
-            </label>
-            <div class="personalization-help">Guardamos hasta 5 muestras para adaptar el tono.</div>
-          </div>
 
-          <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
+            <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="tono" aria-haspopup="true" aria-expanded="false" aria-controls="menuTono">
+              <button class="strategy-btn" type="button" data-profile="tone" aria-haspopup="true" aria-expanded="false" aria-controls="menuTono">
                 <span class="strategy-title">Tono</span>
                 <span class="strategy-subtitle" data-role="selected-value">Automático</span>
               </button>
               <ul class="strategy-menu" id="menuTono" role="menu" aria-label="Opciones de tono">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="tono" data-value="Automático">Automático</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tono" data-value="Directo">Directo</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tono" data-value="Diplomático">Diplomático</button></li>
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="tone" data-value="Automático">Automático</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tone" data-value="Directo">Directo</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="tone" data-value="Diplomático">Diplomático</button></li>
               </ul>
             </div>
             <div class="strategy-dropdown">
-              <button class="strategy-btn" type="button" data-profile="extension" aria-haspopup="true" aria-expanded="false" aria-controls="menuExtension">
+              <button class="strategy-btn" type="button" data-profile="length" aria-haspopup="true" aria-expanded="false" aria-controls="menuExtension">
                 <span class="strategy-title">Extensión</span>
                 <span class="strategy-subtitle" data-role="selected-value">Automática</span>
               </button>
               <ul class="strategy-menu" id="menuExtension" role="menu" aria-label="Opciones de extensión">
-                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="extension" data-value="Automática">Automática</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="extension" data-value="Breve">Breve</button></li>
-                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="extension" data-value="Detallada">Detallada</button></li>
+                <li role="none"><button class="strategy-option selected" type="button" role="menuitemradio" aria-checked="true" data-profile="length" data-value="Automática">Automática</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="length" data-value="Breve">Breve</button></li>
+                <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="length" data-value="Detallada">Detallada</button></li>
               </ul>
             </div>
             <div class="strategy-dropdown">
@@ -1341,6 +1361,7 @@
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Mínimo">Mínimo</button></li>
                 <li role="none"><button class="strategy-option" type="button" role="menuitemradio" aria-checked="false" data-profile="emojis" data-value="Ninguno">Ninguno</button></li>
               </ul>
+            </div>
             </div>
           </div>
 
@@ -1398,9 +1419,8 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
-    const recipientRegionEl = document.getElementById('recipientRegion');
-    const industryEl = document.getElementById('industry');
-    const rememberStyleEl = document.getElementById('rememberStyle');
+    const toggleAdvancedBtn = document.getElementById('toggleAdvanced');
+    const advancedPanelEl = document.getElementById('advancedPanel');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('tabHistory');
@@ -1430,29 +1450,11 @@
     let isInteractingWithPopover = false;
 
     const communicationProfile = {
-      tono: 'Automático',
-      extension: 'Automática',
+      tone: 'Automático',
+      length: 'Automática',
       emojis: 'Automático'
     };
     const HISTORY_KEY = 'emails_history_v1';
-    const WRITING_SAMPLES_KEY = 'writingSamples';
-    const REGION_INSTRUCTIONS = {
-      Neutral: 'Use international neutral Spanish.',
-      Spain: 'Use a direct and clear professional tone typical in Spain.',
-      Mexico: 'Use a courteous and relational tone typical in Mexico.',
-      Argentina: 'Use a natural, close professional tone typical in Argentina.',
-      Chile: 'Maintain respectful and moderately formal Chilean business tone.',
-      Colombia: 'Use balanced professional courtesy typical in Colombia.'
-    };
-    const INDUSTRY_INSTRUCTIONS = {
-      General: '',
-      'Technology / SaaS': 'Use modern, concise, project-oriented language.',
-      Sales: 'Use action-oriented, persuasive language.',
-      Legal: 'Use precise, formal, unambiguous language.',
-      Finance: 'Use structured, analytical tone.',
-      Hospitality: 'Use warm, service-oriented tone.',
-      Consulting: 'Use strategic and professional tone.'
-    };
     let currentOutputTab = 'new';
 
     function closeAllStrategyMenus() {
@@ -1500,8 +1502,8 @@
       if (emptyState) {
         const badges = emptyState.querySelectorAll('.preview-badge');
         if (badges.length >= 3) {
-          badges[0].textContent = communicationProfile.tono;
-          badges[1].textContent = communicationProfile.extension;
+          badges[0].textContent = communicationProfile.tone;
+          badges[1].textContent = communicationProfile.length;
           badges[2].textContent = communicationProfile.emojis;
         }
       }
@@ -1538,62 +1540,6 @@
         opt.setAttribute('aria-checked', selected ? 'true' : 'false');
       });
       closeVersionsMenu();
-    }
-
-    function getEmojiInstruction(mode) {
-      if (mode === 'Ninguno') return 'No utilices emojis.';
-      if (mode === 'Mínimo') return 'Usa como máximo un emoji solo si aporta claridad profesional.';
-      return 'Si aplica, decide automáticamente si conviene usar emojis con criterio B2B.';
-    }
-
-    function setMode(mode) {
-      currentMode = mode === 'reply' ? 'reply' : 'compose';
-      const isReply = currentMode === 'reply';
-
-      originalEmailGroupEl.classList.toggle('mode-hidden', !isReply);
-      originalEmailEl.toggleAttribute('required', isReply);
-
-      modeButtons.forEach((button) => {
-        const isActive = button.dataset.mode === currentMode;
-        button.classList.toggle('active', isActive);
-        button.setAttribute('aria-selected', isActive ? 'true' : 'false');
-      });
-
-      // Refrescar el estado vacío si estamos en ese estado
-      const emptyState = outputEl.querySelector('.empty-state');
-      if (emptyState) {
-        renderEmptyState();
-      }
-    }
-
-    function buildStrategicPrompt(userInputText, versionCount) {
-      const systemInstructions = `
-Actúa como asistente corporativo experto en comunicación B2B.
-
-Configura cada versión con este perfil estratégico:
-- Tono: ${communicationProfile.tono}
-- Extensión: ${communicationProfile.extension}
-- Emojis: ${communicationProfile.emojis}
-
-Reglas de negocio:
-- Si alguna categoría está en "Automático" o "Automática", decide ese aspecto según el contexto.
-- ${getEmojiInstruction(communicationProfile.emojis)}
-- Genera ${versionCount} versiones claramente diferenciadas entre sí.
-
-Formato obligatorio de salida:
-Versión 1
-Asunto: ...
-Cuerpo: ...
-
-Versión 2
-Asunto: ...
-Cuerpo: ...
-(repite hasta completar la cantidad solicitada).
-`.trim();
-
-      return `${systemInstructions}
-
-${userInputText}`;
     }
 
     function extractSubjectAndBody(text) {
@@ -1659,40 +1605,6 @@ ${userInputText}`;
       setActiveOutputTab('new');
       tabNewBtn?.addEventListener('click', () => setActiveOutputTab('new'));
       tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
-    }
-
-    function getWritingSamples() {
-      try {
-        const raw = localStorage.getItem(WRITING_SAMPLES_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string' && item.trim()) : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function saveApprovedEmail(text) {
-      const cleanedText = typeof text === 'string' ? text.trim() : '';
-      if (!cleanedText) return;
-      const samples = getWritingSamples();
-      const updated = [cleanedText, ...samples.filter((sample) => sample !== cleanedText)].slice(0, 5);
-      localStorage.setItem(WRITING_SAMPLES_KEY, JSON.stringify(updated));
-    }
-
-    function buildPersonalizationContext(region, industry) {
-      const instructions = [
-        REGION_INSTRUCTIONS[region] || REGION_INSTRUCTIONS.Neutral,
-        INDUSTRY_INSTRUCTIONS[industry] || ''
-      ].filter(Boolean);
-
-      const writingSamples = getWritingSamples();
-      if (writingSamples.length > 0) {
-        instructions.push(`Imitate the user's writing style based on these examples:
-${writingSamples.join('\n---\n')}`);
-      }
-
-      return instructions.join('\n');
     }
 
     function loadHistory() {
@@ -1872,10 +1784,10 @@ ${writingSamples.join('\n---\n')}`);
             </div>
             <div class="preview-meta">
               <div class="preview-meta-item">
-                <span class="preview-badge">${communicationProfile.tono}</span>
+                <span class="preview-badge">${communicationProfile.tone}</span>
               </div>
               <div class="preview-meta-item">
-                <span class="preview-badge">${communicationProfile.extension}</span>
+                <span class="preview-badge">${communicationProfile.length}</span>
               </div>
               <div class="preview-meta-item">
                 <span class="preview-badge">${communicationProfile.emojis}</span>
@@ -1942,9 +1854,6 @@ ${writingSamples.join('\n---\n')}`);
 ${body}`.trim();
 
       navigator.clipboard.writeText(content).then(() => {
-        if (rememberStyleEl?.checked) {
-          saveApprovedEmail(body);
-        }
         const original = button.textContent;
         button.textContent = 'Copiado ✓';
         button.classList.add('copied');
@@ -2325,11 +2234,6 @@ ${body}`.trim();
       const button = event.target.closest('.version-accept-btn');
       if (!button) return false;
 
-      const body = decodeURIComponent(button.dataset.body || '');
-      if (rememberStyleEl?.checked) {
-        saveApprovedEmail(body);
-      }
-
       const original = button.textContent;
       button.textContent = 'Aceptado ✓';
       button.classList.add('copied');
@@ -2503,14 +2407,9 @@ ${body}`.trim();
       const clientInput = clientNameEl.value.trim();
 
       const senderName = senderInput || 'El equipo';
-      const clientGreeting = clientInput ? `Hola ${clientInput},` : 'Hola,';
       const clientName = clientInput || 'cliente';
       const versions = selectedVersions;
       const isReplyMode = currentMode === 'reply';
-      const region = recipientRegionEl?.value || 'Neutral';
-      const industry = industryEl?.value || 'General';
-      const personalizationContext = buildPersonalizationContext(region, industry);
-      const instructionWithContext = [instruction, personalizationContext].filter(Boolean).join('\n\n');
 
       if (!instruction || (isReplyMode && !originalEmail)) return;
 
@@ -2525,14 +2424,15 @@ ${body}`.trim();
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mode: isReplyMode ? 'reply' : 'compose',
-            instruction: instructionWithContext,
+            instruction,
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
-            clientGreeting,
-            recipientName: clientName,
-            tone: communicationProfile.tono,
-            extension: communicationProfile.extension,
+            clientName,
+            tone: communicationProfile.tone,
+            length: communicationProfile.length,
             emojis: communicationProfile.emojis,
+            recipientRegion: document.getElementById("recipientRegion")?.value || "",
+            industry: document.getElementById("industry")?.value || "",
             versions
           })
         });
@@ -2578,6 +2478,13 @@ ${body}`.trim();
         versionsButton.disabled = false;
         buttonText.textContent = 'Generar';
       }
+    }
+
+
+    if (toggleAdvancedBtn && advancedPanelEl) {
+      toggleAdvancedBtn.addEventListener('click', () => {
+        advancedPanelEl.classList.toggle('visible');
+      });
     }
 
     generateButton.addEventListener('click', generateEmail);

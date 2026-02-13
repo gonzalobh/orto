@@ -14,27 +14,21 @@ export default async function handler(req, res) {
       instruction,
       originalEmail,
       senderName,
-      recipientName,
       clientName,
       tone,
-      extension,
+      length,
       emojis,
-      communicationProfile,
+      recipientRegion,
+      industry,
       versions,
     } = req.body || {};
+
     const safeMode = mode === "reply" ? "reply" : "compose";
     const safeInstruction = typeof instruction === "string" ? instruction.trim() : "";
     const safeOriginalEmail = typeof originalEmail === "string" ? originalEmail.trim() : "";
     const safeSenderName = typeof senderName === "string" ? senderName.trim() : "";
-    const recipientValue = typeof recipientName === "string" ? recipientName : clientName;
-    const safeClientName = typeof recipientValue === "string" ? recipientValue.trim() : "";
+    const safeClientName = typeof clientName === "string" ? clientName.trim() : "";
     const safeVersions = Math.min(3, Math.max(1, Number(versions) || 1));
-
-    const safeProfile = {
-      tono: typeof tone === "string" ? tone : (typeof communicationProfile?.tono === "string" ? communicationProfile.tono : "Automático"),
-      extension: typeof extension === "string" ? extension : (typeof communicationProfile?.extension === "string" ? communicationProfile.extension : "Automática"),
-      emojis: typeof emojis === "string" ? emojis : (typeof communicationProfile?.emojis === "string" ? communicationProfile.emojis : "Automático"),
-    };
 
     if (!safeInstruction || !safeSenderName || !safeClientName || (safeMode === "reply" && !safeOriginalEmail)) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
@@ -71,16 +65,37 @@ considerando también la instrucción adicional del usuario.
 Aplica el tono, extensión y configuración seleccionada.`
       : "";
 
-    const userPrompt = `${safeMode === "reply" ? `${modePrompt}\n\n` : ""}INSTRUCCIÓN:
-${safeInstruction}
+    const businessContext = `
+### BUSINESS CONTEXT (STRICT)
 
-DATOS:
-- Remitente: ${safeSenderName}
-- Cliente: ${safeClientName}
-- Cantidad de versiones: ${safeVersions}
-- Tono preferido: ${safeProfile.tono}
-- Extensión preferida: ${safeProfile.extension}
-- Emojis: ${safeProfile.emojis}
+Recipient Region: ${recipientRegion || "Not specified"}
+Industry: ${industry || "General"}
+
+Adapt the email to:
+- cultural norms of the region
+- expected professionalism level
+- industry-specific vocabulary
+- business etiquette typical of that market
+
+This context has priority over stylistic creativity.
+`;
+
+    const userPrompt = `
+${businessContext}
+
+### EMAIL REQUEST
+Instruction: ${safeInstruction}
+
+### PARAMETERS
+Tone: ${tone || "Automatic"}
+Length: ${length || "Automatic"}
+Emojis: ${emojis || "Automatic"}
+
+Sender Name: ${safeSenderName || "El equipo"}
+Recipient Name: ${safeClientName || ""}
+`;
+
+    const finalUserPrompt = `${safeMode === "reply" ? `${modePrompt}\n\n` : ""}${userPrompt}
 
 Genera ${safeVersions} versiones claramente diferentes entre sí.
 Cada versión debe tener un enfoque distinto.
@@ -104,7 +119,7 @@ Si se solicita 1 versión, devuelve solo la versión 1.`;
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        temperature: 0.7,
+        temperature: 0.3,
         response_format: {
           type: "json_schema",
           json_schema: {
@@ -135,7 +150,7 @@ Si se solicita 1 versión, devuelve solo la versión 1.`;
         },
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt },
+          { role: "user", content: finalUserPrompt },
         ],
       }),
     });
