@@ -1457,6 +1457,35 @@
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
 
+    function setMode(mode) {
+      currentMode = mode;
+
+      const isReply = mode === 'reply';
+
+      modeButtons.forEach((btn) => {
+        const active = btn.dataset.mode === mode;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      if (originalEmailGroupEl) {
+        originalEmailGroupEl.classList.toggle('mode-hidden', !isReply);
+      }
+
+      if (instructionEl) {
+        instructionEl.placeholder = isReply
+          ? 'Indica cómo quieres responder al email recibido…'
+          : 'Describe el email que quieres redactar…';
+      }
+
+      const outputContainer = document.getElementById('outputContainer');
+      if (outputContainer) {
+        outputContainer.innerHTML = '';
+      } else if (outputEl) {
+        outputEl.innerHTML = '';
+      }
+    }
+
     function closeAllStrategyMenus() {
       strategyMenus.forEach((menu) => menu.classList.remove('open'));
       strategyButtons.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
