@@ -144,7 +144,8 @@
 
     /* Inputs estilo TrustMRR */
     textarea,
-    input[type="text"] {
+    input[type="text"],
+    select {
       width: 100%;
       font-family: inherit;
       font-size: 0.9375rem;
@@ -168,13 +169,57 @@
     }
 
     textarea:focus,
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    select:focus {
       border-color: var(--text-primary);
       box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
     }
 
     textarea::placeholder,
     input[type="text"]::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .personalization-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.875rem;
+      margin-bottom: 1.25rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .personalization-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .personalization-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--text-primary);
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--text-primary);
+    }
+
+    .personalization-help {
+      font-size: 0.6875rem;
       color: var(--text-tertiary);
     }
 
@@ -1139,6 +1184,10 @@
         gap: 1rem;
       }
 
+      .personalization-grid {
+        grid-template-columns: 1fr;
+      }
+
       .strategy-controls {
         grid-template-columns: 1fr;
       }
@@ -1223,6 +1272,40 @@
                 placeholder="María García" 
               />
             </div>
+          </div>
+
+          <div class="personalization-panel" aria-label="Panel de personalización">
+            <div class="personalization-title">Personalización</div>
+            <div class="personalization-grid">
+              <div class="input-group">
+                <label class="input-label" for="recipientRegion">Recipient Region</label>
+                <select id="recipientRegion">
+                  <option value="Neutral" selected>Neutral</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Chile">Chile</option>
+                  <option value="Colombia">Colombia</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label class="input-label" for="industry">Industry</label>
+                <select id="industry">
+                  <option value="General" selected>General</option>
+                  <option value="Technology / SaaS">Technology / SaaS</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Legal">Legal</option>
+                  <option value="Finance">Finance</option>
+                  <option value="Hospitality">Hospitality</option>
+                  <option value="Consulting">Consulting</option>
+                </select>
+              </div>
+            </div>
+            <label class="checkbox-row" for="rememberStyle">
+              <input type="checkbox" id="rememberStyle" checked />
+              Remember my writing style
+            </label>
+            <div class="personalization-help">Guardamos hasta 5 muestras para adaptar el tono.</div>
           </div>
 
           <div class="strategy-controls" aria-label="Controles estratégicos de comunicación">
@@ -1315,6 +1398,9 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
+    const recipientRegionEl = document.getElementById('recipientRegion');
+    const industryEl = document.getElementById('industry');
+    const rememberStyleEl = document.getElementById('rememberStyle');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('tabHistory');
@@ -1349,6 +1435,24 @@
       emojis: 'Automático'
     };
     const HISTORY_KEY = 'emails_history_v1';
+    const WRITING_SAMPLES_KEY = 'writingSamples';
+    const REGION_INSTRUCTIONS = {
+      Neutral: 'Use international neutral Spanish.',
+      Spain: 'Use a direct and clear professional tone typical in Spain.',
+      Mexico: 'Use a courteous and relational tone typical in Mexico.',
+      Argentina: 'Use a natural, close professional tone typical in Argentina.',
+      Chile: 'Maintain respectful and moderately formal Chilean business tone.',
+      Colombia: 'Use balanced professional courtesy typical in Colombia.'
+    };
+    const INDUSTRY_INSTRUCTIONS = {
+      General: '',
+      'Technology / SaaS': 'Use modern, concise, project-oriented language.',
+      Sales: 'Use action-oriented, persuasive language.',
+      Legal: 'Use precise, formal, unambiguous language.',
+      Finance: 'Use structured, analytical tone.',
+      Hospitality: 'Use warm, service-oriented tone.',
+      Consulting: 'Use strategic and professional tone.'
+    };
     let currentOutputTab = 'new';
 
     function closeAllStrategyMenus() {
@@ -1555,6 +1659,40 @@ ${userInputText}`;
       setActiveOutputTab('new');
       tabNewBtn?.addEventListener('click', () => setActiveOutputTab('new'));
       tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
+    }
+
+    function getWritingSamples() {
+      try {
+        const raw = localStorage.getItem(WRITING_SAMPLES_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string' && item.trim()) : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveApprovedEmail(text) {
+      const cleanedText = typeof text === 'string' ? text.trim() : '';
+      if (!cleanedText) return;
+      const samples = getWritingSamples();
+      const updated = [cleanedText, ...samples.filter((sample) => sample !== cleanedText)].slice(0, 5);
+      localStorage.setItem(WRITING_SAMPLES_KEY, JSON.stringify(updated));
+    }
+
+    function buildPersonalizationContext(region, industry) {
+      const instructions = [
+        REGION_INSTRUCTIONS[region] || REGION_INSTRUCTIONS.Neutral,
+        INDUSTRY_INSTRUCTIONS[industry] || ''
+      ].filter(Boolean);
+
+      const writingSamples = getWritingSamples();
+      if (writingSamples.length > 0) {
+        instructions.push(`Imitate the user's writing style based on these examples:
+${writingSamples.join('\n---\n')}`);
+      }
+
+      return instructions.join('\n');
     }
 
     function loadHistory() {
@@ -1804,6 +1942,9 @@ ${userInputText}`;
 ${body}`.trim();
 
       navigator.clipboard.writeText(content).then(() => {
+        if (rememberStyleEl?.checked) {
+          saveApprovedEmail(body);
+        }
         const original = button.textContent;
         button.textContent = 'Copiado ✓';
         button.classList.add('copied');
@@ -1991,12 +2132,16 @@ ${body}`.trim();
       if (!card) return;
       const subjectEl = card.querySelector('[data-role="email-subject"]');
       const copyButton = card.querySelector('.version-copy-btn');
+      const acceptButton = card.querySelector('.version-accept-btn');
       const currentSubject = subjectEl?.textContent?.trim() || '';
       const currentBody = bodyEl.textContent.trim();
 
       if (copyButton) {
         copyButton.dataset.subject = encodeURIComponent(currentSubject);
         copyButton.dataset.body = encodeURIComponent(currentBody);
+      }
+      if (acceptButton) {
+        acceptButton.dataset.body = encodeURIComponent(currentBody);
       }
 
       const isTranslated = card.dataset.isTranslated === 'true';
@@ -2118,9 +2263,13 @@ ${body}`.trim();
         card.dataset.isTranslated = 'true';
 
         const copyButton = card.querySelector('.version-copy-btn');
+        const acceptButton = card.querySelector('.version-accept-btn');
         if (copyButton) {
           copyButton.dataset.subject = encodeURIComponent(translatedSubject);
           copyButton.dataset.body = encodeURIComponent(translatedBody);
+        }
+        if (acceptButton) {
+          acceptButton.dataset.body = encodeURIComponent(translatedBody);
         }
 
         const restoreButton = card.querySelector('.restore-original-btn');
@@ -2160,12 +2309,35 @@ ${body}`.trim();
       card.dataset.isTranslated = 'false';
 
       const copyButton = card.querySelector('.version-copy-btn');
+      const acceptButton = card.querySelector('.version-accept-btn');
       if (copyButton) {
         copyButton.dataset.subject = encodeURIComponent(originalSubject);
         copyButton.dataset.body = encodeURIComponent(originalBody);
       }
+      if (acceptButton) {
+        acceptButton.dataset.body = encodeURIComponent(originalBody);
+      }
 
       button.classList.remove('visible');
+    }
+
+    function handleAcceptClick(event) {
+      const button = event.target.closest('.version-accept-btn');
+      if (!button) return false;
+
+      const body = decodeURIComponent(button.dataset.body || '');
+      if (rememberStyleEl?.checked) {
+        saveApprovedEmail(body);
+      }
+
+      const original = button.textContent;
+      button.textContent = 'Aceptado ✓';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.textContent = original;
+        button.classList.remove('copied');
+      }, 2000);
+      return true;
     }
 
     async function handleOutputClick(event) {
@@ -2201,6 +2373,9 @@ ${body}`.trim();
         return;
       }
 
+      if (handleAcceptClick(event)) {
+        return;
+      }
       handleCopyClick(event);
     }
 
@@ -2222,6 +2397,7 @@ ${body}`.trim();
           </div>
           <div class="version-actions">
             <button class="version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">Copiar</button>
+            <button class="version-copy-btn version-accept-btn" type="button" data-body="${encodeURIComponent(item.body)}">Aceptar</button>
             <div class="translate-dropdown">
               <button class="translate-btn" type="button" aria-haspopup="true" aria-expanded="false">Traducir</button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
@@ -2331,6 +2507,10 @@ ${body}`.trim();
       const clientName = clientInput || 'cliente';
       const versions = selectedVersions;
       const isReplyMode = currentMode === 'reply';
+      const region = recipientRegionEl?.value || 'Neutral';
+      const industry = industryEl?.value || 'General';
+      const personalizationContext = buildPersonalizationContext(region, industry);
+      const instructionWithContext = [instruction, personalizationContext].filter(Boolean).join('\n\n');
 
       if (!instruction || (isReplyMode && !originalEmail)) return;
 
@@ -2345,7 +2525,7 @@ ${body}`.trim();
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mode: isReplyMode ? 'reply' : 'compose',
-            instruction,
+            instruction: instructionWithContext,
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
             clientGreeting,
