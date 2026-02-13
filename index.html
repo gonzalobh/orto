@@ -124,6 +124,10 @@
       font-size: 0.8125rem;
     }
 
+    #recipientRegion {
+      font-size: 0.75rem;
+    }
+
     .mode-toggle {
       display: inline-flex;
       align-items: center;
@@ -460,7 +464,9 @@
     }
 
     .generate-btn:disabled {
-      opacity: 0.5;
+      background: #8c8c8c;
+      color: #f5f5f5;
+      opacity: 1;
       cursor: not-allowed;
       transform: none;
     }
@@ -1334,7 +1340,6 @@
               </div>
 
               <div class="section-label-end">
-                <span class="section-label-title">Región del destinatario</span>
                 <select id="recipientRegion">
                   <option value="" selected>No especificada</option>
                   <option value="Spain">España</option>
@@ -1473,6 +1478,28 @@
 
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
+    let isGenerating = false;
+
+    function shouldDisableGenerateButton() {
+      const instruction = instructionEl?.value.trim() || '';
+      const originalEmail = originalEmailEl?.value.trim() || '';
+      const isReplyMode = currentMode === 'reply';
+
+      if (!instruction) return true;
+      if (isReplyMode && !originalEmail) return true;
+      return false;
+    }
+
+    function updateGenerateButtonState() {
+      if (!generateButton) return;
+
+      if (isGenerating) {
+        generateButton.disabled = true;
+        return;
+      }
+
+      generateButton.disabled = shouldDisableGenerateButton();
+    }
 
     function setMode(mode) {
       currentMode = mode;
@@ -1501,6 +1528,8 @@
       } else if (outputEl) {
         outputEl.innerHTML = '';
       }
+
+      updateGenerateButtonState();
     }
 
     function closeAllStrategyMenus() {
@@ -2354,7 +2383,10 @@ ${body}`.trim();
     instructionEl.addEventListener('input', () => {
       charCount.textContent = instructionEl.value.length;
       updatePreviewIfEmpty();
+      updateGenerateButtonState();
     });
+
+    originalEmailEl?.addEventListener('input', updateGenerateButtonState);
 
     versionsControl?.addEventListener('click', (event) => {
       const option = event.target.closest('.versions-option');
@@ -2447,6 +2479,7 @@ ${body}`.trim();
 
       if (!instruction || (isReplyMode && !originalEmail)) return;
 
+      isGenerating = true;
       generateButton.disabled = true;
       versionsButton.disabled = true;
       buttonText.textContent = 'Generando...';
@@ -2504,9 +2537,10 @@ ${body}`.trim();
       } catch {
         renderPlaceholder('Error de conexión.');
       } finally {
-        generateButton.disabled = false;
+        isGenerating = false;
         versionsButton.disabled = false;
         buttonText.textContent = 'Generar';
+        updateGenerateButtonState();
       }
     }
 
@@ -2596,6 +2630,7 @@ ${body}`.trim();
     setMode('compose');
     initOutputTabs();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
+    updateGenerateButtonState();
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
