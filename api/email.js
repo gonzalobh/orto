@@ -32,14 +32,7 @@ export default async function handler(req, res) {
     const safeSenderRole = typeof senderRole === "string" ? senderRole.trim() : "";
     const safeRecipientRole = typeof recipientRole === "string" ? recipientRole.trim() : "";
     const rawFormalityPreference = typeof formality?.preference === "string" ? formality.preference.trim().toLowerCase() : "auto";
-    const rawFormalityDetected = typeof formality?.detected === "string" ? formality.detected.trim().toLowerCase() : "";
-    const rawFormalityResolved = typeof formality?.resolved === "string" ? formality.resolved.trim().toLowerCase() : "";
     const safeFormalityPreference = ["auto", "tu", "usted"].includes(rawFormalityPreference) ? rawFormalityPreference : "auto";
-    const safeFormalityDetected = ["tu", "usted"].includes(rawFormalityDetected) ? rawFormalityDetected : "usted";
-    const safeFormalityResolvedCandidate = ["tu", "usted"].includes(rawFormalityResolved) ? rawFormalityResolved : "";
-    const safeFormalityResolved = safeFormalityPreference === "auto"
-      ? (safeFormalityResolvedCandidate || safeFormalityDetected)
-      : safeFormalityPreference;
 
     const regionMap = {
       españa: "Spain",
@@ -177,16 +170,55 @@ Keep structure clean and practical.
 ### ROLES & FORMALITY GUIDELINES
 Sender Role: ${safeSenderRole || "Not specified"}
 Recipient Role: ${safeRecipientRole || "Not specified"}
-Formality Preference: ${safeFormalityPreference}
-Detected Formality: ${safeFormalityDetected}
-Resolved Formality (must apply): ${safeFormalityResolved}
+
+### FORMALITY DECISION MODE
+
+User Preference: ${safeFormalityPreference}
+
+Context Signals You May Use:
+
+* Sender Role: ${safeSenderRole || "Unknown"}
+* Recipient Role: ${safeRecipientRole || "Unknown"}
+* Email Type: ${safeMode}
+* Region: ${safeRecipientRegion}
+* Original Email (if reply): may contain tone indicators.
+
+If User Preference = "tu" → MUST use TÚ.
+If User Preference = "usted" → MUST use USTED.
+
+If User Preference = "auto" →
+You must determine the appropriate level of formality.
+
+### HOW TO CHOOSE FORMALITY (AUTO MODE)
+
+Decide como lo haría un profesional real:
+
+Use USTED when:
+
+* There is hierarchy (client, executive, unknown contact)
+* First interaction
+* B2B communication
+* Roles sound senior
+* Region expects professional distance (Spain, corporate LATAM)
+
+Use TÚ when:
+
+* Internal team communication
+* Peer-to-peer collaboration
+* Casual but still professional context
+* The instruction clearly suggests closeness
+
+If unsure → prefer USTED.
+
+CRITICAL:
+Never mix tú and usted.
+The reader must not notice this decision was made artificially.
 
 - Usa los cargos para ajustar enfoque, jerarquía y nivel de detalle.
 - No menciones los cargos explícitamente salvo que suene natural.
-- Si Resolved Formality = "usted": usa USTED/LE/SU con tono profesional formal.
-- Si Resolved Formality = "tu": usa TÚ/TE/TU con tono cercano-profesional.
+- Si User Preference = "usted": usa USTED/LE/SU con tono profesional formal.
+- Si User Preference = "tu": usa TÚ/TE/TU con tono cercano-profesional.
 - Regla crítica: NO mezclar tuteo y ustedeo en el mismo email.
-- Si la preferencia fue "auto" y hay duda en contexto profesional, prioriza "usted".
 - Si es reply, intenta respetar la formalidad percibida del correo original, salvo que el usuario fuerce otra opción.
 `;
 
