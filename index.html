@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,11 +16,14 @@
       --bg-primary: #ffffff;
       --bg-secondary: #fafafa;
       --bg-tertiary: #f5f5f5;
+      --bg-main: #ffffff;
+      --bg-input: #ffffff;
       --border-color: #e5e5e5;
-      --text-primary: #171717;
+      --text-primary: #1d1d1f;
       --text-secondary: #737373;
       --text-tertiary: #a3a3a3;
-      --accent-color: #171717;
+      --accent: #1d1d1f;
+      --accent-color: #1d1d1f;
       --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -27,7 +31,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-      background: #ffffff;
+      background: #fafaf9;
       color: var(--text-primary);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
@@ -90,7 +94,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       grid-auto-rows: 1fr;
-      gap: 2rem;
+      gap: clamp(32px, 4vw, 56px);
       padding: 2rem;
       max-width: 1400px;
       margin: 0 auto;
@@ -100,8 +104,8 @@
 
     /* Panel izquierdo limpio */
     .left-panel {
-      background: var(--bg-primary);
-      padding: 2.5rem;
+      background: #f2f1f0;
+      padding: 28px 32px 32px 32px;
       border-radius: 12px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
@@ -124,7 +128,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
     }
 
     .section-label-end {
@@ -310,8 +314,8 @@
     select {
       width: 100%;
       font-family: inherit;
-      font-size: 0.9375rem;
-      color: var(--text-primary);
+      font-size: 1.1rem;
+      color: #1d1d1f;
       background: var(--bg-primary);
       border: 1px solid var(--border-color);
       border-radius: 8px;
@@ -327,7 +331,45 @@
     }
 
     #instruction {
-      min-height: 100px;
+      width: 100%;
+      min-height: 88px;
+      max-height: 320px;
+      resize: none;
+      line-height: 1.5;
+      padding: 14px 16px;
+      border-radius: 12px;
+      transition: height 0.15s ease,
+                  box-shadow 0.2s ease;
+    }
+
+    .instruction-field {
+      position: relative;
+    }
+
+    .instruction-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      max-width: 92%;
+      min-height: 88px;
+      padding: 14px 16px;
+      color: #6b7280;
+      font-size: 1.1rem;
+      font-style: normal;
+      line-height: 1.5;
+      opacity: 0;
+      transition: opacity 260ms ease;
+      pointer-events: none;
+      user-select: none;
+      white-space: normal;
+      z-index: 1;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .instruction-hint {
+        transition: none;
+      }
     }
 
     textarea:focus,
@@ -340,28 +382,6 @@
     textarea::placeholder,
     input[type="text"]::placeholder {
       color: var(--text-tertiary);
-    }
-
-    .advanced-hidden {
-      display: none;
-      margin-top: 12px;
-    }
-
-    .advanced-hidden.visible {
-      display: block;
-    }
-
-    .advanced-toggle {
-      background: none;
-      border: none;
-      color: #777;
-      font-size: 13px;
-      cursor: pointer;
-      padding: 4px 0;
-    }
-
-    .advanced-toggle:hover {
-      color: #111;
     }
 
     /* Lucide icons must inherit text color */
@@ -428,37 +448,114 @@
     }
 
     .segmented-control {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.375rem;
-      padding: 0.25rem;
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-color);
+      gap: 0;
+      padding: 4px;
+      background: #f4f4f5;
+      border: 1px solid #ececf1;
+      border-radius: 12px;
+      isolation: isolate;
+      --formality-index: 2;
+    }
+
+    .segmented-indicator {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: calc((100% - 8px) / 3);
+      height: calc(100% - 8px);
+      background: #ffffff;
       border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateX(calc(var(--formality-index) * 100%));
+      z-index: 0;
     }
 
     .formality-btn {
       background: transparent;
       border: none;
-      border-radius: 8px;
-      color: var(--text-secondary);
+      border-radius: 10px;
+      color: #71717a;
       font-family: inherit;
-      font-size: 0.8125rem;
+      font-size: 14px;
       font-weight: 500;
       padding: 0.5rem 0.625rem;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
+      position: relative;
+      z-index: 1;
     }
 
     .formality-btn:hover,
     .formality-btn:focus-visible {
-      color: var(--text-primary);
+      color: #18181b;
       outline: none;
     }
 
     .formality-btn.active {
-      background: var(--text-primary);
-      color: white;
+      color: #18181b;
+    }
+
+
+    /* ===== Campos compartidos siempre visibles ===== */
+
+    .shared-fields {
+      margin-top: 20px;
+      margin-bottom: 1.25rem;
+    }
+
+    .input-group-row {
+      margin-bottom: 18px;
+    }
+
+    .input-group-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .group-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .input-pair {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--bg-input);
+      transition: border-color 0.15s ease;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent);
+    }
+
+    .inner-label {
+      position: absolute;
+      top: -7px;
+      right: 10px;
+      background: var(--bg-main);
+      padding: 0 4px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      pointer-events: none;
     }
 
     .strategy-dropdown {
@@ -613,8 +710,8 @@
     }
 
     .generate-btn:disabled {
-      background: #e5e5e5;
-      color: #000000;
+      background: #1d1d1f26;
+      color: #ffffff;
       opacity: 1;
       cursor: not-allowed;
       transform: none;
@@ -648,8 +745,9 @@
 
     /* Panel derecho limpio */
     .right-panel {
-      background: var(--bg-primary);
-      padding: 2.5rem;
+      background: #f2f1f0;
+      padding: 28px 32px 32px 32px;
+      margin-top: 4px;
       border-radius: 12px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
@@ -1180,27 +1278,6 @@
       word-break: break-word;
     }
 
-    .version-copy-btn {
-      background: var(--bg-primary);
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 0.5rem 1rem;
-      font-family: inherit;
-      font-size: 0.8125rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-
-    .version-copy-btn:hover:not(:disabled),
-    .version-copy-btn:focus-visible {
-      background: var(--bg-secondary);
-      border-color: var(--text-primary);
-      color: var(--text-primary);
-      outline: none;
-    }
-
     .version-copy-btn.copied {
       background: var(--text-primary);
       color: white;
@@ -1211,31 +1288,51 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      flex-wrap: wrap;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .version-actions .icon-btn,
+    .restore-original-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      border: 0;
+      background: transparent;
+      padding: 0.375rem 0.75rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      color: #374151;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      opacity: 1;
+      justify-content: flex-start;
+    }
+
+    .version-actions .icon-btn:hover,
+    .version-actions .icon-btn:focus-visible,
+    .restore-original-btn:hover:not(:disabled),
+    .restore-original-btn:focus-visible {
+      background: #f3f4f6;
+      color: #111827;
+      outline: none;
     }
 
     .translate-dropdown {
       position: relative;
+      margin-left: auto;
     }
 
     .translate-btn {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 0.45rem 0.875rem;
-      font-family: inherit;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      margin-left: auto;
     }
 
     .translate-btn:hover:not(:disabled),
     .translate-btn:focus-visible,
     .translate-btn[aria-expanded="true"] {
-      background: var(--bg-primary);
-      border-color: #d0d0d0;
-      color: var(--text-primary);
+      background: #f3f4f6;
+      color: #111827;
       outline: none;
     }
 
@@ -1246,6 +1343,7 @@
 
     .restore-original-btn {
       display: none;
+      margin-left: 0.25rem;
     }
 
     .restore-original-btn.visible {
@@ -1483,6 +1581,14 @@
     ::-webkit-scrollbar-thumb:hover {
       background: #d0d0d0;
     }
+
+
+    @media (max-width: 640px) {
+      .input-pair {
+        flex-direction: column;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1490,6 +1596,7 @@
     <header>
       <h1>Redactar.ai</h1>
     </header>
+
 
     <!-- Barra de controles superior -->
     <div class="controls-bar">
@@ -1524,7 +1631,7 @@
       </div>
     </div>
 
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
       <!-- Panel izquierdo -->
       <div class="left-panel">
         <div class="form-container">
@@ -1539,62 +1646,60 @@
 
           <div class="input-group">
             <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
-            <textarea 
-              id="instruction" 
-              placeholder="Escribe la idea en pocas palabras…"
-              maxlength="300"
-            ></textarea>
+            <div class="instruction-field">
+              <textarea
+                id="instruction"
+                maxlength="300"
+                aria-label="Describe brevemente el email que deseas generar"
+              ></textarea>
+              <div class="instruction-hint" aria-hidden="true"></div>
+            </div>
             <div class="char-counter">
               <span id="charCount">0</span>/300
             </div>
           </div>
 
-          <div class="input-row">
-            <div class="input-group">
-              <label class="input-label" for="senderName">De</label>
-              <input 
-                type="text"
-                id="senderName" 
-                placeholder="Juan Pérez" 
-              />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="clientName">Para</label>
-              <input 
-                type="text"
-                id="clientName" 
-                placeholder="María García" 
-              />
-            </div>
-          </div>
-
-          <div class="input-row">
-            <div class="input-group">
-              <label class="input-label" for="senderRole">Cargo (opcional)</label>
-              <input
-                type="text"
-                id="senderRole"
-                placeholder="Gerente de Ventas"
-              />
-            </div>
-            <div class="input-group">
-              <label class="input-label" for="recipientRole">Cargo (opcional)</label>
-              <input
-                type="text"
-                id="recipientRole"
-                placeholder="Directora de RRHH"
-              />
-            </div>
-          </div>
-
           <div class="input-group">
             <label class="input-label" for="formalityPreference">Nivel de formalidad</label>
-            <div class="segmented-control" role="radiogroup" aria-label="Nivel de formalidad">
+            <div class="segmented-control" id="formalityControl" role="radiogroup" aria-label="Nivel de formalidad">
+              <span class="segmented-indicator" aria-hidden="true"></span>
               <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="tu">Tú (cercano)</button>
               <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="usted">Usted (formal)</button>
               <button class="formality-btn active" type="button" role="radio" aria-checked="true" data-formality="auto">Automático</button>
             </div>
             <input type="hidden" id="formalityPreference" value="auto" />
+          </div>
+
+          <div class="shared-fields">
+
+            <div class="input-group-row">
+              <label class="group-label">De</label>
+              <div class="input-pair">
+                <div class="input-wrapper">
+                  <input id="senderName" type="text" placeholder="Juan Pérez">
+                  <span class="inner-label">Nombre</span>
+                </div>
+                <div class="input-wrapper">
+                  <input id="senderRole" type="text" placeholder="Gerente de Ventas">
+                  <span class="inner-label">Cargo</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="input-group-row">
+              <label class="group-label">Para</label>
+              <div class="input-pair">
+                <div class="input-wrapper">
+                  <input id="clientName" type="text" placeholder="María García">
+                  <span class="inner-label">Nombre</span>
+                </div>
+                <div class="input-wrapper">
+                  <input id="clientRole" type="text" placeholder="Directora de RRHH">
+                  <span class="inner-label">Cargo</span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           <div class="generate-row">
@@ -1654,8 +1759,9 @@
     const senderNameEl = document.getElementById('senderName');
     const clientNameEl = document.getElementById('clientName');
     const senderRoleEl = document.getElementById('senderRole');
-    const recipientRoleEl = document.getElementById('recipientRole');
+    const recipientRoleEl = document.getElementById('clientRole');
     const formalityPrefEl = document.getElementById('formalityPreference');
+    const formalityControlEl = document.getElementById('formalityControl');
     const formalityBtns = Array.from(document.querySelectorAll('.formality-btn'));
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
@@ -1672,6 +1778,7 @@
     const versionsMenu = document.getElementById('versionsMenu');
     const versionsOptions = Array.from(document.querySelectorAll('.versions-option'));
     const charCount = document.getElementById('charCount');
+    const instructionHintEl = document.querySelector('.instruction-hint');
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn:not(#versionsButton)'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu:not(#versionsMenu)'));
     const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
@@ -1688,6 +1795,28 @@
     const HISTORY_KEY = 'emails_history_v1';
     let currentOutputTab = 'new';
     let isGenerating = false;
+    let instructionHintIndex = 0;
+    let instructionHintCycleTimer = null;
+    let instructionHintResumeTimer = null;
+    let instructionHintTransitionTimer = null;
+    let instructionHintTypingTimer = null;
+
+    function autoGrow(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 320) + 'px';
+    }
+
+    instructionEl.addEventListener('input', () => autoGrow(instructionEl));
+    window.addEventListener('load', () => autoGrow(instructionEl));
+
+    const INSTRUCTION_EXAMPLES = [
+      "enviar email para felicitar a un empleado por su cumpleaños",
+      "responder a un cliente que pide descuento y rechazar amablemente",
+      "agradecer una reunión y resumir los próximos pasos",
+      "pedir documentos pendientes de forma cordial",
+      "anunciar cambio de horario al equipo"
+    ];
 
     function normalizeText(value) {
       return (value || '')
@@ -1703,10 +1832,13 @@
       if (formalityPrefEl) {
         formalityPrefEl.value = next;
       }
-      formalityBtns.forEach((btn) => {
+      formalityBtns.forEach((btn, index) => {
         const selected = btn.dataset.formality === next;
         btn.classList.toggle('active', selected);
         btn.setAttribute('aria-checked', selected ? 'true' : 'false');
+        if (selected && formalityControlEl) {
+          formalityControlEl.style.setProperty('--formality-index', String(index));
+        }
       });
     }
 
@@ -1795,6 +1927,115 @@
       generateButton.disabled = shouldDisableGenerateButton();
     }
 
+
+    function clearInstructionHintTimers() {
+      if (instructionHintCycleTimer) {
+        clearTimeout(instructionHintCycleTimer);
+        instructionHintCycleTimer = null;
+      }
+      if (instructionHintResumeTimer) {
+        clearTimeout(instructionHintResumeTimer);
+        instructionHintResumeTimer = null;
+      }
+      if (instructionHintTransitionTimer) {
+        clearTimeout(instructionHintTransitionTimer);
+        instructionHintTransitionTimer = null;
+      }
+      if (instructionHintTypingTimer) {
+        clearTimeout(instructionHintTypingTimer);
+        instructionHintTypingTimer = null;
+      }
+    }
+
+    function randomDelay() {
+      return 1000 + Math.random() * 500;
+    }
+
+    function typeInstructionHint(example) {
+      if (!instructionHintEl) return;
+      const words = example.split(/\s+/).filter(Boolean);
+      let currentWordIndex = 0;
+
+      instructionHintEl.textContent = '';
+
+      function typeNextWord() {
+        if (!instructionHintEl) return;
+        currentWordIndex += 1;
+        instructionHintEl.textContent = words.slice(0, currentWordIndex).join(' ');
+
+        if (currentWordIndex >= words.length) {
+          instructionHintCycleTimer = setTimeout(runInstructionHintCycle, randomDelay());
+          return;
+        }
+
+        const lastWord = words[currentWordIndex - 1] || '';
+        const punctuationPause = /[.,;:!?]$/.test(lastWord) ? 20 : 0;
+        instructionHintTypingTimer = setTimeout(typeNextWord, 42 + Math.random() * 34 + punctuationPause);
+      }
+
+      typeNextWord();
+    }
+
+    function cycleInstructionHint() {
+      if (!instructionHintEl) return;
+      instructionHintEl.style.opacity = '0';
+      instructionHintTransitionTimer = setTimeout(() => {
+        instructionHintIndex = (instructionHintIndex + 1) % INSTRUCTION_EXAMPLES.length;
+        instructionHintEl.style.opacity = '1';
+        typeInstructionHint(INSTRUCTION_EXAMPLES[instructionHintIndex]);
+      }, 220);
+    }
+
+    function runInstructionHintCycle() {
+      cycleInstructionHint();
+    }
+
+    function stopInstructionHint({ hide = true } = {}) {
+      if (!instructionHintEl) return;
+      if (hide) {
+        instructionHintEl.style.transition = 'opacity 150ms ease';
+        instructionHintEl.style.opacity = '0';
+      }
+      instructionHintTransitionTimer = setTimeout(() => {
+        clearInstructionHintTimers();
+      }, 160);
+    }
+
+    function startInstructionHint() {
+      if (!instructionEl || !instructionHintEl) return;
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+        return;
+      }
+
+      clearInstructionHintTimers();
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      instructionHintIndex = 0;
+      instructionHintEl.style.transition = reduceMotion ? 'none' : 'opacity 260ms ease';
+      instructionHintEl.style.opacity = '1';
+
+      if (reduceMotion) {
+        instructionHintEl.textContent = INSTRUCTION_EXAMPLES[0];
+        return;
+      }
+
+      typeInstructionHint(INSTRUCTION_EXAMPLES[0]);
+    }
+
+    function queueInstructionHintResume() {
+      if (!instructionEl) return;
+      clearInstructionHintTimers();
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+        return;
+      }
+      instructionHintResumeTimer = setTimeout(() => {
+        if (!instructionEl.value.trim()) {
+          startInstructionHint();
+        }
+      }, 2000);
+    }
+
     function setMode(mode) {
       currentMode = mode;
 
@@ -1810,11 +2051,6 @@
         originalEmailGroupEl.classList.toggle('mode-hidden', !isReply);
       }
 
-      if (instructionEl) {
-        instructionEl.placeholder = isReply
-          ? 'Indica cómo quieres responder al email recibido…'
-          : 'Escribe la idea en pocas palabras…';
-      }
 
       // Renderizar el estado vacío con preview cuando se cambia de modo
       renderEmptyState();
@@ -2392,16 +2628,12 @@ ${body}`.trim();
       if (!card) return;
       const subjectEl = card.querySelector('[data-role="email-subject"]');
       const copyButton = card.querySelector('.version-copy-btn');
-      const acceptButton = card.querySelector('.version-accept-btn');
       const currentSubject = subjectEl?.textContent?.trim() || '';
       const currentBody = bodyEl.textContent.trim();
 
       if (copyButton) {
         copyButton.dataset.subject = encodeURIComponent(currentSubject);
         copyButton.dataset.body = encodeURIComponent(currentBody);
-      }
-      if (acceptButton) {
-        acceptButton.dataset.body = encodeURIComponent(currentBody);
       }
 
       const isTranslated = card.dataset.isTranslated === 'true';
@@ -2523,13 +2755,9 @@ ${body}`.trim();
         card.dataset.isTranslated = 'true';
 
         const copyButton = card.querySelector('.version-copy-btn');
-        const acceptButton = card.querySelector('.version-accept-btn');
         if (copyButton) {
           copyButton.dataset.subject = encodeURIComponent(translatedSubject);
           copyButton.dataset.body = encodeURIComponent(translatedBody);
-        }
-        if (acceptButton) {
-          acceptButton.dataset.body = encodeURIComponent(translatedBody);
         }
 
         const restoreButton = card.querySelector('.restore-original-btn');
@@ -2569,30 +2797,12 @@ ${body}`.trim();
       card.dataset.isTranslated = 'false';
 
       const copyButton = card.querySelector('.version-copy-btn');
-      const acceptButton = card.querySelector('.version-accept-btn');
       if (copyButton) {
         copyButton.dataset.subject = encodeURIComponent(originalSubject);
         copyButton.dataset.body = encodeURIComponent(originalBody);
       }
-      if (acceptButton) {
-        acceptButton.dataset.body = encodeURIComponent(originalBody);
-      }
 
       button.classList.remove('visible');
-    }
-
-    function handleAcceptClick(event) {
-      const button = event.target.closest('.version-accept-btn');
-      if (!button) return false;
-
-      const original = button.textContent;
-      button.textContent = 'Aceptado ✓';
-      button.classList.add('copied');
-      setTimeout(() => {
-        button.textContent = original;
-        button.classList.remove('copied');
-      }, 2000);
-      return true;
     }
 
     async function handleOutputClick(event) {
@@ -2628,9 +2838,6 @@ ${body}`.trim();
         return;
       }
 
-      if (handleAcceptClick(event)) {
-        return;
-      }
       handleCopyClick(event);
     }
 
@@ -2651,10 +2858,23 @@ ${body}`.trim();
             <div class="version-content" data-role="email-body">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
-            <button id="copyBtn" class="version-copy-btn icon-btn icon-only" type="button" title="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}"><i data-lucide="copy"></i></button>
-            <button class="version-copy-btn version-accept-btn" type="button" data-body="${encodeURIComponent(item.body)}">Aceptar</button>
+            <button class="icon-btn version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
+              <i data-lucide="copy"></i>
+              <span>Copiar</span>
+            </button>
+
+            <button class="icon-btn expand-btn" type="button">
+              <i data-lucide="maximize-2"></i>
+              <span>Expandir</span>
+            </button>
+
+            <button class="icon-btn shorten-btn" type="button">
+              <i data-lucide="minimize-2"></i>
+              <span>Acortar</span>
+            </button>
+
             <div class="translate-dropdown">
-              <button class="translate-btn icon-left" type="button" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
+              <button class="icon-btn translate-btn" type="button" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
@@ -2671,8 +2891,51 @@ ${body}`.trim();
       }
     }
 
+    async function generateEmailFromAI({ instruction, context, isRewrite }) {
+      const mode = instruction.includes('Expande') ? 'expand' : 'simplify';
+      const res = await fetch('/api/improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: context, mode, isRewrite })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || typeof data?.improvedText !== 'string') {
+        throw new Error('No se pudo regenerar el contenido');
+      }
+
+      return data.improvedText.trim();
+    }
+
+    async function regenerateVersion(originalText, mode) {
+      const instruction = mode === 'expand'
+        ? "Expande el siguiente email manteniendo el mismo mensaje pero con mayor claridad, contexto y profesionalismo. No inventes información."
+        : "Reduce el siguiente email manteniendo el mensaje clave pero más directo y conciso.";
+
+      return generateEmailFromAI({
+        instruction,
+        context: originalText,
+        isRewrite: true
+      });
+    }
+
+    instructionEl.addEventListener('focus', () => {
+      stopInstructionHint();
+    });
+
+    instructionEl.addEventListener('blur', () => {
+      if (!instructionEl.value.trim()) {
+        queueInstructionHintResume();
+      }
+    });
+
     instructionEl.addEventListener('input', () => {
       charCount.textContent = instructionEl.value.length;
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+      } else {
+        queueInstructionHintResume();
+      }
       updatePreviewIfEmpty();
       updateGenerateButtonState();
       if ((formalityPrefEl?.value || 'auto') === 'auto') {
@@ -2875,7 +3138,9 @@ ${body}`.trim();
     }
 
 
-    generateButton.addEventListener('click', generateEmail);
+    generateButton.addEventListener('click', () => {
+      generateEmail();
+    });
     outputEl.addEventListener('click', handleOutputClick);
     historyListEl?.addEventListener('click', handleHistoryClick);
     clearHistoryBtn?.addEventListener('click', clearHistory);
@@ -2885,9 +3150,38 @@ ${body}`.trim();
       const exampleItem = event.target.closest('.example-item');
       if (exampleItem && exampleItem.dataset.example) {
         instructionEl.value = exampleItem.dataset.example;
+        stopInstructionHint();
         instructionEl.focus();
         charCount.textContent = instructionEl.value.length;
         updatePreviewIfEmpty();
+      }
+    });
+
+    outputEl.addEventListener('click', async (event) => {
+      const expandBtn = event.target.closest('.expand-btn');
+      const shortenBtn = event.target.closest('.shorten-btn');
+
+      if (!expandBtn && !shortenBtn) return;
+
+      const card = event.target.closest('.version-card');
+      if (!card) return;
+
+      const contentEl = card.querySelector('.version-content[data-role="email-body"]');
+      if (!contentEl) return;
+
+      const originalText = contentEl.innerText;
+
+      contentEl.style.opacity = 0.5;
+
+      try {
+        const mode = expandBtn ? 'expand' : 'shorten';
+        const newText = await regenerateVersion(originalText, mode);
+        contentEl.innerText = newText;
+        syncCardAfterBodyEdit(contentEl);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        contentEl.style.opacity = 1;
       }
     });
 
@@ -2957,6 +3251,7 @@ ${body}`.trim();
       }
     });
 
+    startInstructionHint();
     setMode('compose');
     initOutputTabs();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
