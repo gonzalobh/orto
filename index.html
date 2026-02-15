@@ -3205,7 +3205,7 @@
       if (!button) return;
 
       // Find the card containing this button
-      const card = button.closest('.output-card');
+      const card = button.closest('.version-card');
       if (!card) return;
 
       // Get current content from editable elements
@@ -3249,7 +3249,7 @@ ${body}`.trim();
       }
 
       // Find the card containing this email
-      const card = emailContainer.closest('.output-card');
+      const card = emailContainer.closest('.version-card');
       const subjectEl = card ? card.querySelector('[data-role="email-subject"]') : null;
       const subject = subjectEl ? subjectEl.innerText.trim() : 'Mensaje';
 
@@ -3269,7 +3269,10 @@ ${body}`.trim();
         '&su=' + encodeURIComponent(subject) +
         '&body=' + encodeURIComponent(bodyText);
 
-      window.open(gmailURL, '_blank', 'noopener,noreferrer');
+      const win = window.open(gmailURL, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        alert('Tu navegador bloqueó la ventana emergente. Permite popups para este sitio y vuelve a intentar.');
+      }
     }
 
     function closeAllTranslateMenus() {
@@ -3661,7 +3664,7 @@ ${body}`.trim();
       if (gmailBtn) {
         event.preventDefault();
         event.stopPropagation();
-        const emailCard = gmailBtn.closest('.output-card');
+        const emailCard = gmailBtn.closest('.version-card');
         if (emailCard) {
           const emailContainer = emailCard.querySelector('.generated-email');
           sendViaGmail(emailContainer);
