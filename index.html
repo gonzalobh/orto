@@ -3657,6 +3657,18 @@ ${body}`.trim();
         return;
       }
 
+      const gmailBtn = event.target.closest('.send-gmail-btn');
+      if (gmailBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        const emailCard = gmailBtn.closest('.output-card');
+        if (emailCard) {
+          const emailContainer = emailCard.querySelector('.generated-email');
+          sendViaGmail(emailContainer);
+        }
+        return;
+      }
+
       handleCopyClick(event);
     }
 
@@ -4026,17 +4038,6 @@ ${body}`.trim();
 
 
     document.addEventListener('click', (event) => {
-      const gmailBtn = event.target.closest('.send-gmail-btn');
-      if (gmailBtn) {
-        // Find the email card that contains this button
-        const emailCard = gmailBtn.closest('.output-card');
-        if (emailCard) {
-          const emailContainer = emailCard.querySelector('.generated-email');
-          sendViaGmail(emailContainer);
-        }
-        return;
-      }
-
       if (event.target.closest('.selection-popover')) return;
 
       if (!event.target.closest('.translate-dropdown')) {
