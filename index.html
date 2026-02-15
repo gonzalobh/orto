@@ -1579,6 +1579,24 @@
       color: var(--text-primary);
       white-space: pre-wrap;
       word-break: break-word;
+      padding: 0.5rem;
+      border-radius: 6px;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+      cursor: text;
+      outline: none;
+    }
+
+    .version-content:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .version-content:focus {
+      background-color: rgba(0, 0, 0, 0.03);
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .version-content[data-role="email-subject"] {
+      font-weight: 500;
     }
 
     .version-copy-btn.copied {
@@ -1736,7 +1754,7 @@
       opacity: 0.6;
     }
 
-    #sendGmailBtn {
+    .send-gmail-btn {
       display: inline-flex;
       align-items: center;
       gap: 6px;
@@ -3186,8 +3204,17 @@
       const button = event.target.closest('.version-copy-btn');
       if (!button) return;
 
-      const subject = decodeURIComponent(button.dataset.subject || '');
-      const body = decodeURIComponent(button.dataset.body || '');
+      // Find the card containing this button
+      const card = button.closest('.output-card');
+      if (!card) return;
+
+      // Get current content from editable elements
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const bodyEl = card.querySelector('[data-role="email-body"]');
+      
+      const subject = subjectEl ? subjectEl.innerText.trim() : '';
+      const body = bodyEl ? bodyEl.innerText.trim() : '';
+      
       const content = `Asunto: ${subject}
 
 ${body}`.trim();
@@ -3208,9 +3235,7 @@ ${body}`.trim();
       });
     }
 
-    function sendViaGmail(emailCard) {
-      const emailContainer = emailCard || document.querySelector('.generated-email');
-
+    function sendViaGmail(emailContainer) {
       if (!emailContainer) {
         alert('Primero genera un email.');
         return;
@@ -3223,6 +3248,11 @@ ${body}`.trim();
         return;
       }
 
+      // Find the card containing this email
+      const card = emailContainer.closest('.output-card');
+      const subjectEl = card ? card.querySelector('[data-role="email-subject"]') : null;
+      const subject = subjectEl ? subjectEl.innerText.trim() : 'Mensaje';
+
       let to = '';
       const toInput =
         document.querySelector('#toEmail') ||
@@ -3233,7 +3263,6 @@ ${body}`.trim();
         to = toInput.value.trim();
       }
 
-      const subject = 'Mensaje';
       const gmailURL =
         'https://mail.google.com/mail/?view=cm&fs=1' +
         '&to=' + encodeURIComponent(to) +
@@ -3641,11 +3670,11 @@ ${body}`.trim();
           <span class="version-label">Versión ${index + 1}</span>
           <div class="version-section">
             <div class="version-title">Asunto</div>
-            <div class="version-content" data-role="email-subject">${escapeHtml(item.subject)}</div>
+            <div class="version-content" data-role="email-subject" contenteditable="true">${escapeHtml(item.subject)}</div>
           </div>
           <div class="version-section">
             <div class="version-title">Cuerpo</div>
-            <div class="version-content generated-email" data-role="email-body">${escapeHtml(item.body)}</div>
+            <div class="version-content generated-email" data-role="email-body" contenteditable="true">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
             <button class="icon-btn version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
@@ -3671,7 +3700,7 @@ ${body}`.trim();
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="German">Alemán</button></li>
               </ul>
             </div>
-            <button class="icon-btn action-btn" id="sendGmailBtn" type="button" title="Enviar por Gmail">
+            <button class="icon-btn action-btn send-gmail-btn" type="button" title="Enviar por Gmail">
               <i data-lucide="send"></i>
               Enviar por Gmail
             </button>
@@ -3997,7 +4026,7 @@ ${body}`.trim();
 
 
     document.addEventListener('click', (event) => {
-      const gmailBtn = event.target.closest('#sendGmailBtn');
+      const gmailBtn = event.target.closest('.send-gmail-btn');
       if (gmailBtn) {
         // Find the email card that contains this button
         const emailCard = gmailBtn.closest('.output-card');
@@ -4005,6 +4034,7 @@ ${body}`.trim();
           const emailContainer = emailCard.querySelector('.generated-email');
           sendViaGmail(emailContainer);
         }
+        return;
       }
 
       if (event.target.closest('.selection-popover')) return;
