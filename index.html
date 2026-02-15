@@ -51,8 +51,7 @@
     /* Header limpio estilo TrustMRR */
     header {
       padding: 1.5rem 2.5rem;
-      background: var(--bg-primary);
-      border-bottom: 1px solid var(--border-color);
+      background: #fafaf9;
       position: relative;
       z-index: 10;
     }
@@ -214,6 +213,16 @@
       z-index: 1000;
       max-height: 240px;
       overflow-y: auto;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .custom-select-menu:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .custom-select-option {
@@ -272,6 +281,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
+      margin-bottom: 1.25rem;
     }
 
     .mode-toggle-btn {
@@ -326,7 +336,7 @@
 
     .input-label {
       display: block;
-      font-size: 0.8125rem;
+      font-size: 1rem;
       font-weight: 600;
       color: var(--text-primary);
       margin-bottom: 0.625rem;
@@ -380,6 +390,103 @@
       position: relative;
     }
 
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .profile-dropdown-wrapper {
+      position: relative;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      min-width: 260px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .profile-dropdown:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .profile-dropdown-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.875rem;
+    }
+
+    .profile-dropdown-field {
+      margin-bottom: 0.75rem;
+    }
+
+    .profile-dropdown-field:last-of-type {
+      margin-bottom: 1rem;
+    }
+
+    .profile-dropdown-field label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .profile-dropdown-field input {
+      width: 100%;
+      padding: 0.5rem 0.625rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .profile-dropdown-field input:focus {
+      border-color: var(--text-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-save-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 0.875rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .profile-save-btn:hover {
+      background: #000;
+    }
+
+    .profile-save-btn:active {
+      transform: scale(0.98);
+    }
+
     .save-template-floating {
       position: absolute;
       left: 10px;
@@ -388,10 +495,10 @@
       padding: 6px 10px;
       border-radius: 8px;
       background: transparent;
-      border: none;
+      border: 1px solid #727272;
       color: var(--text-secondary);
       cursor: pointer;
-      transition: opacity .25s ease, background-color .15s ease, transform .25s ease;
+      transition: opacity .25s ease, background-color .15s ease, transform .25s ease, border-color .15s ease;
       opacity: 0;
       transform: translateY(4px);
       z-index: 10;
@@ -407,6 +514,7 @@
     .save-template-floating:hover {
       background-color: #fafaf9;
       color: var(--text-primary);
+      border-color: var(--text-primary);
     }
 
     .instruction-hint {
@@ -472,7 +580,9 @@
     }
 
     #versionsButton {
-      right: 170px;
+      position: relative;
+      right: auto;
+      bottom: auto;
     }
 
     .generate-inline {
@@ -504,30 +614,28 @@
       cursor: pointer;
     }
 
-    .formalidad-dropdown {
-      position: absolute;
-      top: calc(93% + 8px);
-      right: 0;
 
-      background: #ffffff;
-      border: 1px solid #e7e7e7;
-      border-radius: 10px;
-
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-
-      padding: 6px;
-      min-width: 190px;
-
-      display: flex;
-      flex-direction: column;
-      animation: fadeUp 0.14s ease;
-      z-index: 4;
+.formalidad-dropdown {
+    position: absolute;
+    top: calc(93% + 8px);
+    right: 40px;
+    background: #ffffff;
+    border: 1px solid #e7e7e7;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+    padding: 6px;
+    min-width: 141px;
+    display: flex;
+    flex-direction: column;
+    animation: fadeUp 0.14s ease;
+    z-index: 4;
     }
 
     .formalidad-tooltip {
       position: absolute;
       bottom: 46px;
-      right: 6px;
+      right: 30px;
+      transform: translateY(4px);
       background: #2b2b2b;
       color: #fff;
       font-size: 12px;
@@ -536,7 +644,6 @@
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
-      transform: translateY(4px);
       transition: opacity 0.15s ease, transform 0.15s ease;
       z-index: 5;
     }
@@ -544,7 +651,7 @@
     .formalidad-tooltip::after {
       content: "";
       position: absolute;
-      right: 14px;
+      right: 24px;
       bottom: -4px;
       width: 8px;
       height: 8px;
@@ -554,8 +661,9 @@
 
     .versions-tooltip {
       position: absolute;
-      bottom: 46px;
-      right: 122px;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
       background: #2b2b2b;
       color: #fff;
       font-size: 12px;
@@ -564,7 +672,6 @@
       white-space: nowrap;
       pointer-events: none;
       opacity: 0;
-      transform: translateY(4px);
       transition: opacity 0.15s ease, transform 0.15s ease;
       z-index: 5;
     }
@@ -572,12 +679,12 @@
     .versions-tooltip::after {
       content: "";
       position: absolute;
-      right: 14px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
       bottom: -4px;
       width: 8px;
       height: 8px;
       background: #2b2b2b;
-      transform: rotate(45deg);
     }
 
     .formalidad-dropdown button {
@@ -657,8 +764,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 4px;
       font: inherit;
+      font-size: 0.8125rem;
+    }
+
+    .icon-btn i {
+      width: 14px;
+      height: 14px;
     }
 
     .icon-btn:hover,
@@ -755,6 +868,12 @@
       position: relative;
     }
 
+    .versions-control {
+      position: absolute;
+      right: 170px;
+      bottom: 12px;
+    }
+
     .strategy-btn {
       width: 100%;
       background: var(--bg-secondary);
@@ -835,6 +954,15 @@
       font-family: inherit;
       font-size: 0.75rem;
       cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .strategy-option i.check {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
     }
 
     .strategy-option:hover,
@@ -857,6 +985,7 @@
     .versions-menu {
       right: 0;
       left: auto;
+      min-width: 120px;
     }
 
     /* Panel derecho limpio */
@@ -1787,43 +1916,20 @@
     </header>
 
 
-    <!-- Barra de controles superior -->
-    <div class="controls-bar">
-      <div class="controls-left">
-        <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
-          <button class="mode-toggle-btn icon-left active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">
-            <i data-lucide="pencil"></i><span>Redactar</span>
-          </button>
-
-          <button class="mode-toggle-btn icon-left" id="replyBtn" type="button" data-mode="reply" role="tab" aria-selected="false">
-            <i data-lucide="reply"></i><span>Responder</span>
-          </button>
-        </div>
-      </div>
-
-      <div class="controls-right">
-        <div class="custom-select-wrapper">
-          <button class="custom-select-btn" id="recipientRegionBtn" type="button" aria-haspopup="true" aria-expanded="false">
-            <span id="recipientRegionText">No especificada</span>
-            <i data-lucide="chevron-down" class="select-arrow"></i>
-          </button>
-          <ul class="custom-select-menu" id="recipientRegionMenu" role="menu" hidden>
-            <li role="none"><button class="custom-select-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="">No especificada</button></li>
-            <li role="none"><button class="custom-select-option" type="button" role="menuitemradio" aria-checked="false" data-value="Spain">España</button></li>
-            <li role="none"><button class="custom-select-option" type="button" role="menuitemradio" aria-checked="false" data-value="Mexico">México</button></li>
-            <li role="none"><button class="custom-select-option" type="button" role="menuitemradio" aria-checked="false" data-value="Argentina">Argentina</button></li>
-            <li role="none"><button class="custom-select-option" type="button" role="menuitemradio" aria-checked="false" data-value="Chile">Chile</button></li>
-            <li role="none"><button class="custom-select-option" type="button" role="menuitemradio" aria-checked="false" data-value="Colombia">Colombia</button></li>
-          </ul>
-          <input type="hidden" id="recipientRegion" value="">
-        </div>
-      </div>
-    </div>
-
     <div class="main-content" id="mainContent">
       <!-- Panel izquierdo -->
       <div class="left-panel">
         <div class="form-container">
+          
+          <div class="mode-toggle" role="tablist" aria-label="Modo de generación">
+            <button class="mode-toggle-btn icon-left active" id="modeCompose" type="button" data-mode="compose" role="tab" aria-selected="true">
+              <i data-lucide="pencil"></i><span>Redactar</span>
+            </button>
+
+            <button class="mode-toggle-btn icon-left" id="replyBtn" type="button" data-mode="reply" role="tab" aria-selected="false">
+              <i data-lucide="reply"></i><span>Responder</span>
+            </button>
+          </div>
 
           <div class="input-group collapsible-group mode-hidden" id="originalEmailGroup">
             <label class="input-label" for="originalEmail">Email original</label>
@@ -1835,12 +1941,34 @@
 
           <div class="input-group">
             <div class="instruction-header">
-              <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
+              <label class="input-label" for="instruction">¿Qué email quieres enviar?</label>
 
-              <button id="templatesBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                <i data-lucide="form"></i>
-                Plantilla
-              </button>
+              <div class="header-buttons">
+                <button id="templatesBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <i data-lucide="form"></i>
+                  Plantilla
+                </button>
+                
+                <div class="profile-dropdown-wrapper">
+                  <button id="profileBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                    <i data-lucide="user"></i>
+                    Perfil
+                  </button>
+                  <div class="profile-dropdown" id="profileDropdown" hidden>
+                    <div class="profile-dropdown-title">Tu perfil</div>
+                    <div class="profile-dropdown-field">
+                      <label for="profileName">Nombre</label>
+                      <input type="text" id="profileName" placeholder="Juan Pérez">
+                    </div>
+                    <div class="profile-dropdown-field">
+                      <label for="profileRole">Cargo</label>
+                      <input type="text" id="profileRole" placeholder="Gerente de Ventas">
+                    </div>
+                    <button id="profileSaveBtn" class="profile-save-btn" type="button">Guardar</button>
+                  </div>
+                </div>
+              </div>
+              
               <div class="custom-select-menu" id="templatesMenu" role="menu" hidden></div>
             </div>
             <div class="instruction-wrapper">
@@ -1859,8 +1987,8 @@
                   <i data-lucide="chevron-down"></i>
                 </button>
                 <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
-                  <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
-                  <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">3</button></li>
+                  <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1"><span>1 variante</span><i class="check hidden" data-lucide="check"></i></button></li>
+                  <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3"><span>3 variantes</span><i class="check hidden" data-lucide="check"></i></button></li>
                 </ul>
               </div>
 
@@ -1895,37 +2023,6 @@
             </div>
           </div>
 
-          <div class="shared-fields">
-
-            <div class="input-group-row">
-              <label class="group-label">De</label>
-              <div class="input-pair">
-                <div class="input-wrapper">
-                  <input id="senderName" type="text" placeholder="Juan Pérez">
-                  <span class="inner-label">Nombre</span>
-                </div>
-                <div class="input-wrapper">
-                  <input id="senderRole" type="text" placeholder="Gerente de Ventas">
-                  <span class="inner-label">Cargo</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="input-group-row">
-              <label class="group-label">Para</label>
-              <div class="input-pair">
-                <div class="input-wrapper">
-                  <input id="clientName" type="text" placeholder="María García">
-                  <span class="inner-label">Nombre</span>
-                </div>
-                <div class="input-wrapper">
-                  <input id="clientRole" type="text" placeholder="Directora de RRHH">
-                  <span class="inner-label">Cargo</span>
-                </div>
-              </div>
-            </div>
-
-          </div>
 
         </div>
       </div>
@@ -1963,10 +2060,6 @@
     const instructionEl = document.getElementById('instruction');
     const originalEmailEl = document.getElementById('originalEmail');
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
-    const senderNameEl = document.getElementById('senderName');
-    const clientNameEl = document.getElementById('clientName');
-    const senderRoleEl = document.getElementById('senderRole');
-    const recipientRoleEl = document.getElementById('clientRole');
     const trigger = document.getElementById('formalidadTrigger');
     const tooltip = document.getElementById('formalidadTooltip');
     const versionsTooltip = document.getElementById('versionsTooltip');
@@ -1992,12 +2085,18 @@
     const templatesBtn = document.getElementById('templatesBtn');
     const templatesMenu = document.getElementById('templatesMenu');
     const saveBtn = document.getElementById('saveTemplateFloating');
+    const profileBtn = document.getElementById('profileBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileNameInput = document.getElementById('profileName');
+    const profileRoleInput = document.getElementById('profileRole');
+    const profileSaveBtn = document.getElementById('profileSaveBtn');
     const TEMPLATE_KEY = 'redactar_templates_v1';
     const SELECTION_MIN_LENGTH = 3;
     const STORAGE_KEY = 'formalidadPreference';
+    const PROFILE_KEY = 'userProfile';
 
     let currentMode = 'compose';
-    let selectedVersions = 1;
+    let selectedVersions = Number(localStorage.getItem('versionsPreference')) || 1;
     let selectionPopoverEl = null;
     let currentSelectionState = null;
     let currentRange = null;
@@ -2107,7 +2206,7 @@
         if (!versionsTooltip) return;
         versionsTooltip.classList.remove('hidden');
         versionsTooltip.style.opacity = '1';
-        versionsTooltip.style.transform = 'translateY(0)';
+        versionsTooltip.style.transform = 'translateX(-50%) translateY(0)';
       }, 250);
     });
 
@@ -2115,7 +2214,7 @@
       clearTimeout(versionsTooltipTimeout);
       if (!versionsTooltip) return;
       versionsTooltip.style.opacity = '0';
-      versionsTooltip.style.transform = 'translateY(4px)';
+      versionsTooltip.style.transform = 'translateX(-50%) translateY(4px)';
       versionsTooltipHideTimeout = setTimeout(() => versionsTooltip.classList.add('hidden'), 120);
     });
 
@@ -2138,6 +2237,65 @@
       if (!trigger || !dropdown) return;
       if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
         dropdown.classList.add('hidden');
+      }
+    });
+
+    // Profile management
+    function loadProfile() {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      if (saved) {
+        try {
+          const profile = JSON.parse(saved);
+          return profile;
+        } catch (e) {
+          return { name: '', role: '' };
+        }
+      }
+      return { name: '', role: '' };
+    }
+
+    function saveProfile(name, role) {
+      const profile = { name, role };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    }
+
+    function initProfile() {
+      const profile = loadProfile();
+      profileNameInput.value = profile.name || '';
+      profileRoleInput.value = profile.role || '';
+    }
+
+    function toggleProfileDropdown() {
+      const isHidden = profileDropdown.hasAttribute('hidden');
+      if (isHidden) {
+        profileDropdown.removeAttribute('hidden');
+        profileBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        profileDropdown.setAttribute('hidden', '');
+        profileBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function closeProfileDropdown() {
+      profileDropdown.setAttribute('hidden', '');
+      profileBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    profileBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleProfileDropdown();
+    });
+
+    profileSaveBtn?.addEventListener('click', () => {
+      const name = profileNameInput.value.trim();
+      const role = profileRoleInput.value.trim();
+      saveProfile(name, role);
+      closeProfileDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileBtn?.contains(e.target) && !profileDropdown?.contains(e.target)) {
+        closeProfileDropdown();
       }
     });
 
@@ -2181,7 +2339,7 @@
     }
 
     function randomDelay() {
-      return 1000 + Math.random() * 500;
+      return 3000 + Math.random() * 1000;
     }
 
     function typeInstructionHint(example) {
@@ -2320,11 +2478,22 @@
       if (!selectedValue) return;
 
       selectedVersions = selectedValue;
+      localStorage.setItem('versionsPreference', selectedValue);
       versionsLabel.textContent = selectedVersions === 3 ? '3 variantes' : '1 variante';
       versionsOptions.forEach((opt) => {
         const selected = opt === optionButton;
         opt.classList.toggle('selected', selected);
         opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+        
+        // Update check icon
+        const icon = opt.querySelector('.check');
+        if (icon) {
+          if (selected) {
+            icon.classList.remove('hidden');
+          } else {
+            icon.classList.add('hidden');
+          }
+        }
       });
       closeVersionsMenu();
     }
@@ -2408,10 +2577,6 @@
     function getCurrentFormData() {
       return {
         instruction: document.getElementById('instruction').value,
-        senderName: document.getElementById('senderName').value,
-        senderRole: document.getElementById('senderRole').value,
-        clientName: document.getElementById('clientName').value,
-        clientRole: document.getElementById('clientRole').value,
         formalidad: formalidadValue,
         recipientRegion: document.getElementById('recipientRegion').value,
         mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
@@ -2450,10 +2615,6 @@
     function applyTemplate(data) {
       if (!data) return;
       instructionEl.value = data.instruction || '';
-      senderNameEl.value = data.senderName || '';
-      senderRoleEl.value = data.senderRole || '';
-      clientNameEl.value = data.clientName || '';
-      recipientRoleEl.value = data.clientRole || '';
       const templateFormalidad = data.formalidad ?? data.formality;
       formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'auto';
       localStorage.setItem(STORAGE_KEY, formalidadValue);
@@ -2464,7 +2625,7 @@
       updateRecipientRegionSelection(data.recipientRegion || '');
       setMode(data.mode || 'compose');
 
-      [instructionEl, senderNameEl, senderRoleEl, clientNameEl, recipientRoleEl, originalEmailEl].forEach((el) => {
+      [instructionEl, originalEmailEl].forEach((el) => {
         el?.dispatchEvent(new Event('input', { bubbles: true }));
       });
       charCount.textContent = instructionEl.value.length;
@@ -2790,8 +2951,8 @@
       stopTipsRotation();
       
       const instruction = instructionEl.value.trim();
-      const senderName = senderNameEl.value.trim() || 'Tu nombre';
-      const clientName = clientNameEl.value.trim() || 'Destinatario';
+      const profile = loadProfile();
+      const senderName = profile.name || 'Tu nombre';
       const tips = contextualTips[currentMode] || contextualTips.compose;
       const examples = getRandomExamples();
 
@@ -2809,10 +2970,6 @@
             <div class="preview-field">
               <span class="preview-label">De:</span>
               <span class="preview-value">${senderName}</span>
-            </div>
-            <div class="preview-field">
-              <span class="preview-label">Para:</span>
-              <span class="preview-value">${clientName}</span>
             </div>
             <div class="preview-context ${instruction ? '' : 'empty'}">
               ${instruction || 'Escribe tu instrucción para ver un preview...'}
@@ -3475,24 +3632,19 @@ ${body}`.trim();
       }
     });
 
-    senderNameEl.addEventListener('input', updatePreviewIfEmpty);
-    clientNameEl.addEventListener('input', updatePreviewIfEmpty);
-
     function updatePreviewIfEmpty() {
       // Solo actualizar si estamos en estado vacío
       const emptyState = outputEl.querySelector('.empty-state');
       if (!emptyState) return;
 
       const instruction = instructionEl.value.trim();
-      const senderName = senderNameEl.value.trim() || 'Tu nombre';
-      const clientName = clientNameEl.value.trim() || 'Destinatario';
+      const profile = loadProfile();
+      const senderName = profile.name || 'Tu nombre';
 
       const previewSender = emptyState.querySelector('.preview-field .preview-value');
-      const previewClient = emptyState.querySelectorAll('.preview-field .preview-value')[1];
       const previewContext = emptyState.querySelector('.preview-context');
 
       if (previewSender) previewSender.textContent = senderName;
-      if (previewClient) previewClient.textContent = clientName;
       if (previewContext) {
         previewContext.textContent = instruction || 'Escribe tu instrucción para ver un preview...';
         if (instruction) {
@@ -3506,14 +3658,14 @@ ${body}`.trim();
     async function generateEmail() {
       const instruction = instructionEl.value.trim();
       const originalEmail = originalEmailEl.value.trim();
-      const senderInput = senderNameEl.value.trim();
-      const clientInput = clientNameEl.value.trim();
-      const senderRole = senderRoleEl?.value.trim() || '';
-      const recipientRole = recipientRoleEl?.value.trim() || '';
+      const profile = loadProfile();
+      const senderInput = profile.name || '';
+      const senderRole = profile.role || '';
       const formality = formalidadValue;
 
       const senderName = senderInput || 'El equipo';
-      const clientName = clientInput || 'cliente';
+      const clientName = 'cliente';
+      const recipientRole = '';
       const versions = selectedVersions;
       const isReplyMode = currentMode === 'reply';
 
@@ -3769,6 +3921,37 @@ ${body}`.trim();
     renderTemplateMenu();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
     updateGenerateButtonState();
+    initProfile(); // Initialize profile data
+
+    // Initialize versions UI with saved preference
+    function initVersionsUI() {
+      // Validate selectedVersions
+      if (![1, 3].includes(selectedVersions)) {
+        selectedVersions = 1;
+      }
+      
+      // Update label
+      versionsLabel.textContent = selectedVersions === 3 ? '3 variantes' : '1 variante';
+      
+      // Update options and checks
+      versionsOptions.forEach((opt) => {
+        const optValue = Number(opt.dataset.value);
+        const selected = optValue === selectedVersions;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+        
+        const icon = opt.querySelector('.check');
+        if (icon) {
+          if (selected) {
+            icon.classList.remove('hidden');
+          } else {
+            icon.classList.add('hidden');
+          }
+        }
+      });
+    }
+    
+    initVersionsUI();
 
     document.addEventListener('DOMContentLoaded', () => {
       renderTemplateMenu();
