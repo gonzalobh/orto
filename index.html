@@ -243,6 +243,31 @@
       font-weight: 600;
     }
 
+    .custom-select-menu hr {
+      border: 0;
+      border-top: 1px solid var(--border-color);
+      margin: 0.25rem;
+    }
+
+    .template-manage-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .template-manage-btn:hover,
+    .template-manage-btn:focus-visible {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
     .mode-toggle {
       display: inline-flex;
       align-items: center;
@@ -330,20 +355,58 @@
       line-height: 1.6;
     }
 
+    .instruction-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
     #instruction {
       width: 100%;
       min-height: 88px;
       max-height: 320px;
       resize: none;
       line-height: 1.5;
-      padding: 14px 16px;
+      padding: 20px;
+      padding-bottom: 52px;
       border-radius: 12px;
       transition: height 0.15s ease,
                   box-shadow 0.2s ease;
     }
 
-    .instruction-field {
+    .instruction-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       position: relative;
+    }
+
+    .save-template-floating {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: opacity .25s ease, background-color .15s ease, transform .25s ease;
+      opacity: 0;
+      transform: translateY(4px);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .save-template-floating.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .save-template-floating:hover {
+      background-color: #fafaf9;
+      color: var(--text-primary);
     }
 
     .instruction-hint {
@@ -364,6 +427,189 @@
       user-select: none;
       white-space: normal;
       z-index: 1;
+    }
+
+    .editor-control {
+      position: absolute;
+      bottom: 12px;
+
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+
+      font-size: 13px;
+      font-weight: 400;
+
+      color: #6b6b6b;
+      background: transparent;
+      border: none;
+      padding: 2px 6px;
+      border-radius: 6px;
+
+      cursor: pointer;
+      transition: all 0.15s ease;
+      z-index: 3;
+    }
+
+    .editor-control:hover {
+      background: #f3f3f3;
+      color: #111;
+    }
+
+    .editor-control:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .editor-control i {
+      width: 14px;
+      height: 14px;
+      opacity: 0.6;
+    }
+
+    #formalidadTrigger {
+      right: 54px;
+    }
+
+    #versionsButton {
+      right: 170px;
+    }
+
+    .generate-inline {
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #e5e5e5;
+      color: #9a9a9a;
+      cursor: default;
+      transition: all 0.18s ease;
+      z-index: 3;
+    }
+
+    .generate-inline i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .generate-inline.active {
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .formalidad-dropdown {
+      position: absolute;
+      top: calc(93% + 8px);
+      right: 0;
+
+      background: #ffffff;
+      border: 1px solid #e7e7e7;
+      border-radius: 10px;
+
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+
+      padding: 6px;
+      min-width: 190px;
+
+      display: flex;
+      flex-direction: column;
+      animation: fadeUp 0.14s ease;
+      z-index: 4;
+    }
+
+    .formalidad-tooltip {
+      position: absolute;
+      bottom: 46px;
+      right: 6px;
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 5;
+    }
+
+    .formalidad-tooltip::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      bottom: -4px;
+      width: 8px;
+      height: 8px;
+      background: #2b2b2b;
+      transform: rotate(45deg);
+    }
+
+    .versions-tooltip {
+      position: absolute;
+      bottom: 46px;
+      right: 122px;
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 5;
+    }
+
+    .versions-tooltip::after {
+      content: "";
+      position: absolute;
+      right: 14px;
+      bottom: -4px;
+      width: 8px;
+      height: 8px;
+      background: #2b2b2b;
+      transform: rotate(45deg);
+    }
+
+    .formalidad-dropdown button {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 7px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .formalidad-dropdown i {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    .formalidad-dropdown button:hover {
+      background: #f5f5f5;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(6px); }
+      to { opacity:1; transform: translateY(0); }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -446,59 +692,6 @@
       gap: 0.5rem;
       margin-bottom: 1.25rem;
     }
-
-    .segmented-control {
-      position: relative;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0;
-      padding: 4px;
-      background: #f4f4f5;
-      border: 1px solid #ececf1;
-      border-radius: 12px;
-      isolation: isolate;
-      --formality-index: 2;
-    }
-
-    .segmented-indicator {
-      position: absolute;
-      top: 4px;
-      left: 4px;
-      width: calc((100% - 8px) / 3);
-      height: calc(100% - 8px);
-      background: #ffffff;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
-      transform: translateX(calc(var(--formality-index) * 100%));
-      z-index: 0;
-    }
-
-    .formality-btn {
-      background: transparent;
-      border: none;
-      border-radius: 10px;
-      color: #71717a;
-      font-family: inherit;
-      font-size: 14px;
-      font-weight: 500;
-      padding: 0.5rem 0.625rem;
-      cursor: pointer;
-      transition: color 200ms cubic-bezier(0.22, 1, 0.36, 1);
-      position: relative;
-      z-index: 1;
-    }
-
-    .formality-btn:hover,
-    .formality-btn:focus-visible {
-      color: #18181b;
-      outline: none;
-    }
-
-    .formality-btn.active {
-      color: #18181b;
-    }
-
 
     /* ===== Campos compartidos siempre visibles ===== */
 
@@ -661,86 +854,9 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Botón generate */
-
-
-    .generate-row {
-      display: flex;
-      align-items: stretch;
-      gap: 0.625rem;
-    }
-
-    .generate-row .generate-btn {
-      flex: 1;
-    }
-
-    .versions-control {
-      min-width: 110px;
-      position: relative;
-    }
-
     .versions-menu {
       right: 0;
       left: auto;
-    }
-
-    .generate-btn {
-      width: 100%;
-      background: var(--accent-color);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 0.875rem 1.5rem;
-      font-family: inherit;
-      font-size: 0.9375rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      letter-spacing: -0.01em;
-    }
-
-    .generate-btn:hover:not(:disabled) {
-      background: #404040;
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    .generate-btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .generate-btn:disabled {
-      background: #1d1d1f26;
-      color: #ffffff;
-      opacity: 1;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: var(--bg-secondary);
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      display: none;
-    }
-
-    /* Mostrar spinner solo cuando está generando (no cuando está disabled por falta de texto) */
-    .generate-btn.generating .spinner {
-      display: block;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
     }
 
     /* Panel derecho limpio */
@@ -1589,6 +1705,73 @@
     }
 
 
+
+    .template-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 1rem;
+    }
+
+    .template-modal {
+      width: min(760px, 100%);
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-lg);
+      padding: 1rem;
+    }
+
+    .template-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .template-list {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .template-row {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .template-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .template-action-btn {
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .template-action-btn:hover,
+    .template-action-btn:focus-visible {
+      border-color: var(--text-secondary);
+      outline: none;
+    }
+
     @media (max-width: 640px) {
       .input-pair {
         flex-direction: column;
@@ -1651,29 +1834,65 @@
           </div>
 
           <div class="input-group">
-            <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
-            <div class="instruction-field">
+            <div class="instruction-header">
+              <label class="input-label" for="instruction">¿Qué quieres comunicar?</label>
+
+              <button id="templatesBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                <i data-lucide="form"></i>
+                Plantilla
+              </button>
+              <div class="custom-select-menu" id="templatesMenu" role="menu" hidden></div>
+            </div>
+            <div class="instruction-wrapper">
               <textarea
                 id="instruction"
                 maxlength="300"
                 aria-label="Describe brevemente el email que deseas generar"
               ></textarea>
+
+              <div class="versions-control strategy-dropdown">
+                <div id="versionsTooltip" class="versions-tooltip hidden">
+                  Variantes
+                </div>
+                <button id="versionsButton" class="editor-control" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
+                  <span id="versionsLabel">1 variante</span>
+                  <i data-lucide="chevron-down"></i>
+                </button>
+                <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
+                  <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
+                  <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">3</button></li>
+                </ul>
+              </div>
+
+              <button id="formalidadTrigger" class="editor-control" type="button">
+                <span id="formalidadLabel">Automático</span>
+                <i data-lucide="chevron-down"></i>
+              </button>
+
+              <button id="generateButton" class="generate-inline" type="button" disabled>
+                <i data-lucide="arrow-up"></i>
+              </button>
+
+              <div id="formalidadTooltip" class="formalidad-tooltip hidden">
+                Formalidad
+              </div>
+
+              <div id="formalidadDropdown" class="formalidad-dropdown hidden">
+                <button type="button" data-value="auto"><span>Automático</span><i class="check hidden" data-lucide="check"></i></button>
+                <button type="button" data-value="tu"><span>Informal (Tú)</span><i class="check hidden" data-lucide="check"></i></button>
+                <button type="button" data-value="usted"><span>Formal (Usted)</span><i class="check hidden" data-lucide="check"></i></button>
+              </div>
+
+              <button id="saveTemplateFloating"
+                class="save-template-floating"
+                type="button">
+                Guardar como plantilla
+              </button>
               <div class="instruction-hint" aria-hidden="true"></div>
             </div>
             <div class="char-counter">
               <span id="charCount">0</span>/300
             </div>
-          </div>
-
-          <div class="input-group">
-            <label class="input-label" for="formalityPreference">Nivel de formalidad</label>
-            <div class="segmented-control" id="formalityControl" role="radiogroup" aria-label="Nivel de formalidad">
-              <span class="segmented-indicator" aria-hidden="true"></span>
-              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="tu">Tú (cercano)</button>
-              <button class="formality-btn" type="button" role="radio" aria-checked="false" data-formality="usted">Usted (formal)</button>
-              <button class="formality-btn active" type="button" role="radio" aria-checked="true" data-formality="auto">Automático</button>
-            </div>
-            <input type="hidden" id="formalityPreference" value="auto" />
           </div>
 
           <div class="shared-fields">
@@ -1708,24 +1927,6 @@
 
           </div>
 
-          <div class="generate-row">
-            <button class="generate-btn" id="generateButton" type="button">
-              <span class="btn-content">
-                <span class="spinner"></span>
-                <span id="buttonText">Generar</span>
-              </span>
-            </button>
-            <div class="versions-control strategy-dropdown">
-              <button class="strategy-btn" id="versionsButton" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
-                <span class="strategy-title">Variantes</span>
-                <span class="strategy-subtitle" id="versionsSubtitle" data-role="selected-value">1</span>
-              </button>
-              <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
-                <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1">1</button></li>
-                <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3">+2</button></li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -1766,9 +1967,10 @@
     const clientNameEl = document.getElementById('clientName');
     const senderRoleEl = document.getElementById('senderRole');
     const recipientRoleEl = document.getElementById('clientRole');
-    const formalityPrefEl = document.getElementById('formalityPreference');
-    const formalityControlEl = document.getElementById('formalityControl');
-    const formalityBtns = Array.from(document.querySelectorAll('.formality-btn'));
+    const trigger = document.getElementById('formalidadTrigger');
+    const tooltip = document.getElementById('formalidadTooltip');
+    const versionsTooltip = document.getElementById('versionsTooltip');
+    const dropdown = document.getElementById('formalidadDropdown');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('historyBtn');
@@ -1777,10 +1979,9 @@
     const historyListEl = document.getElementById('historyList');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const generateButton = document.getElementById('generateButton');
-    const buttonText = document.getElementById('buttonText');
     const versionsControl = document.querySelector('.versions-control');
     const versionsButton = document.getElementById('versionsButton');
-    const versionsSubtitle = document.getElementById('versionsSubtitle');
+    const versionsLabel = document.getElementById('versionsLabel');
     const versionsMenu = document.getElementById('versionsMenu');
     const versionsOptions = Array.from(document.querySelectorAll('.versions-option'));
     const charCount = document.getElementById('charCount');
@@ -1788,7 +1989,12 @@
     const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn:not(#versionsButton)'));
     const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu:not(#versionsMenu)'));
     const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
+    const templatesBtn = document.getElementById('templatesBtn');
+    const templatesMenu = document.getElementById('templatesMenu');
+    const saveBtn = document.getElementById('saveTemplateFloating');
+    const TEMPLATE_KEY = 'redactar_templates_v1';
     const SELECTION_MIN_LENGTH = 3;
+    const STORAGE_KEY = 'formalidadPreference';
 
     let currentMode = 'compose';
     let selectedVersions = 1;
@@ -1806,6 +2012,13 @@
     let instructionHintResumeTimer = null;
     let instructionHintTransitionTimer = null;
     let instructionHintTypingTimer = null;
+    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
+    if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
+      formalidadValue = 'auto';
+    }
+    let tooltipTimeout;
+    let tooltipHideTimeout;
+
 
     function autoGrow(el) {
       if (!el) return;
@@ -1833,93 +2046,104 @@
         .trim();
     }
 
-    function setFormalityPreference(value) {
-      const next = value === 'tu' || value === 'usted' ? value : 'auto';
-      if (formalityPrefEl) {
-        formalityPrefEl.value = next;
-      }
-      formalityBtns.forEach((btn, index) => {
-        const selected = btn.dataset.formality === next;
-        btn.classList.toggle('active', selected);
-        btn.setAttribute('aria-checked', selected ? 'true' : 'false');
-        if (selected && formalityControlEl) {
-          formalityControlEl.style.setProperty('--formality-index', String(index));
+    const label = document.getElementById('formalidadLabel');
+    const options = dropdown?.querySelectorAll('button') || [];
+
+    const labels = {
+      auto: 'Automático',
+      tu: 'Informal (Tú)',
+      usted: 'Formal (Usted)'
+    };
+
+    localStorage.setItem(STORAGE_KEY, formalidadValue);
+
+    if (label) {
+      label.textContent = labels[formalidadValue] || labels.auto;
+    }
+
+    function updateChecks() {
+      options.forEach((btn) => {
+        const icon = btn.querySelector('.check');
+        if (!icon) return;
+        if (btn.dataset.value === formalidadValue) {
+          icon.classList.remove('hidden');
+        } else {
+          icon.classList.add('hidden');
         }
       });
     }
 
-    function detectFormality({ instruction, senderRole, recipientRole, originalEmail, mode }) {
-      const context = normalizeText([instruction, senderRole, recipientRole].filter(Boolean).join(' '));
-      const original = normalizeText(originalEmail || '');
-      let ustedScore = 0;
-      let tuScore = 0;
+    updateChecks();
 
-      const ustedSignals = [
-        /\busted\b/,
-        /\ble\b/,
-        /\bsu\b/,
-        /agradeceria/,
-        /quedo a su disposicion/,
-        /atentamente/,
-        /cordialmente/,
-        /estimad[oa]/
-      ];
-      const tuSignals = [
-        /\btu\b/,
-        /\bte\b/,
-        /\btu\s+\w+/,
-        /\bhola\b/,
-        /\bque tal\b/
-      ];
-      const seniorRoleSignals = [
-        /director/,
-        /gerent/,
-        /\bceo\b/,
-        /\bcfo\b/,
-        /\bcto\b/,
-        /president/,
-        /abogad/,
-        /notari/,
-        /rrhh/,
-        /\bjef/,
-        /recursos humanos/
-      ];
-      const closeSignals = [/interno/, /colega/, /equipo/, /companer/];
+    trigger?.addEventListener('click', () => {
+      dropdown?.classList.toggle('hidden');
+    });
 
-      if (ustedSignals.some((r) => r.test(context))) ustedScore += 2;
-      if (tuSignals.some((r) => r.test(context))) tuScore += 2;
-      if (seniorRoleSignals.some((r) => r.test(normalizeText(recipientRole)))) ustedScore += 2;
-      if (closeSignals.some((r) => r.test(context))) tuScore += 1;
+    trigger?.addEventListener('mouseenter', () => {
+      clearTimeout(tooltipHideTimeout);
+      tooltipTimeout = setTimeout(() => {
+        if (!tooltip) return;
+        tooltip.classList.remove('hidden');
+        tooltip.style.opacity = '1';
+        tooltip.style.transform = 'translateY(0)';
+      }, 250);
+    });
 
-      if (mode === 'reply' && original) {
-        if (/\busted\b|\bsu\b|\ble\b|agradeceria/.test(original)) ustedScore += 3;
-        if (/\btu\b|\bte\b|\bhola\b/.test(original)) tuScore += 2;
-      }
+    trigger?.addEventListener('mouseleave', () => {
+      clearTimeout(tooltipTimeout);
+      if (!tooltip) return;
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translateY(4px)';
+      tooltipHideTimeout = setTimeout(() => tooltip.classList.add('hidden'), 120);
+    });
 
-      return ustedScore >= tuScore ? 'usted' : 'tu';
-    }
+    // Versions tooltip event listeners
+    let versionsTooltipTimeout;
+    let versionsTooltipHideTimeout;
 
-    function resolveFormality() {
-      const preference = formalityPrefEl?.value || 'auto';
-      const detected = detectFormality({
-        instruction: instructionEl?.value || '',
-        senderRole: senderRoleEl?.value || '',
-        recipientRole: recipientRoleEl?.value || '',
-        originalEmail: originalEmailEl?.value || '',
-        mode: currentMode
+    versionsButton?.addEventListener('mouseenter', () => {
+      clearTimeout(versionsTooltipHideTimeout);
+      versionsTooltipTimeout = setTimeout(() => {
+        if (!versionsTooltip) return;
+        versionsTooltip.classList.remove('hidden');
+        versionsTooltip.style.opacity = '1';
+        versionsTooltip.style.transform = 'translateY(0)';
+      }, 250);
+    });
+
+    versionsButton?.addEventListener('mouseleave', () => {
+      clearTimeout(versionsTooltipTimeout);
+      if (!versionsTooltip) return;
+      versionsTooltip.style.opacity = '0';
+      versionsTooltip.style.transform = 'translateY(4px)';
+      versionsTooltipHideTimeout = setTimeout(() => versionsTooltip.classList.add('hidden'), 120);
+    });
+
+    options.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        formalidadValue = btn.dataset.value || 'auto';
+
+        localStorage.setItem(STORAGE_KEY, formalidadValue);
+
+        if (label) {
+          label.textContent = labels[formalidadValue] || labels.auto;
+        }
+
+        updateChecks();
+        dropdown?.classList.add('hidden');
       });
-      const resolved = preference === 'auto' ? detected : preference;
-      return { preference, detected: preference === 'auto' ? detected : resolved, resolved };
-    }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!trigger || !dropdown) return;
+      if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.add('hidden');
+      }
+    });
 
     function shouldDisableGenerateButton() {
       const instruction = instructionEl?.value.trim() || '';
-      const originalEmail = originalEmailEl?.value.trim() || '';
-      const isReplyMode = currentMode === 'reply';
-
-      if (!instruction) return true;
-      if (isReplyMode && !originalEmail) return true;
-      return false;
+      return !instruction;
     }
 
     function updateGenerateButtonState() {
@@ -1927,10 +2151,13 @@
 
       if (isGenerating) {
         generateButton.disabled = true;
+        generateButton.classList.remove('active');
         return;
       }
 
+      const hasText = (instructionEl?.value || '').trim().length > 0;
       generateButton.disabled = shouldDisableGenerateButton();
+      generateButton.classList.toggle('active', hasText);
     }
 
 
@@ -2093,7 +2320,7 @@
       if (!selectedValue) return;
 
       selectedVersions = selectedValue;
-      versionsSubtitle.textContent = selectedVersions === 3 ? '+2' : '1';
+      versionsLabel.textContent = selectedVersions === 3 ? '3 variantes' : '1 variante';
       versionsOptions.forEach((opt) => {
         const selected = opt === optionButton;
         opt.classList.toggle('selected', selected);
@@ -2167,6 +2394,214 @@
       setActiveOutputTab('new');
       tabNewBtn?.addEventListener('click', () => setActiveOutputTab('new'));
       tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
+    }
+
+
+    function loadTemplates() {
+      return JSON.parse(localStorage.getItem(TEMPLATE_KEY) || '[]');
+    }
+
+    function saveTemplates(list) {
+      localStorage.setItem(TEMPLATE_KEY, JSON.stringify(list));
+    }
+
+    function getCurrentFormData() {
+      return {
+        instruction: document.getElementById('instruction').value,
+        senderName: document.getElementById('senderName').value,
+        senderRole: document.getElementById('senderRole').value,
+        clientName: document.getElementById('clientName').value,
+        clientRole: document.getElementById('clientRole').value,
+        formalidad: formalidadValue,
+        recipientRegion: document.getElementById('recipientRegion').value,
+        mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
+      };
+    }
+
+    function templateExists(instruction) {
+      const templates = loadTemplates();
+
+      return templates.some((t) =>
+        (t.data?.instruction || '').trim().toLowerCase() === instruction.trim().toLowerCase()
+      );
+    }
+
+    function updateRecipientRegionSelection(value) {
+      const nextValue = value || '';
+      const recipientRegionInput = document.getElementById('recipientRegion');
+      const recipientRegionText = document.getElementById('recipientRegionText');
+      const recipientRegionMenu = document.getElementById('recipientRegionMenu');
+      const options = recipientRegionMenu?.querySelectorAll('.custom-select-option') || [];
+      let selectedText = 'No especificada';
+
+      options.forEach((option) => {
+        const selected = option.dataset.value === nextValue;
+        if (selected) {
+          selectedText = option.textContent || selectedText;
+        }
+        option.classList.toggle('selected', selected);
+        option.setAttribute('aria-checked', selected ? 'true' : 'false');
+      });
+
+      if (recipientRegionInput) recipientRegionInput.value = nextValue;
+      if (recipientRegionText) recipientRegionText.textContent = selectedText;
+    }
+
+    function applyTemplate(data) {
+      if (!data) return;
+      instructionEl.value = data.instruction || '';
+      senderNameEl.value = data.senderName || '';
+      senderRoleEl.value = data.senderRole || '';
+      clientNameEl.value = data.clientName || '';
+      recipientRoleEl.value = data.clientRole || '';
+      const templateFormalidad = data.formalidad ?? data.formality;
+      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'auto';
+      localStorage.setItem(STORAGE_KEY, formalidadValue);
+      if (label) {
+        label.textContent = labels[formalidadValue] || labels.auto;
+      }
+      updateChecks();
+      updateRecipientRegionSelection(data.recipientRegion || '');
+      setMode(data.mode || 'compose');
+
+      [instructionEl, senderNameEl, senderRoleEl, clientNameEl, recipientRoleEl, originalEmailEl].forEach((el) => {
+        el?.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      charCount.textContent = instructionEl.value.length;
+      updatePreviewIfEmpty();
+      closeTemplatesMenu();
+    }
+
+    function deleteTemplate(id) {
+      const list = loadTemplates().filter((t) => t.id !== id);
+      saveTemplates(list);
+      renderTemplateMenu();
+      renderTemplateManagerRows();
+    }
+
+    function openManagerModal() {
+      const overlay = document.createElement('div');
+      overlay.className = 'template-modal-overlay';
+      overlay.innerHTML = `
+        <div class="template-modal" role="dialog" aria-modal="true" aria-label="Gestionar planillas">
+          <div class="template-modal-header">
+            <strong>Gestionar planillas</strong>
+            <button class="icon-btn" type="button" data-action="close-manager">Cerrar</button>
+          </div>
+          <div class="template-list" id="templateManagerList"></div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || event.target.closest('[data-action="close-manager"]')) {
+          overlay.remove();
+        }
+      });
+
+      renderTemplateManagerRows();
+    }
+
+    function renderTemplateManagerRows() {
+      const container = document.getElementById('templateManagerList');
+      if (!container) return;
+      const templates = loadTemplates();
+      if (!templates.length) {
+        container.innerHTML = '<div class="output-empty">No hay planillas guardadas.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      templates.forEach((t) => {
+        const row = document.createElement('div');
+        row.className = 'template-row';
+
+        const name = document.createElement('div');
+        name.textContent = t.name;
+
+        const actions = document.createElement('div');
+        actions.className = 'template-actions';
+
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'template-action-btn';
+        loadBtn.textContent = 'Cargar';
+        loadBtn.onclick = () => applyTemplate(t.data);
+
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'template-action-btn';
+        renameBtn.textContent = 'Renombrar';
+        renameBtn.onclick = () => {
+          const nextName = window.prompt('Nuevo nombre de la planilla:', t.name);
+          if (!nextName) return;
+          const list = loadTemplates().map((item) => item.id === t.id ? { ...item, name: nextName } : item);
+          saveTemplates(list);
+          renderTemplateMenu();
+          renderTemplateManagerRows();
+        };
+
+        const replaceBtn = document.createElement('button');
+        replaceBtn.className = 'template-action-btn';
+        replaceBtn.textContent = 'Reemplazar con actual';
+        replaceBtn.onclick = () => {
+          const list = loadTemplates().map((item) => item.id === t.id ? { ...item, data: getCurrentFormData() } : item);
+          saveTemplates(list);
+          renderTemplateMenu();
+          renderTemplateManagerRows();
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'template-action-btn';
+        deleteBtn.textContent = 'Eliminar';
+        deleteBtn.onclick = () => {
+          if (!window.confirm(`¿Eliminar planilla "${t.name}"?`)) return;
+          deleteTemplate(t.id);
+        };
+
+        actions.append(loadBtn, renameBtn, replaceBtn, deleteBtn);
+        row.append(name, actions);
+        container.appendChild(row);
+      });
+    }
+
+    function renderTemplateMenu() {
+      if (!templatesMenu) return;
+      const list = loadTemplates();
+      templatesMenu.innerHTML = '';
+
+      list.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'custom-select-option';
+        btn.textContent = t.name;
+        btn.type = 'button';
+        btn.onclick = () => applyTemplate(t.data);
+        templatesMenu.appendChild(btn);
+      });
+
+      const divider = document.createElement('hr');
+      const manage = document.createElement('button');
+      manage.className = 'template-manage-btn';
+      manage.type = 'button';
+      manage.textContent = 'Gestionar planillas…';
+      manage.onclick = () => {
+        closeTemplatesMenu();
+        openManagerModal();
+      };
+
+      templatesMenu.appendChild(divider);
+      templatesMenu.appendChild(manage);
+    }
+
+    function closeTemplatesMenu() {
+      if (!templatesBtn || !templatesMenu) return;
+      templatesBtn.setAttribute('aria-expanded', 'false');
+      templatesMenu.hidden = true;
+    }
+
+    function toggleTemplatesMenu() {
+      if (!templatesBtn || !templatesMenu) return;
+      const isExpanded = templatesBtn.getAttribute('aria-expanded') === 'true';
+      templatesBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      templatesMenu.hidden = isExpanded;
     }
 
     function createHistoryId() {
@@ -2983,35 +3418,12 @@ ${body}`.trim();
       }
       updatePreviewIfEmpty();
       updateGenerateButtonState();
-      if ((formalityPrefEl?.value || 'auto') === 'auto') {
-        resolveFormality();
-      }
     });
 
     originalEmailEl?.addEventListener('input', () => {
       updateGenerateButtonState();
-      if ((formalityPrefEl?.value || 'auto') === 'auto') {
-        resolveFormality();
-      }
     });
 
-    formalityBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        setFormalityPreference(btn.dataset.formality);
-      });
-    });
-
-    senderRoleEl?.addEventListener('input', () => {
-      if ((formalityPrefEl?.value || 'auto') === 'auto') {
-        resolveFormality();
-      }
-    });
-
-    recipientRoleEl?.addEventListener('input', () => {
-      if ((formalityPrefEl?.value || 'auto') === 'auto') {
-        resolveFormality();
-      }
-    });
 
     versionsControl?.addEventListener('click', (event) => {
       const option = event.target.closest('.versions-option');
@@ -3066,8 +3478,6 @@ ${body}`.trim();
     senderNameEl.addEventListener('input', updatePreviewIfEmpty);
     clientNameEl.addEventListener('input', updatePreviewIfEmpty);
 
-    setFormalityPreference(formalityPrefEl?.value || 'auto');
-
     function updatePreviewIfEmpty() {
       // Solo actualizar si estamos en estado vacío
       const emptyState = outputEl.querySelector('.empty-state');
@@ -3100,7 +3510,7 @@ ${body}`.trim();
       const clientInput = clientNameEl.value.trim();
       const senderRole = senderRoleEl?.value.trim() || '';
       const recipientRole = recipientRoleEl?.value.trim() || '';
-      const formality = resolveFormality();
+      const formality = formalidadValue;
 
       const senderName = senderInput || 'El equipo';
       const clientName = clientInput || 'cliente';
@@ -3111,9 +3521,7 @@ ${body}`.trim();
 
       isGenerating = true;
       generateButton.disabled = true;
-      generateButton.classList.add('generating');
       versionsButton.disabled = true;
-      buttonText.textContent = 'Generando...';
       const loadingSub = (selectedVersions === 3)
         ? 'Generando +2 variantes profesionales'
         : 'Generando email profesional';
@@ -3132,7 +3540,7 @@ ${body}`.trim();
             recipientRegion: document.getElementById("recipientRegion")?.value || "",
             senderRole,
             recipientRole,
-            formality,
+            formalidad: formality,
             versions
           })
         });
@@ -3175,15 +3583,14 @@ ${body}`.trim();
         renderPlaceholder('Error de conexión.');
       } finally {
         isGenerating = false;
-        generateButton.classList.remove('generating');
         versionsButton.disabled = false;
-        buttonText.textContent = 'Generar';
         updateGenerateButtonState();
       }
     }
 
 
     generateButton.addEventListener('click', () => {
+      if (generateButton.disabled) return;
       generateEmail();
     });
     outputEl.addEventListener('click', handleOutputClick);
@@ -3236,6 +3643,57 @@ ${body}`.trim();
       });
     });
 
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    instructionEl.addEventListener('input', () => {
+      const value = instructionEl.value.trim();
+
+      if (!value) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      if (countWords(value) < 3) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      if (templateExists(value)) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      saveBtn.classList.add('visible');
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      const name = window.prompt('Nombre de la plantilla:');
+      if (!name) return;
+
+      const newTemplate = {
+        id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+          ? crypto.randomUUID()
+          : createHistoryId(),
+        name,
+        createdAt: Date.now(),
+        data: getCurrentFormData()
+      };
+
+      const list = loadTemplates();
+      list.push(newTemplate);
+      saveTemplates(list);
+      renderTemplateMenu();
+
+      saveBtn.classList.remove('visible');
+    });
+
+    templatesBtn?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleTemplatesMenu();
+    });
+
     historyListEl?.addEventListener('keydown', (event) => {
       const item = event.target.closest('.history-item');
       if (!item) return;
@@ -3256,6 +3714,9 @@ ${body}`.trim();
 
       if (!event.target.closest('.translate-dropdown')) {
         closeAllTranslateMenus();
+      }
+      if (!event.target.closest('#templatesBtn') && !event.target.closest('#templatesMenu')) {
+        closeTemplatesMenu();
       }
       if (!event.target.closest('.strategy-dropdown')) {
         closeAllStrategyMenus();
@@ -3286,6 +3747,7 @@ ${body}`.trim();
       if (event.key === 'Escape') {
         closeAllStrategyMenus();
         closeVersionsMenu();
+        closeTemplatesMenu();
         hideSelectionPopover();
       }
     });
@@ -3304,8 +3766,13 @@ ${body}`.trim();
     startInstructionHint();
     setMode('compose');
     initOutputTabs();
+    renderTemplateMenu();
     renderEmptyState(); // Inicializar con el estado vacío mejorado
     updateGenerateButtonState();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTemplateMenu();
+    });
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>

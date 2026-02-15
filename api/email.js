@@ -19,6 +19,7 @@ export default async function handler(req, res) {
       senderRole,
       recipientRole,
       formality,
+      formalidad,
       versions,
     } = req.body || {};
 
@@ -31,7 +32,10 @@ export default async function handler(req, res) {
 
     const safeSenderRole = typeof senderRole === "string" ? senderRole.trim() : "";
     const safeRecipientRole = typeof recipientRole === "string" ? recipientRole.trim() : "";
-    const rawFormalityPreference = typeof formality?.preference === "string" ? formality.preference.trim().toLowerCase() : "auto";
+    const incomingFormalidad = formalidad ?? formality;
+    const rawFormalityPreference = typeof incomingFormalidad === "string"
+      ? incomingFormalidad.trim().toLowerCase()
+      : (typeof incomingFormalidad?.preference === "string" ? incomingFormalidad.preference.trim().toLowerCase() : "auto");
     const safeFormalityPreference = ["auto", "tu", "usted"].includes(rawFormalityPreference) ? rawFormalityPreference : "auto";
 
     const regionMap = {
