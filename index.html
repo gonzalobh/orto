@@ -1417,9 +1417,59 @@
       animation: blink 1s infinite;
     }
 
+    .history-search-wrapper {
+      padding: 0 0 1rem 0;
+      position: sticky;
+      top: 0;
+      background: var(--bg-secondary);
+      z-index: 10;
+    }
+
+    .history-search-input {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .history-search-input:focus {
+      border-color: var(--text-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .history-search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
     .history-list {
       display: grid;
       gap: 0.875rem;
+      max-height: calc(100vh - 280px);
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .history-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
     }
 
     .history-item {
@@ -1750,6 +1800,15 @@
       }
     }
 
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
     /* Responsive */
     @media (min-width: 1024px) {
       .main-content {
@@ -2052,6 +2111,14 @@
               </div>
             </div>
             <div id="panelHistory" class="output-panel" role="tabpanel" hidden>
+              <div class="history-search-wrapper">
+                <input 
+                  type="text" 
+                  id="historySearch" 
+                  class="history-search-input" 
+                  placeholder="Buscar en historial..."
+                />
+              </div>
               <div id="historyList" class="history-list"></div>
             </div>
           </div>
@@ -2074,6 +2141,7 @@
     const panelNewEl = document.getElementById('panelNew');
     const panelHistoryEl = document.getElementById('panelHistory');
     const historyListEl = document.getElementById('historyList');
+    const historySearchInput = document.getElementById('historySearch');
     const clearHistoryBtn = document.getElementById('clearHistoryBtn');
     const generateButton = document.getElementById('generateButton');
     const versionsControl = document.querySelector('.versions-control');
@@ -2567,6 +2635,11 @@
       setActiveOutputTab('new');
       tabNewBtn?.addEventListener('click', () => setActiveOutputTab('new'));
       tabHistoryBtn?.addEventListener('click', () => setActiveOutputTab('history'));
+      
+      // History search
+      historySearchInput?.addEventListener('input', (e) => {
+        renderHistory(e.target.value);
+      });
     }
 
 
@@ -2810,15 +2883,31 @@
       return `${day}/${month}/${year}`;
     }
 
-    function renderHistory() {
+    function renderHistory(searchQuery = '') {
       if (!historyListEl) return;
       const history = loadHistory();
-      if (history.length === 0) {
-        historyListEl.innerHTML = '<div class="history-empty">Todavía no hay emails en el historial.</div>';
+      
+      // Filter history based on search query
+      const filteredHistory = searchQuery.trim() 
+        ? history.filter(entry => {
+            const instruction = (entry.instruction || '').toLowerCase();
+            const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
+            const subject = (firstVersion?.subject || '').toLowerCase();
+            const body = (firstVersion?.body || '').toLowerCase();
+            const search = searchQuery.toLowerCase();
+            return instruction.includes(search) || subject.includes(search) || body.includes(search);
+          })
+        : history;
+      
+      if (filteredHistory.length === 0) {
+        const emptyMessage = searchQuery.trim() 
+          ? 'No se encontraron emails que coincidan con tu búsqueda.'
+          : 'Todavía no hay emails en el historial.';
+        historyListEl.innerHTML = `<div class="history-empty">${emptyMessage}</div>`;
         return;
       }
 
-      historyListEl.innerHTML = history
+      historyListEl.innerHTML = filteredHistory
         .map((entry) => {
           const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
           const title = (entry.instruction || 'Sin instrucción').trim();
