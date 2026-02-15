@@ -1433,6 +1433,12 @@
       opacity: 0.6;
     }
 
+    #sendGmailBtn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .selection-status {
       margin-top: 0.35rem;
       font-size: 0.67rem;
@@ -2453,6 +2459,41 @@ ${body}`.trim();
       });
     }
 
+    function sendViaGmail() {
+      const emailContainer = document.querySelector('.generated-email');
+
+      if (!emailContainer) {
+        alert('Primero genera un email.');
+        return;
+      }
+
+      const bodyText = emailContainer.innerText.trim();
+
+      if (!bodyText) {
+        alert('El mensaje está vacío.');
+        return;
+      }
+
+      let to = '';
+      const toInput =
+        document.querySelector('#toEmail') ||
+        document.querySelector('input[name="to"]') ||
+        document.querySelector('input[placeholder*="Para"]');
+
+      if (toInput && toInput.value) {
+        to = toInput.value.trim();
+      }
+
+      const subject = 'Mensaje';
+      const gmailURL =
+        'https://mail.google.com/mail/?view=cm&fs=1' +
+        '&to=' + encodeURIComponent(to) +
+        '&su=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(bodyText);
+
+      window.open(gmailURL, '_blank', 'noopener,noreferrer');
+    }
+
     function closeAllTranslateMenus() {
       outputEl.querySelectorAll('.translate-menu.open').forEach((menu) => menu.classList.remove('open'));
       outputEl.querySelectorAll('.translate-btn[aria-expanded="true"]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
@@ -2855,7 +2896,7 @@ ${body}`.trim();
           </div>
           <div class="version-section">
             <div class="version-title">Cuerpo</div>
-            <div class="version-content" data-role="email-body">${escapeHtml(item.body)}</div>
+            <div class="version-content generated-email" data-role="email-body">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
             <button class="icon-btn version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
@@ -2881,6 +2922,10 @@ ${body}`.trim();
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="German">Alemán</button></li>
               </ul>
             </div>
+            <button class="icon-btn action-btn" id="sendGmailBtn" type="button" title="Enviar por Gmail">
+              <i data-lucide="send"></i>
+              Enviar por Gmail
+            </button>
             <button class="version-copy-btn restore-original-btn" type="button">Volver al original</button>
           </div>
         `;
@@ -3202,6 +3247,11 @@ ${body}`.trim();
 
 
     document.addEventListener('click', (event) => {
+      const gmailBtn = event.target.closest('#sendGmailBtn');
+      if (gmailBtn) {
+        sendViaGmail();
+      }
+
       if (event.target.closest('.selection-popover')) return;
 
       if (!event.target.closest('.translate-dropdown')) {
