@@ -373,8 +373,8 @@
 
     #instruction {
       width: 100%;
-      min-height: 88px;
-      max-height: 320px;
+      min-height: 220px;
+      max-height: 400px;
       resize: none;
       line-height: 1.5;
       padding: 20px;
@@ -1135,6 +1135,9 @@
       border-radius: 12px;
       padding: 1.5rem;
       transition: all 0.15s ease;
+      min-height: 292px;
+      display: flex;
+      flex-direction: column;
     }
 
     .preview-card-header {
@@ -1186,6 +1189,7 @@
       color: var(--text-secondary);
       min-height: 200px;
       font-style: italic;
+      flex: 1;
     }
 
     .preview-context.empty {
@@ -1421,7 +1425,7 @@
       padding: 0 0 1rem 0;
       position: sticky;
       top: 0;
-      background: var(--bg-secondary);
+      background: #f2f1f0;
       z-index: 10;
     }
 
@@ -2724,6 +2728,82 @@
       renderTemplateManagerRows();
     }
 
+    function openSaveTemplateModal() {
+      const overlay = document.createElement('div');
+      overlay.className = 'template-modal-overlay';
+      overlay.innerHTML = `
+        <div class="template-modal" role="dialog" aria-modal="true" aria-label="Guardar plantilla" style="max-width: 400px;">
+          <div class="template-modal-header">
+            <strong>Guardar como plantilla</strong>
+            <button class="icon-btn" type="button" data-action="close-save">Cerrar</button>
+          </div>
+          <div style="padding: 1.5rem;">
+            <label for="templateNameInput" style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem;">
+              Nombre de la plantilla:
+            </label>
+            <input 
+              type="text" 
+              id="templateNameInput" 
+              style="width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; margin-bottom: 1rem;"
+              placeholder="Ej: Email de seguimiento"
+              autofocus
+            />
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button type="button" data-action="cancel-save" style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                Cancelar
+              </button>
+              <button type="button" data-action="confirm-save" style="padding: 0.5rem 1rem; border-radius: 8px; border: none; background: var(--accent); color: white; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const input = overlay.querySelector('#templateNameInput');
+      
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || event.target.closest('[data-action="close-save"]') || event.target.closest('[data-action="cancel-save"]')) {
+          overlay.remove();
+          return;
+        }
+        
+        if (event.target.closest('[data-action="confirm-save"]')) {
+          const name = input.value.trim();
+          if (!name) {
+            input.focus();
+            return;
+          }
+
+          const newTemplate = {
+            id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+              ? crypto.randomUUID()
+              : createHistoryId(),
+            name,
+            createdAt: Date.now(),
+            data: getCurrentFormData()
+          };
+
+          const list = loadTemplates();
+          list.push(newTemplate);
+          saveTemplates(list);
+          renderTemplateMenu();
+
+          saveBtn.classList.remove('visible');
+          overlay.remove();
+        }
+      });
+
+      // Enter key to save
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          overlay.querySelector('[data-action="confirm-save"]').click();
+        }
+      });
+    }
+
     function renderTemplateManagerRows() {
       const container = document.getElementById('templateManagerList');
       if (!container) return;
@@ -3128,8 +3208,8 @@ ${body}`.trim();
       });
     }
 
-    function sendViaGmail() {
-      const emailContainer = document.querySelector('.generated-email');
+    function sendViaGmail(emailCard) {
+      const emailContainer = emailCard || document.querySelector('.generated-email');
 
       if (!emailContainer) {
         alert('Primero genera un email.');
@@ -3898,24 +3978,7 @@ ${body}`.trim();
     });
 
     saveBtn?.addEventListener('click', () => {
-      const name = window.prompt('Nombre de la plantilla:');
-      if (!name) return;
-
-      const newTemplate = {
-        id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
-          ? crypto.randomUUID()
-          : createHistoryId(),
-        name,
-        createdAt: Date.now(),
-        data: getCurrentFormData()
-      };
-
-      const list = loadTemplates();
-      list.push(newTemplate);
-      saveTemplates(list);
-      renderTemplateMenu();
-
-      saveBtn.classList.remove('visible');
+      openSaveTemplateModal();
     });
 
     templatesBtn?.addEventListener('click', (event) => {
@@ -3936,7 +3999,12 @@ ${body}`.trim();
     document.addEventListener('click', (event) => {
       const gmailBtn = event.target.closest('#sendGmailBtn');
       if (gmailBtn) {
-        sendViaGmail();
+        // Find the email card that contains this button
+        const emailCard = gmailBtn.closest('.output-card');
+        if (emailCard) {
+          const emailContainer = emailCard.querySelector('.generated-email');
+          sendViaGmail(emailContainer);
+        }
       }
 
       if (event.target.closest('.selection-popover')) return;
