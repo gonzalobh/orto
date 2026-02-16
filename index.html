@@ -93,14 +93,15 @@
       flex: 1;
       display: grid;
       grid-template-columns: 1fr;
-      grid-auto-rows: 1fr;
       gap: clamp(32px, 4vw, 56px);
       padding: 2rem;
       max-width: 800px;
       margin: 0 auto;
       width: 100%;
-      align-items: stretch;
+      align-items: start;
       transition: max-width 0.3s ease, grid-template-columns 0.3s ease;
+      max-height: calc(100vh - 70px); /* Máximo: viewport height menos header */
+      overflow: visible; /* Permite que crezca naturalmente */
     }
 
     .main-content.has-results {
@@ -115,10 +116,11 @@
       border-radius: 12px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
-      height: 100%;
+      max-height: calc(100vh - 140px); /* Altura máxima con margen */
       position: relative;
       z-index: 2;
-      overflow: hidden;
+      overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .form-container {
@@ -1020,8 +1022,7 @@
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
       overflow-y: auto;
-      max-height: none;
-      height: 100%;
+      max-height: calc(100vh - 140px); /* Altura máxima con margen */
       position: relative;
       z-index: 2;
       opacity: 0;
@@ -1046,6 +1047,17 @@
       align-items: flex-start;
       gap: 0.75rem;
       margin-bottom: 1.25rem;
+      position: sticky;
+      top: 0;
+      background: #f2f1f0;
+      z-index: 10;
+      padding-bottom: 0.75rem;
+      margin-left: -32px;
+      margin-right: -32px;
+      padding-left: 32px;
+      padding-right: 32px;
+      margin-top: -28px;
+      padding-top: 28px;
     }
 
     .output-header h2 {
@@ -1829,6 +1841,8 @@
         padding: 1.5rem;
         gap: 1.5rem;
         max-width: 100%;
+        height: auto; /* En mobile, dejamos que crezca naturalmente */
+        overflow: visible;
       }
       
       .main-content.has-results {
@@ -1839,7 +1853,8 @@
       .left-panel,
       .right-panel {
         padding: 2rem;
-        max-height: none;
+        max-height: 600px; /* Altura máxima en mobile */
+        height: auto;
       }
     }
 
@@ -1888,6 +1903,15 @@
       .output-container {
         max-width: 100%;
       }
+      
+      .output-header {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        margin-top: -1.5rem;
+        padding-top: 1.5rem;
+      }
     }
 
     /* Scrollbar personalizado */
@@ -1907,6 +1931,13 @@
 
     ::-webkit-scrollbar-thumb:hover {
       background: #d0d0d0;
+    }
+
+    /* Scrollbar para Firefox */
+    .left-panel,
+    .right-panel {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-color) transparent;
     }
 
 
@@ -2108,7 +2139,7 @@
       <div class="right-panel">
         <div class="output-container">
           <div class="output-header">
-            <h2>Emails generados</h2>
+            <h2>Resultados</h2>
             <div class="output-header-top">
               <div class="output-tabs" role="tablist" aria-label="Salida de emails">
                 <button id="tabNew" class="output-tab active" type="button" role="tab" aria-selected="true" aria-controls="panelNew">Nuevo</button>
