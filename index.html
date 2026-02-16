@@ -1723,12 +1723,12 @@
       cursor: not-allowed;
     }
 
-    /* Estados de traducción */
-    .translate-btn.translating i,
-    .translate-btn.translated i {
+    /* Ocultar ícono cuando está traduciendo */
+    .translate-btn.translating i {
       display: none;
     }
 
+    /* Mostrar spinner cuando está traduciendo */
     .translate-btn.translating::before {
       content: '';
       width: 16px;
@@ -1737,14 +1737,6 @@
       border-top-color: #6b7280;
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
-      display: inline-block;
-    }
-
-    .translate-btn.translated::before {
-      content: '✓';
-      font-size: 16px;
-      font-weight: 600;
-      color: #10b981;
       display: inline-block;
     }
 
@@ -3688,19 +3680,12 @@ ${body}`.trim();
           restoreButton.classList.add('visible');
         }
 
+        // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
-        button.classList.add('translated');
-        setTimeout(() => {
-          button.classList.remove('translated');
-          // El ícono vuelve a mostrarse automáticamente al quitar la clase 'translated'
-        }, 1400);
       } catch (err) {
         console.error('Error al traducir:', err);
+        // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
-        // En caso de error, vuelve directamente al ícono sin mostrar checkmark
-        setTimeout(() => {
-          button.classList.remove('translated');
-        }, 100);
       } finally {
         button.disabled = false;
       }
