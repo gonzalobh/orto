@@ -1723,13 +1723,17 @@
       cursor: not-allowed;
     }
 
-    /* Cuando está traduciendo: ocultar TODO el contenido del botón */
+    /* FORZAR ocultar TODO el contenido del botón cuando está traduciendo */
+    .icon-btn.translate-btn.translating i,
+    .icon-btn.translate-btn.translating span,
     .translate-btn.translating i,
     .translate-btn.translating span {
-      display: none;
+      display: none !important;
+      visibility: hidden !important;
     }
 
     /* Sobrescribir tooltip completamente cuando está traduciendo */
+    .icon-btn.translate-btn.translating::before,
     .translate-btn.translating::before {
       content: '' !important;
       width: 16px !important;
@@ -1749,13 +1753,16 @@
       padding: 0 !important;
       box-shadow: none !important;
       opacity: 1 !important;
-      z-index: 1 !important;
+      z-index: 10 !important;
+      white-space: normal !important;
     }
 
     /* NO mostrar flecha del tooltip cuando está traduciendo */
+    .icon-btn.translate-btn.translating::after,
     .translate-btn.translating::after {
       display: none !important;
       opacity: 0 !important;
+      visibility: hidden !important;
     }
 
     @keyframes spin {
@@ -3665,6 +3672,8 @@ ${body}`.trim();
 
       button.disabled = true;
       button.classList.add('translating');
+      console.log('Clase translating agregada:', button.classList.contains('translating'));
+      console.log('Botón:', button);
 
       try {
         const res = await fetch('/api/translate', {
@@ -3701,10 +3710,12 @@ ${body}`.trim();
 
         // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
+        console.log('Clase translating removida:', !button.classList.contains('translating'));
       } catch (err) {
         console.error('Error al traducir:', err);
         // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
+        console.log('Clase translating removida (error):', !button.classList.contains('translating'));
       } finally {
         button.disabled = false;
       }
