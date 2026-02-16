@@ -1636,11 +1636,11 @@
     /* Tooltip custom con CSS */
     .version-actions .icon-btn::before,
     .restore-original-btn::before {
-      content: attr(title);
+      content: attr(data-tooltip);
       position: absolute;
-      bottom: calc(100% + 8px);
+      top: calc(100% + 8px);
       left: 50%;
-      transform: translateX(-50%) translateY(4px);
+      transform: translateX(-50%) translateY(-4px);
       background: #2b2b2b;
       color: #fff;
       font-size: 0.75rem;
@@ -1657,7 +1657,7 @@
     .restore-original-btn::after {
       content: "";
       position: absolute;
-      bottom: calc(100% + 2px);
+      top: calc(100% + 2px);
       left: 50%;
       transform: translateX(-50%) rotate(45deg);
       width: 6px;
@@ -1717,6 +1717,33 @@
     .translate-btn:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    /* Estados de traducción */
+    .translate-btn.translating i,
+    .translate-btn.translated i {
+      display: none;
+    }
+
+    .translate-btn.translating::before {
+      content: '';
+      width: 14px;
+      height: 14px;
+      border: 2px solid #d1d5db;
+      border-top-color: #374151;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      display: inline-block;
+    }
+
+    .translate-btn.translated::before {
+      content: '✓';
+      font-size: 14px;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     .version-actions .restore-original-btn {
@@ -3620,8 +3647,7 @@ ${body}`.trim();
       }
 
       button.disabled = true;
-      const originalLabel = button.textContent;
-      button.textContent = 'Traduciendo...';
+      button.classList.add('translating');
 
       try {
         const res = await fetch('/api/translate', {
@@ -3656,15 +3682,17 @@ ${body}`.trim();
           restoreButton.classList.add('visible');
         }
 
-        button.textContent = 'Traducido ✓';
+        button.classList.remove('translating');
+        button.classList.add('translated');
         setTimeout(() => {
-          button.textContent = originalLabel;
+          button.classList.remove('translated');
         }, 1400);
       } catch (err) {
         console.error('Error al traducir:', err);
-        button.textContent = 'Error';
+        button.classList.remove('translating');
+        button.classList.add('translated');
         setTimeout(() => {
-          button.textContent = originalLabel;
+          button.classList.remove('translated');
         }, 1400);
       } finally {
         button.disabled = false;
@@ -3765,34 +3793,34 @@ ${body}`.trim();
             <div class="version-content generated-email" data-role="email-body" contenteditable="true">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
-            <button class="icon-btn version-copy-btn" type="button" title="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
+            <button class="icon-btn version-copy-btn" type="button" data-tooltip="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
               <i data-lucide="copy"></i>
               <span>Copiar</span>
             </button>
 
-            <button class="icon-btn expand-btn" type="button" title="Expandir">
+            <button class="icon-btn expand-btn" type="button" data-tooltip="Expandir">
               <i data-lucide="maximize-2"></i>
               <span>Expandir</span>
             </button>
 
-            <button class="icon-btn shorten-btn" type="button" title="Acortar">
+            <button class="icon-btn shorten-btn" type="button" data-tooltip="Acortar">
               <i data-lucide="minimize-2"></i>
               <span>Acortar</span>
             </button>
 
             <div class="translate-dropdown">
-              <button class="icon-btn translate-btn" type="button" title="Traducir" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
+              <button class="icon-btn translate-btn" type="button" data-tooltip="Traducir" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="German">Alemán</button></li>
               </ul>
             </div>
-            <button class="icon-btn action-btn send-gmail-btn" type="button" title="Enviar por Gmail">
+            <button class="icon-btn action-btn send-gmail-btn" type="button" data-tooltip="Enviar por Gmail">
               <i data-lucide="send"></i>
               <span>Enviar por Gmail</span>
             </button>
-            <button class="icon-btn restore-original-btn" type="button" title="Volver al original">
+            <button class="icon-btn restore-original-btn" type="button" data-tooltip="Volver al original">
               <i data-lucide="undo-2"></i>
               <span>Volver al original</span>
             </button>
