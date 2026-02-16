@@ -1049,7 +1049,9 @@
       margin-bottom: 1.25rem;
       position: sticky;
       top: 0;
-      background: #f2f1f0;
+      background: rgba(242, 241, 240, 0.98);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       z-index: 10;
       padding-bottom: 0.75rem;
       margin-left: -32px;
@@ -1058,7 +1060,8 @@
       padding-right: 32px;
       margin-top: -28px;
       padding-top: 20px;
-      box-shadow: 0 1px 0 0 #f2f1f0, 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.08);
     }
 
     .output-header h2 {
@@ -1629,6 +1632,56 @@
       opacity: 1;
       width: 32px;
       height: 32px;
+      position: relative;
+    }
+
+    /* Tooltip custom con CSS */
+    .version-actions .icon-btn::before,
+    .restore-original-btn::before {
+      content: attr(title);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.375rem 0.625rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 100;
+    }
+
+    .version-actions .icon-btn::after,
+    .restore-original-btn::after {
+      content: "";
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 6px;
+      height: 6px;
+      background: #2b2b2b;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease 0.05s;
+      z-index: 99;
+    }
+
+    .version-actions .icon-btn:hover::before,
+    .version-actions .icon-btn:hover::after,
+    .restore-original-btn:hover::before,
+    .restore-original-btn:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .version-actions .icon-btn:hover::after,
+    .restore-original-btn:hover::after {
+      transform: translateX(-50%) rotate(45deg);
     }
 
     /* Ocultar el texto, solo mostrar íconos */
