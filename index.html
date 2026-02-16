@@ -1723,51 +1723,30 @@
       cursor: not-allowed;
     }
 
-    /* FORZAR ocultar TODO el contenido del botón cuando está traduciendo */
-    .icon-btn.translate-btn.translating i,
-    .icon-btn.translate-btn.translating span,
-    .translate-btn.translating i,
-    .translate-btn.translating span {
-      display: none !important;
-      visibility: hidden !important;
+    /* Spinner HTML dentro del botón (oculto por defecto) */
+    .translate-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #e5e7eb;
+      border-top-color: #6b7280;
+      border-radius: 50%;
+      animation: spin-translate 0.8s linear infinite;
+      display: none;
     }
 
-    /* Sobrescribir tooltip completamente cuando está traduciendo */
-    .icon-btn.translate-btn.translating::before,
-    .translate-btn.translating::before {
-      content: '' !important;
-      width: 16px !important;
-      height: 16px !important;
-      border: 2px solid #e5e7eb !important;
-      border-top-color: #6b7280 !important;
-      border-radius: 50% !important;
-      animation: spin 0.8s linear infinite !important;
+    /* Cuando está traduciendo: mostrar spinner, ocultar ícono */
+    .translate-btn.translating .translate-spinner {
       display: block !important;
-      margin: 0 !important;
-      position: absolute !important;
-      top: 50% !important;
-      left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      background: transparent !important;
-      color: transparent !important;
-      padding: 0 !important;
-      box-shadow: none !important;
-      opacity: 1 !important;
-      z-index: 10 !important;
-      white-space: normal !important;
     }
 
-    /* NO mostrar flecha del tooltip cuando está traduciendo */
-    .icon-btn.translate-btn.translating::after,
-    .translate-btn.translating::after {
+    .translate-btn.translating i,
+    .translate-btn.translating > span {
       display: none !important;
-      opacity: 0 !important;
-      visibility: hidden !important;
     }
 
-    @keyframes spin {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    @keyframes spin-translate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     .version-actions .restore-original-btn {
@@ -3672,8 +3651,6 @@ ${body}`.trim();
 
       button.disabled = true;
       button.classList.add('translating');
-      console.log('Clase translating agregada:', button.classList.contains('translating'));
-      console.log('Botón:', button);
 
       try {
         const res = await fetch('/api/translate', {
@@ -3710,12 +3687,10 @@ ${body}`.trim();
 
         // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
-        console.log('Clase translating removida:', !button.classList.contains('translating'));
       } catch (err) {
         console.error('Error al traducir:', err);
         // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
-        console.log('Clase translating removida (error):', !button.classList.contains('translating'));
       } finally {
         button.disabled = false;
       }
@@ -3831,7 +3806,11 @@ ${body}`.trim();
             </button>
 
             <div class="translate-dropdown">
-              <button class="icon-btn translate-btn" type="button" data-tooltip="Traducir" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
+              <button class="icon-btn translate-btn" type="button" data-tooltip="Traducir" aria-haspopup="true" aria-expanded="false">
+                <span class="translate-spinner" style="display:none;"></span>
+                <i data-lucide="languages"></i>
+                <span>Traducir</span>
+              </button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
