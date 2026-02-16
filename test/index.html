@@ -2171,6 +2171,40 @@
                   </button>
                 </div>
               </div>
+
+              <!-- Región Control -->
+              <div class="config-control-wrapper">
+                <button id="regionBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="regionLabel">Internacional</span>
+                  <i data-lucide="chevron-down"></i>
+                </button>
+                <div id="regionDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="">
+                    <span>Internacional</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="españa">
+                    <span>España</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="méxico">
+                    <span>México</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="argentina">
+                    <span>Argentina</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="chile">
+                    <span>Chile</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="colombia">
+                    <span>Colombia</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                </div>
+              </div>
             </div>
 
             <div class="instruction-wrapper">
@@ -2256,6 +2290,8 @@
     const formalidadDropdown = document.getElementById('formalidadDropdown');
     const longitudBtn = document.getElementById('longitudBtn');
     const longitudDropdown = document.getElementById('longitudDropdown');
+    const regionBtn = document.getElementById('regionBtn');
+    const regionDropdown = document.getElementById('regionDropdown');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('historyBtn');
@@ -2287,6 +2323,7 @@
     const SELECTION_MIN_LENGTH = 3;
     const STORAGE_KEY = 'formalidadPreference';
     const LONGITUD_KEY = 'longitudPreference';
+    const REGION_KEY = 'regionPreference';
     const PROFILE_KEY = 'userProfile';
 
     let currentMode = 'compose';
@@ -2307,11 +2344,15 @@
     let instructionHintTypingTimer = null;
     let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
     let longitudValue = localStorage.getItem(LONGITUD_KEY) || 'detallado';
+    let regionValue = localStorage.getItem(REGION_KEY) || '';
     if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
       formalidadValue = 'auto';
     }
     if (!['breve', 'detallado', 'completo'].includes(longitudValue)) {
       longitudValue = 'detallado';
+    }
+    if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
+      regionValue = '';
     }
 
 
@@ -2377,10 +2418,14 @@
       const isExpanded = formalidadBtn.getAttribute('aria-expanded') === 'true';
       formalidadBtn.setAttribute('aria-expanded', !isExpanded);
       formalidadDropdown.hidden = isExpanded;
-      // Close longitud dropdown if open
+      // Close other dropdowns if open
       if (longitudBtn && longitudDropdown) {
         longitudBtn.setAttribute('aria-expanded', 'false');
         longitudDropdown.hidden = true;
+      }
+      if (regionBtn && regionDropdown) {
+        regionBtn.setAttribute('aria-expanded', 'false');
+        regionDropdown.hidden = true;
       }
     });
 
@@ -2436,10 +2481,14 @@
       const isExpanded = longitudBtn.getAttribute('aria-expanded') === 'true';
       longitudBtn.setAttribute('aria-expanded', !isExpanded);
       longitudDropdown.hidden = isExpanded;
-      // Close formalidad dropdown if open
+      // Close other dropdowns if open
       if (formalidadBtn && formalidadDropdown) {
         formalidadBtn.setAttribute('aria-expanded', 'false');
         formalidadDropdown.hidden = true;
+      }
+      if (regionBtn && regionDropdown) {
+        regionBtn.setAttribute('aria-expanded', 'false');
+        regionDropdown.hidden = true;
       }
     });
 
@@ -2458,6 +2507,72 @@
       });
     });
 
+    // Región control
+    const regionLabel = document.getElementById('regionLabel');
+    const regionOptions = regionDropdown?.querySelectorAll('.config-dropdown-option') || [];
+
+    const regionLabels = {
+      '': 'Internacional',
+      'españa': 'España',
+      'méxico': 'México',
+      'argentina': 'Argentina',
+      'chile': 'Chile',
+      'colombia': 'Colombia'
+    };
+
+    localStorage.setItem(REGION_KEY, regionValue);
+
+    if (regionLabel) {
+      regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+    }
+
+    function updateRegionChecks() {
+      regionOptions.forEach((btn) => {
+        const icon = btn.querySelector('i[data-lucide="check"]');
+        if (!icon) return;
+        if (btn.dataset.value === regionValue) {
+          btn.classList.add('selected');
+          icon.style.opacity = '1';
+        } else {
+          btn.classList.remove('selected');
+          icon.style.opacity = '0';
+        }
+      });
+    }
+
+    updateRegionChecks();
+
+    regionBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = regionBtn.getAttribute('aria-expanded') === 'true';
+      regionBtn.setAttribute('aria-expanded', !isExpanded);
+      regionDropdown.hidden = isExpanded;
+      // Close other dropdowns if open
+      if (formalidadBtn && formalidadDropdown) {
+        formalidadBtn.setAttribute('aria-expanded', 'false');
+        formalidadDropdown.hidden = true;
+      }
+      if (longitudBtn && longitudDropdown) {
+        longitudBtn.setAttribute('aria-expanded', 'false');
+        longitudDropdown.hidden = true;
+      }
+    });
+
+    regionOptions.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        regionValue = btn.dataset.value || '';
+        localStorage.setItem(REGION_KEY, regionValue);
+
+        if (regionLabel) {
+          regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+        }
+
+        updateRegionChecks();
+        regionDropdown.hidden = true;
+        regionBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
     // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
       if (formalidadBtn && formalidadDropdown) {
@@ -2470,6 +2585,12 @@
         if (!longitudBtn.contains(e.target) && !longitudDropdown.contains(e.target)) {
           longitudDropdown.hidden = true;
           longitudBtn.setAttribute('aria-expanded', 'false');
+        }
+      }
+      if (regionBtn && regionDropdown) {
+        if (!regionBtn.contains(e.target) && !regionDropdown.contains(e.target)) {
+          regionDropdown.hidden = true;
+          regionBtn.setAttribute('aria-expanded', 'false');
         }
       }
     });
@@ -2818,7 +2939,7 @@
         instruction: document.getElementById('instruction').value,
         formalidad: formalidadValue,
         longitud: longitudValue,
-        recipientRegion: '',
+        recipientRegion: regionValue,
         mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
       };
     }
@@ -2858,7 +2979,15 @@
       }
       updateLongitudChecks();
       
-      updateRecipientRegionSelection(data.recipientRegion || '');
+      // Apply region
+      const templateRegion = data.recipientRegion || '';
+      regionValue = ['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(templateRegion) ? templateRegion : '';
+      localStorage.setItem(REGION_KEY, regionValue);
+      if (regionLabel) {
+        regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+      }
+      updateRegionChecks();
+      
       setMode(data.mode || 'compose');
 
       [instructionEl, originalEmailEl].forEach((el) => {
@@ -4011,7 +4140,7 @@ ${body}`.trim();
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
             clientName,
-            recipientRegion: "",
+            recipientRegion: regionValue,
             senderRole,
             recipientRole,
             formalidad: formality,
@@ -4267,65 +4396,6 @@ ${body}`.trim();
       clearHistoryBtnInit.hidden = true;
     }
 
-    // Custom Select Dropdown para recipientRegion
-    (function() {
-      const recipientRegionBtn = document.getElementById('recipientRegionBtn');
-      const recipientRegionMenu = document.getElementById('recipientRegionMenu');
-      const recipientRegionText = document.getElementById('recipientRegionText');
-      const recipientRegionInput = document.getElementById('recipientRegion');
-      const recipientRegionOptions = recipientRegionMenu?.querySelectorAll('.custom-select-option');
-
-      if (!recipientRegionBtn || !recipientRegionMenu || !recipientRegionOptions) return;
-
-      // Toggle dropdown
-      recipientRegionBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isExpanded = recipientRegionBtn.getAttribute('aria-expanded') === 'true';
-        recipientRegionBtn.setAttribute('aria-expanded', !isExpanded);
-        recipientRegionMenu.hidden = isExpanded;
-      });
-
-      // Select option
-      recipientRegionOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const value = option.dataset.value;
-          const text = option.textContent;
-
-          // Update UI
-          recipientRegionText.textContent = text;
-          recipientRegionInput.value = value;
-
-          // Update selected state
-          recipientRegionOptions.forEach(opt => {
-            opt.classList.remove('selected');
-            opt.setAttribute('aria-checked', 'false');
-          });
-          option.classList.add('selected');
-          option.setAttribute('aria-checked', 'true');
-
-          // Close dropdown
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        });
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!recipientRegionBtn.contains(e.target) && !recipientRegionMenu.contains(e.target)) {
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        }
-      });
-
-      // Close on Escape key
-      recipientRegionBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        }
-      });
-    })();
   </script>
 </body>
 </html>
