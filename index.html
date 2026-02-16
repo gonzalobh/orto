@@ -1727,11 +1727,17 @@
     .translate-spinner {
       width: 16px;
       height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      max-width: 16px;
+      max-height: 16px;
       border: 2px solid #e5e7eb;
       border-top-color: #6b7280;
       border-radius: 50%;
       animation: spin-translate 0.8s linear infinite;
       display: none;
+      flex-shrink: 0;
+      box-sizing: border-box;
     }
 
     /* Cuando está traduciendo: mostrar spinner, ocultar ícono */
