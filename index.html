@@ -1057,7 +1057,8 @@
       padding-left: 32px;
       padding-right: 32px;
       margin-top: -28px;
-      padding-top: 28px;
+      padding-top: 20px;
+      box-shadow: 0 1px 0 0 #f2f1f0, 0 2px 4px -1px rgba(0, 0, 0, 0.05);
     }
 
     .output-header h2 {
@@ -1564,7 +1565,7 @@
 
     .version-title {
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 800;
       color: var(--text-primary);
       letter-spacing: -0.01em;
       margin-bottom: 0.5rem;
@@ -1605,7 +1606,7 @@
     .version-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.375rem;
       padding-top: 1rem;
       border-top: 1px solid #e5e7eb;
     }
@@ -1614,10 +1615,11 @@
     .restore-original-btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.375rem;
       border: 0;
       background: transparent;
-      padding: 0.375rem 0.75rem;
+      padding: 0.5rem;
       border-radius: 0.375rem;
       cursor: pointer;
       color: #374151;
@@ -1625,7 +1627,14 @@
       line-height: 1.25rem;
       transition: background-color 0.15s ease, color 0.15s ease;
       opacity: 1;
-      justify-content: flex-start;
+      width: 32px;
+      height: 32px;
+    }
+
+    /* Ocultar el texto, solo mostrar íconos */
+    .version-actions .icon-btn span,
+    .restore-original-btn span {
+      display: none;
     }
 
     .version-actions .icon-btn:hover,
@@ -1910,7 +1919,7 @@
         padding-left: 1.5rem;
         padding-right: 1.5rem;
         margin-top: -1.5rem;
-        padding-top: 1.5rem;
+        padding-top: 1rem;
       }
     }
 
@@ -3705,23 +3714,23 @@ ${body}`.trim();
             <div class="version-content generated-email" data-role="email-body" contenteditable="true">${escapeHtml(item.body)}</div>
           </div>
           <div class="version-actions">
-            <button class="icon-btn version-copy-btn" type="button" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
+            <button class="icon-btn version-copy-btn" type="button" title="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
               <i data-lucide="copy"></i>
               <span>Copiar</span>
             </button>
 
-            <button class="icon-btn expand-btn" type="button">
+            <button class="icon-btn expand-btn" type="button" title="Expandir">
               <i data-lucide="maximize-2"></i>
               <span>Expandir</span>
             </button>
 
-            <button class="icon-btn shorten-btn" type="button">
+            <button class="icon-btn shorten-btn" type="button" title="Acortar">
               <i data-lucide="minimize-2"></i>
               <span>Acortar</span>
             </button>
 
             <div class="translate-dropdown">
-              <button class="icon-btn translate-btn" type="button" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
+              <button class="icon-btn translate-btn" type="button" title="Traducir" aria-haspopup="true" aria-expanded="false"><i data-lucide="languages"></i><span>Traducir</span></button>
               <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
                 <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
@@ -3730,9 +3739,12 @@ ${body}`.trim();
             </div>
             <button class="icon-btn action-btn send-gmail-btn" type="button" title="Enviar por Gmail">
               <i data-lucide="send"></i>
-              Enviar por Gmail
+              <span>Enviar por Gmail</span>
             </button>
-            <button class="version-copy-btn restore-original-btn" type="button">Volver al original</button>
+            <button class="icon-btn restore-original-btn" type="button" title="Volver al original">
+              <i data-lucide="undo-2"></i>
+              <span>Volver al original</span>
+            </button>
           </div>
         `;
         outputEl.appendChild(card);
