@@ -845,27 +845,41 @@
       position: absolute;
       right: 14px;
       bottom: 10px;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
       border: none;
       display: flex;
       align-items: center;
       justify-content: center;
+      background: #1a1a1a;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .generate-inline:hover:not(:disabled) {
+      background: #000000;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .generate-inline:disabled {
       background: #e5e5e5;
       color: #9a9a9a;
-      cursor: default;
-      transition: all 0.18s ease;
-      z-index: 3;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     .generate-inline i {
-      width: 14px;
-      height: 14px;
+      width: 18px;
+      height: 18px;
     }
 
     .generate-inline.active {
-      background: #111;
+      background: #1a1a1a;
       color: #fff;
       cursor: pointer;
     }
@@ -1036,7 +1050,7 @@
 
     .versions-control {
       position: absolute;
-      right: 54px;
+      right: 70px;
       bottom: 12px;
     }
 
@@ -2502,7 +2516,7 @@
               </div>
 
               <button id="generateButton" class="generate-inline" type="button" disabled>
-                <i data-lucide="arrow-up"></i>
+                <i data-lucide="arrow-right"></i>
               </button>
 
               <button id="saveTemplateFloating"
