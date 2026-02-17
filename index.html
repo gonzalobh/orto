@@ -5,6 +5,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Redactar.ai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
@@ -29,8 +32,134 @@
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
+    html.dark {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --bg-main: #1c1c1e;
+      --bg-input: #2c2c2e;
+      --border-color: #3a3a3c;
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1a6;
+      --text-tertiary: #6e6e73;
+      --accent: #f5f5f7;
+      --accent-color: #f5f5f7;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    html.dark body {
+      background: #111111;
+    }
+
+    html.dark header {
+      background: #111111;
+    }
+
+    html.dark .left-panel,
+    html.dark .right-panel,
+    html.dark .results-panel,
+    html.dark .mode-toggle,
+    html.dark .output-tabs-sticky {
+      background: #1c1c1e !important;
+      border-color: #3a3a3c;
+    }
+
+    html.dark .history-search-wrapper {
+      background: #1c1c1e !important;
+    }
+
+    html.dark .save-template-floating {
+      background-color: #2c2c2e !important;
+    }
+
+    html.dark .form-container,
+    html.dark textarea,
+    html.dark input[type="text"],
+    html.dark input[type="email"],
+    html.dark select {
+      background: #1c1c1e;
+      color: var(--text-primary);
+      border-color: #3a3a3c;
+    }
+
+    html.dark textarea::placeholder,
+    html.dark input::placeholder {
+      color: #6e6e73;
+    }
+
+    html.dark .dropdown-option,
+    html.dark .dropdown-menu,
+    html.dark .profile-dropdown,
+    html.dark .custom-select-menu,
+    html.dark .templates-dropdown,
+    html.dark .region-dropdown {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c;
+      color: var(--text-primary);
+    }
+
+    html.dark .dropdown-option:hover,
+    html.dark .custom-select-option:hover {
+      background: #3a3a3c !important;
+    }
+
+    html.dark .profile-dropdown input {
+      background: #3a3a3c;
+      border-color: #48484a;
+      color: var(--text-primary);
+    }
+
+    html.dark .config-control-btn,
+    html.dark .custom-select-btn {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c !important;
+      color: var(--text-secondary) !important;
+    }
+
+    html.dark .config-control-btn:hover,
+    html.dark .custom-select-btn:hover {
+      border-color: #636366 !important;
+      color: var(--text-primary) !important;
+    }
+
+    html.dark .mode-toggle-btn {
+      color: var(--text-secondary);
+    }
+
+    html.dark .mode-toggle-btn.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+    }
+
+    /* Botón tema */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: #fafaf9;
       color: var(--text-primary);
       line-height: 1.5;
@@ -38,7 +167,9 @@
       -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
       position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
+
 
     .container {
       min-height: 100vh;
@@ -62,6 +193,44 @@
       font-weight: 600;
       color: var(--text-primary);
       letter-spacing: -0.02em;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .header-icon-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .header-icon-btn i {
+      width: 16px;
+      height: 16px;
     }
 
     /* Barra de controles superior */
@@ -94,7 +263,7 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: clamp(32px, 4vw, 56px);
-      padding: 2rem;
+      padding: 1rem 2rem 2rem 2rem;
       max-width: 800px;
       margin: 0 auto;
       width: 100%;
@@ -105,7 +274,7 @@
     }
 
     .main-content.has-results {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 35fr 65fr;
       max-width: 1400px;
     }
 
@@ -113,10 +282,10 @@
     .left-panel {
       background: #f2f1f0;
       padding: 0;
-      border-radius: 12px;
+      border-radius: 20px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
-      max-height: calc(100vh - 140px); /* Altura máxima con margen */
+      height: fit-content;
       position: relative;
       z-index: 2;
       overflow-y: auto;
@@ -399,7 +568,7 @@
       line-height: 1.5;
       padding: 20px;
       padding-bottom: 52px;
-      border-radius: 12px;
+      border-radius: 20px;
       transition: height 0.15s ease,
                   box-shadow 0.2s ease;
     }
@@ -415,6 +584,120 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+    }
+
+    /* Configuration Controls Row */
+    .config-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .config-control-wrapper {
+      position: relative;
+    }
+
+    .config-control-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .config-control-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .config-control-btn i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .templates-btn {
+      position: relative;
+    }
+
+    .templates-btn:hover {
+      background: var(--bg-secondary);
+    }
+
+    #templatesMenu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 200px;
+    }
+
+    .config-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem;
+      min-width: 160px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .config-dropdown:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .config-dropdown-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+    }
+
+    .config-dropdown-option:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .config-dropdown-option.selected {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .config-dropdown-option i,
+    .config-dropdown-option svg.lucide {
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+    }
+
+    .config-dropdown-option.selected i,
+    .config-dropdown-option.selected svg.lucide {
+      opacity: 1;
     }
 
     .profile-dropdown-wrapper {
@@ -558,54 +841,6 @@
       z-index: 1;
     }
 
-    .editor-control {
-      position: absolute;
-      bottom: 12px;
-
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-
-      font-size: 13px;
-      font-weight: 400;
-
-      color: #6b6b6b;
-      background: transparent;
-      border: none;
-      padding: 2px 6px;
-      border-radius: 6px;
-
-      cursor: pointer;
-      transition: all 0.15s ease;
-      z-index: 3;
-    }
-
-    .editor-control:hover {
-      background: #f3f3f3;
-      color: #111;
-    }
-
-    .editor-control:focus {
-      outline: none;
-      box-shadow: none;
-    }
-
-    .editor-control i {
-      width: 14px;
-      height: 14px;
-      opacity: 0.6;
-    }
-
-    #formalidadTrigger {
-      right: 54px;
-    }
-
-    #versionsButton {
-      position: relative;
-      right: auto;
-      bottom: auto;
-    }
-
     .generate-inline {
       position: absolute;
       right: 14px;
@@ -633,105 +868,6 @@
       background: #111;
       color: #fff;
       cursor: pointer;
-    }
-
-    .formalidad-dropdown {
-      position: absolute;
-      top: calc(93% + 8px);
-      right: 0;
-
-      background: #ffffff;
-      border: 1px solid #e7e7e7;
-      border-radius: 10px;
-
-      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-
-      padding: 6px;
-      min-width: 190px;
-
-      display: flex;
-      flex-direction: column;
-      animation: fadeUp 0.14s ease;
-      z-index: 4;
-    }
-
-    .formalidad-tooltip {
-      position: absolute;
-      bottom: 46px;
-      right: 30px;
-      transform: translateY(4px);
-      background: #2b2b2b;
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s ease, transform 0.15s ease;
-      z-index: 5;
-    }
-
-    .formalidad-tooltip::after {
-      content: "";
-      position: absolute;
-      right: 24px;
-      bottom: -4px;
-      width: 8px;
-      height: 8px;
-      background: #2b2b2b;
-      transform: rotate(45deg);
-    }
-
-    .versions-tooltip {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%) translateY(4px);
-      background: #2b2b2b;
-      color: #fff;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s ease, transform 0.15s ease;
-      z-index: 5;
-    }
-
-    .versions-tooltip::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%) rotate(45deg);
-      bottom: -4px;
-      width: 8px;
-      height: 8px;
-      background: #2b2b2b;
-    }
-
-    .formalidad-dropdown button {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: none;
-      border: none;
-      text-align: left;
-      padding: 7px 10px;
-      border-radius: 7px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .formalidad-dropdown i {
-      width: 16px;
-      height: 16px;
-      opacity: 0.7;
-    }
-
-    .formalidad-dropdown button:hover {
-      background: #f5f5f5;
     }
 
     .hidden {
@@ -775,6 +911,12 @@
     /* Slight emphasis on hover */
     button:hover .lucide {
       opacity: 1;
+    }
+
+    /* Override: never show check icon on hover unless selected */
+    .config-dropdown-option:not(.selected):hover i,
+    .config-dropdown-option:not(.selected):hover svg.lucide {
+      opacity: 0 !important;
     }
 
     .icon-btn {
@@ -894,7 +1036,7 @@
 
     .versions-control {
       position: absolute;
-      right: 170px;
+      right: 54px;
       bottom: 12px;
     }
 
@@ -902,7 +1044,7 @@
       width: 100%;
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 20px;
       padding: 0.5rem 0.45rem;
       font-size: 0.6875rem;
       line-height: 1.3;
@@ -1018,11 +1160,12 @@
       background: #f2f1f0;
       padding: 28px 32px 32px 32px;
       margin-top: 4px;
-      border-radius: 12px;
+      border-radius: 20px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
       overflow-y: auto;
-      max-height: calc(100vh - 140px); /* Altura máxima con margen */
+      height: calc(100vh - 140px); /* Altura fija igual a left-panel */
+      min-height: 500px; /* Altura mínima igual a left-panel */
       position: relative;
       z-index: 2;
       opacity: 0;
@@ -1384,8 +1527,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 1rem;
       padding: 2rem 0;
+      min-height: 300px;
     }
 
     .skeleton-spinner {
@@ -1401,12 +1546,11 @@
       font-size: 0.875rem;
       color: var(--text-secondary);
       font-weight: 500;
+      transition: opacity 0.15s ease;
     }
 
     .skeleton-substatus {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-      margin-top: 0.25rem;
+      display: none;
     }
 
     .output-loading::after {
@@ -1546,8 +1690,7 @@
     }
 
     .version-card:hover {
-      border-color: var(--text-secondary);
-      box-shadow: var(--shadow-sm);
+      /* Hover effect removed */
     }
 
     .version-label {
@@ -1927,14 +2070,14 @@
     /* Responsive */
     @media (min-width: 1024px) {
       .main-content.has-results {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 35fr 65fr;
       }
     }
 
     @media (max-width: 1023px) {
       .main-content {
         grid-template-columns: 1fr;
-        padding: 1.5rem;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
         gap: 1.5rem;
         max-width: 100%;
         height: auto; /* En mobile, dejamos que crezca naturalmente */
@@ -1949,8 +2092,8 @@
       .left-panel,
       .right-panel {
         padding: 2rem;
-        max-height: 600px; /* Altura máxima en mobile */
-        height: auto;
+        height: 600px; /* Altura fija en tablet */
+        min-height: 400px;
       }
     }
 
@@ -1977,7 +2120,7 @@
       }
 
       .main-content {
-        padding: 1rem;
+        padding: 0.5rem 1rem 1rem 1rem;
       }
 
       .left-panel,
@@ -2000,6 +2143,50 @@
         max-width: 100%;
       }
       
+
+      
+      /* Mobile: Stack config controls or wrap them */
+      .config-controls-row {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .config-control-wrapper {
+        flex-shrink: 0;
+      }
+      
+      /* Mobile: Reduce form padding */
+      .form-container {
+        padding: 1.25rem 1rem 1.5rem 1rem;
+      }
+      
+      /* Mobile: Adjust textarea size */
+      #instruction {
+        min-height: 150px;
+        padding: 16px;
+        padding-bottom: 52px;
+        font-size: 1rem;
+      }
+      
+      textarea,
+      input[type="text"] {
+        font-size: 1rem;
+      }
+      
+      /* Mobile: Smaller config buttons */
+      .config-control-btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.65rem;
+      }
+      
+      /* Mobile: Adjust mode toggle buttons */
+      .mode-toggle-btn {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.85rem;
+      }
+
       .output-header {
         margin-left: -1.5rem;
         margin-right: -1.5rem;
@@ -2007,6 +2194,61 @@
         padding-right: 1.5rem;
         margin-top: -1.5rem;
         padding-top: 1rem;
+      }
+    }
+
+
+    
+    /* Extra small screens (phones in portrait) */
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 0.75rem;
+      }
+      
+      .left-panel,
+      .right-panel {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      
+      .form-container {
+        padding: 1rem 0.875rem 1.25rem 0.875rem;
+      }
+      
+      .input-label {
+        font-size: 0.875rem;
+      }
+      
+      #instruction {
+        min-height: 140px;
+        padding: 14px;
+        padding-bottom: 50px;
+        font-size: 0.9375rem;
+      }
+      
+      textarea,
+      input[type="text"] {
+        font-size: 0.9375rem;
+        padding: 0.625rem 0.875rem;
+      }
+      
+      .config-control-btn {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.55rem;
+      }
+      
+      header h1 {
+        font-size: 0.9375rem;
+      }
+      
+      .mode-toggle-btn {
+        font-size: 0.75rem;
+        padding: 0.45rem 0.75rem;
+      }
+      
+      .generate-button {
+        font-size: 0.8125rem;
+        padding: 0.625rem 1.25rem;
       }
     }
 
@@ -2115,7 +2357,33 @@
 <body>
   <div class="container">
     <header>
-      <h1>Redactar.ai</h1>
+      <div class="header-content">
+        <h1>Redactar.ai</h1>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+            <i data-lucide="moon" id="themeIconMoon"></i>
+            <i data-lucide="sun" id="themeIconSun" style="display:none"></i>
+          </button>
+          <div class="profile-dropdown-wrapper">
+            <button id="profileBtn" class="icon-btn header-icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i data-lucide="user"></i>
+              <span>Perfil</span>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown" hidden>
+              <div class="profile-dropdown-title">Tu perfil</div>
+              <div class="profile-dropdown-field">
+                <label for="profileName">Nombre</label>
+                <input type="text" id="profileName" placeholder="Juan Pérez">
+              </div>
+              <div class="profile-dropdown-field">
+                <label for="profileRole">Cargo</label>
+                <input type="text" id="profileRole" placeholder="Gerente de Ventas">
+              </div>
+              <button id="profileSaveBtn" class="profile-save-btn" type="button">Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </header>
 
 
@@ -2146,35 +2414,76 @@
           <div class="input-group">
             <div class="instruction-header">
               <label class="input-label" for="instruction">¿Qué email quieres enviar?</label>
+            </div>
 
-              <div class="header-buttons">
-                <button id="templatesBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                  <i data-lucide="form"></i>
-                  Plantilla
+            <!-- Configuration Controls Row -->
+            <div class="config-controls-row">
+              <!-- Formalidad Control -->
+              <div class="config-control-wrapper">
+                <button id="formalidadBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="formalidadLabel">Formal (Usted)</span>
+                  <i data-lucide="chevron-down"></i>
                 </button>
-                
-                <div class="profile-dropdown-wrapper">
-                  <button id="profileBtn" class="icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                    <i data-lucide="user"></i>
-                    Perfil
+                <div id="formalidadDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="usted">
+                    <span>Formal (Usted)</span>
+                    <i data-lucide="check"></i>
                   </button>
-                  <div class="profile-dropdown" id="profileDropdown" hidden>
-                    <div class="profile-dropdown-title">Tu perfil</div>
-                    <div class="profile-dropdown-field">
-                      <label for="profileName">Nombre</label>
-                      <input type="text" id="profileName" placeholder="Juan Pérez">
-                    </div>
-                    <div class="profile-dropdown-field">
-                      <label for="profileRole">Cargo</label>
-                      <input type="text" id="profileRole" placeholder="Gerente de Ventas">
-                    </div>
-                    <button id="profileSaveBtn" class="profile-save-btn" type="button">Guardar</button>
-                  </div>
+                  <button type="button" class="config-dropdown-option" data-value="tu">
+                    <span>Informal (Tú)</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="auto">
+                    <span>Auto</span>
+                    <i data-lucide="check"></i>
+                  </button>
                 </div>
               </div>
-              
-              <div class="custom-select-menu" id="templatesMenu" role="menu" hidden></div>
+
+              <!-- Región Control -->
+              <div class="config-control-wrapper">
+                <button id="regionBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="regionLabel">Internacional</span>
+                  <i data-lucide="chevron-down"></i>
+                </button>
+                <div id="regionDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="">
+                    <span>Internacional</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="españa">
+                    <span>España</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="méxico">
+                    <span>México</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="argentina">
+                    <span>Argentina</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="chile">
+                    <span>Chile</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="colombia">
+                    <span>Colombia</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Plantilla Button -->
+              <div class="config-control-wrapper">
+                <button id="templatesBtn" class="config-control-btn templates-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <i data-lucide="folder"></i>
+                  <span>Plantilla</span>
+                </button>
+                <div class="custom-select-menu" id="templatesMenu" role="menu" hidden></div>
+              </div>
             </div>
+
             <div class="instruction-wrapper">
               <textarea
                 id="instruction"
@@ -2183,12 +2492,8 @@
               ></textarea>
 
               <div class="versions-control strategy-dropdown">
-                <div id="versionsTooltip" class="versions-tooltip hidden">
-                  Variantes
-                </div>
-                <button id="versionsButton" class="editor-control" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
-                  <span id="versionsLabel">1 variante</span>
-                  <i data-lucide="chevron-down"></i>
+                <button id="versionsButton" class="strategy-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu">
+                  <span class="strategy-title" id="versionsLabel">1 variante</span>
                 </button>
                 <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
                   <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1"><span>1 variante</span><i class="check hidden" data-lucide="check"></i></button></li>
@@ -2196,24 +2501,9 @@
                 </ul>
               </div>
 
-              <button id="formalidadTrigger" class="editor-control" type="button">
-                <span id="formalidadLabel">Automático</span>
-                <i data-lucide="chevron-down"></i>
-              </button>
-
               <button id="generateButton" class="generate-inline" type="button" disabled>
                 <i data-lucide="arrow-up"></i>
               </button>
-
-              <div id="formalidadTooltip" class="formalidad-tooltip hidden">
-                Formalidad
-              </div>
-
-              <div id="formalidadDropdown" class="formalidad-dropdown hidden">
-                <button type="button" data-value="auto"><span>Automático</span><i class="check hidden" data-lucide="check"></i></button>
-                <button type="button" data-value="tu"><span>Informal (Tú)</span><i class="check hidden" data-lucide="check"></i></button>
-                <button type="button" data-value="usted"><span>Formal (Usted)</span><i class="check hidden" data-lucide="check"></i></button>
-              </div>
 
               <button id="saveTemplateFloating"
                 class="save-template-floating"
@@ -2273,10 +2563,10 @@
     const instructionEl = document.getElementById('instruction');
     const originalEmailEl = document.getElementById('originalEmail');
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
-    const trigger = document.getElementById('formalidadTrigger');
-    const tooltip = document.getElementById('formalidadTooltip');
-    const versionsTooltip = document.getElementById('versionsTooltip');
-    const dropdown = document.getElementById('formalidadDropdown');
+    const formalidadBtn = document.getElementById('formalidadBtn');
+    const formalidadDropdown = document.getElementById('formalidadDropdown');
+    const regionBtn = document.getElementById('regionBtn');
+    const regionDropdown = document.getElementById('regionDropdown');
     const outputEl = document.getElementById('output');
     const tabNewBtn = document.getElementById('tabNew');
     const tabHistoryBtn = document.getElementById('historyBtn');
@@ -2307,6 +2597,7 @@
     const TEMPLATE_KEY = 'redactar_templates_v1';
     const SELECTION_MIN_LENGTH = 3;
     const STORAGE_KEY = 'formalidadPreference';
+    const REGION_KEY = 'regionPreference';
     const PROFILE_KEY = 'userProfile';
 
     let currentMode = 'compose';
@@ -2325,12 +2616,15 @@
     let instructionHintResumeTimer = null;
     let instructionHintTransitionTimer = null;
     let instructionHintTypingTimer = null;
-    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
+    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'usted';
+    let tonoValue = 'neutro';
+    let regionValue = localStorage.getItem(REGION_KEY) || '';
     if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
-      formalidadValue = 'auto';
+      formalidadValue = 'usted';
     }
-    let tooltipTimeout;
-    let tooltipHideTimeout;
+    if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
+      regionValue = '';
+    }
 
 
     function autoGrow(el) {
@@ -2359,98 +2653,131 @@
         .trim();
     }
 
-    const label = document.getElementById('formalidadLabel');
-    const options = dropdown?.querySelectorAll('button') || [];
+    const formalidadLabel = document.getElementById('formalidadLabel');
+    const formalidadOptions = formalidadDropdown?.querySelectorAll('.config-dropdown-option') || [];
 
-    const labels = {
-      auto: 'Automático',
+    const formalidadLabels = {
+      auto: 'Auto',
       tu: 'Informal (Tú)',
       usted: 'Formal (Usted)'
     };
 
     localStorage.setItem(STORAGE_KEY, formalidadValue);
 
-    if (label) {
-      label.textContent = labels[formalidadValue] || labels.auto;
+    if (formalidadLabel) {
+      formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
     }
 
-    function updateChecks() {
-      options.forEach((btn) => {
-        const icon = btn.querySelector('.check');
-        if (!icon) return;
+    function updateFormalidadChecks() {
+      formalidadOptions.forEach((btn) => {
         if (btn.dataset.value === formalidadValue) {
-          icon.classList.remove('hidden');
+          btn.classList.add('selected');
         } else {
-          icon.classList.add('hidden');
+          btn.classList.remove('selected');
         }
       });
     }
 
-    updateChecks();
+    updateFormalidadChecks();
 
-    trigger?.addEventListener('click', () => {
-      dropdown?.classList.toggle('hidden');
+    formalidadBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = formalidadBtn.getAttribute('aria-expanded') === 'true';
+      formalidadBtn.setAttribute('aria-expanded', !isExpanded);
+      formalidadDropdown.hidden = isExpanded;
+      // Close other dropdowns if open
+      if (regionBtn && regionDropdown) {
+        regionBtn.setAttribute('aria-expanded', 'false');
+        regionDropdown.hidden = true;
+      }
     });
 
-    trigger?.addEventListener('mouseenter', () => {
-      clearTimeout(tooltipHideTimeout);
-      tooltipTimeout = setTimeout(() => {
-        if (!tooltip) return;
-        tooltip.classList.remove('hidden');
-        tooltip.style.opacity = '1';
-        tooltip.style.transform = 'translateY(0)';
-      }, 250);
-    });
-
-    trigger?.addEventListener('mouseleave', () => {
-      clearTimeout(tooltipTimeout);
-      if (!tooltip) return;
-      tooltip.style.opacity = '0';
-      tooltip.style.transform = 'translateY(4px)';
-      tooltipHideTimeout = setTimeout(() => tooltip.classList.add('hidden'), 120);
-    });
-
-    // Versions tooltip event listeners
-    let versionsTooltipTimeout;
-    let versionsTooltipHideTimeout;
-
-    versionsButton?.addEventListener('mouseenter', () => {
-      clearTimeout(versionsTooltipHideTimeout);
-      versionsTooltipTimeout = setTimeout(() => {
-        if (!versionsTooltip) return;
-        versionsTooltip.classList.remove('hidden');
-        versionsTooltip.style.opacity = '1';
-        versionsTooltip.style.transform = 'translateX(-50%) translateY(0)';
-      }, 250);
-    });
-
-    versionsButton?.addEventListener('mouseleave', () => {
-      clearTimeout(versionsTooltipTimeout);
-      if (!versionsTooltip) return;
-      versionsTooltip.style.opacity = '0';
-      versionsTooltip.style.transform = 'translateX(-50%) translateY(4px)';
-      versionsTooltipHideTimeout = setTimeout(() => versionsTooltip.classList.add('hidden'), 120);
-    });
-
-    options.forEach((btn) => {
+    formalidadOptions.forEach((btn) => {
       btn.addEventListener('click', () => {
-        formalidadValue = btn.dataset.value || 'auto';
-
+        formalidadValue = btn.dataset.value || 'usted';
         localStorage.setItem(STORAGE_KEY, formalidadValue);
 
-        if (label) {
-          label.textContent = labels[formalidadValue] || labels.auto;
+        if (formalidadLabel) {
+          formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
         }
 
-        updateChecks();
-        dropdown?.classList.add('hidden');
+        updateFormalidadChecks();
+        formalidadDropdown.hidden = true;
+        formalidadBtn.setAttribute('aria-expanded', 'false');
       });
     });
 
+    // Región control
+    const regionLabel = document.getElementById('regionLabel');
+    const regionOptions = regionDropdown?.querySelectorAll('.config-dropdown-option') || [];
+
+    const regionLabels = {
+      '': 'Internacional',
+      'españa': 'España',
+      'méxico': 'México',
+      'argentina': 'Argentina',
+      'chile': 'Chile',
+      'colombia': 'Colombia'
+    };
+
+    localStorage.setItem(REGION_KEY, regionValue);
+
+    if (regionLabel) {
+      regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+    }
+
+    function updateRegionChecks() {
+      regionOptions.forEach((btn) => {
+        if (btn.dataset.value === regionValue) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    updateRegionChecks();
+
+    regionBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = regionBtn.getAttribute('aria-expanded') === 'true';
+      regionBtn.setAttribute('aria-expanded', !isExpanded);
+      regionDropdown.hidden = isExpanded;
+      // Close other dropdowns if open
+      if (formalidadBtn && formalidadDropdown) {
+        formalidadBtn.setAttribute('aria-expanded', 'false');
+        formalidadDropdown.hidden = true;
+      }
+    });
+
+    regionOptions.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        regionValue = btn.dataset.value || '';
+        localStorage.setItem(REGION_KEY, regionValue);
+
+        if (regionLabel) {
+          regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+        }
+
+        updateRegionChecks();
+        regionDropdown.hidden = true;
+        regionBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
-      if (!trigger || !dropdown) return;
-      if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
-        dropdown.classList.add('hidden');
+      if (formalidadBtn && formalidadDropdown) {
+        if (!formalidadBtn.contains(e.target) && !formalidadDropdown.contains(e.target)) {
+          formalidadDropdown.hidden = true;
+          formalidadBtn.setAttribute('aria-expanded', 'false');
+        }
+      }
+      if (regionBtn && regionDropdown) {
+        if (!regionBtn.contains(e.target) && !regionDropdown.contains(e.target)) {
+          regionDropdown.hidden = true;
+          regionBtn.setAttribute('aria-expanded', 'false');
+        }
       }
     });
 
@@ -2797,7 +3124,8 @@
       return {
         instruction: document.getElementById('instruction').value,
         formalidad: formalidadValue,
-        recipientRegion: '',
+        tone: tonoValue,
+        recipientRegion: regionValue,
         mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
       };
     }
@@ -2818,14 +3146,25 @@
     function applyTemplate(data) {
       if (!data) return;
       instructionEl.value = data.instruction || '';
+      
+      // Apply formalidad
       const templateFormalidad = data.formalidad ?? data.formality;
-      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'auto';
+      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'usted';
       localStorage.setItem(STORAGE_KEY, formalidadValue);
-      if (label) {
-        label.textContent = labels[formalidadValue] || labels.auto;
+      if (formalidadLabel) {
+        formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
       }
-      updateChecks();
-      updateRecipientRegionSelection(data.recipientRegion || '');
+      updateFormalidadChecks();
+      
+      // Apply region
+      const templateRegion = data.recipientRegion || '';
+      regionValue = ['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(templateRegion) ? templateRegion : '';
+      localStorage.setItem(REGION_KEY, regionValue);
+      if (regionLabel) {
+        regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+      }
+      updateRegionChecks();
+      
       setMode(data.mode || 'compose');
 
       [instructionEl, originalEmailEl].forEach((el) => {
@@ -3242,6 +3581,12 @@
     function renderEmptyState() {
       hideSelectionPopover();
       
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Ocultar panel derecho
       mainContent.classList.remove('has-results');
       
@@ -3279,27 +3624,55 @@
       `;
     }
 
-    function renderLoadingState(substatusText) {
+    let loadingMessageInterval = null;
+    
+    function renderLoadingState() {
       hideSelectionPopover();
       stopTipsRotation();
       
+      // Clear any existing interval
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Mostrar panel derecho con loading
       mainContent.classList.add('has-results');
+      
+      const messages = [
+        'Pensando en la mejor forma de decirlo...',
+        'Ajustando el tono...',
+        'Refinando el mensaje...'
+      ];
+      
+      let currentMessageIndex = 0;
       
       outputEl.innerHTML = `
         <div class="skeleton-loader">
           <div class="skeleton-progress">
             <div class="skeleton-spinner"></div>
-            <div class="skeleton-status">Analizando contexto...</div>
-            <div class="skeleton-substatus">${substatusText || 'Generando email profesional'}</div>
+            <div class="skeleton-status" id="loadingMessage">${messages[0]}</div>
           </div>
         </div>
       `;
+      
+      // Rotate messages every 2.5 seconds
+      loadingMessageInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+        const messageEl = document.getElementById('loadingMessage');
+        if (messageEl) {
+          messageEl.style.opacity = '0';
+          setTimeout(() => {
+            messageEl.textContent = messages[currentMessageIndex];
+            messageEl.style.opacity = '1';
+          }, 150);
+        }
+      }, 2500);
     }
 
     function renderPlaceholder(message, loading = false) {
       if (loading) {
-        renderLoadingState(message);
+        renderLoadingState();
       } else {
         renderEmptyState();
       }
@@ -3326,8 +3699,11 @@ ${body}`.trim();
 
       navigator.clipboard.writeText(content).then(() => {
         const originalHtml = button.innerHTML;
-        button.textContent = 'Copiado ✓';
+        button.innerHTML = '<i data-lucide="check"></i>';
         button.classList.add('copied');
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
         setTimeout(() => {
           button.innerHTML = originalHtml;
           button.classList.remove('copied');
@@ -3778,6 +4154,12 @@ ${body}`.trim();
     function renderVersions(versions) {
       hideSelectionPopover();
       
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Mostrar panel derecho
       mainContent.classList.add('has-results');
       
@@ -3950,6 +4332,7 @@ ${body}`.trim();
       const senderInput = profile.name || '';
       const senderRole = profile.role || '';
       const formality = formalidadValue;
+      const tone = tonoValue;
 
       const senderName = senderInput || 'El equipo';
       const clientName = 'cliente';
@@ -3962,10 +4345,7 @@ ${body}`.trim();
       isGenerating = true;
       generateButton.disabled = true;
       versionsButton.disabled = true;
-      const loadingSub = (selectedVersions === 3)
-        ? 'Generando +2 variantes profesionales'
-        : 'Generando email profesional';
-      renderPlaceholder(loadingSub, true);
+      renderPlaceholder(null, true);
 
       try {
         const res = await fetch('/api/email', {
@@ -3977,10 +4357,11 @@ ${body}`.trim();
             ...(isReplyMode ? { originalEmail } : {}),
             senderName,
             clientName,
-            recipientRegion: "",
+            recipientRegion: regionValue,
             senderRole,
             recipientRole,
             formalidad: formality,
+            tone,
             versions
           })
         });
@@ -4224,6 +4605,44 @@ ${body}`.trim();
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
+    // ── Theme: auto (system) + manual override ──────────────────────────
+    (function () {
+      const stored = localStorage.getItem('redactar-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = stored ? stored === 'dark' : prefersDark;
+      if (isDark) document.documentElement.classList.add('dark');
+    })();
+
+    function applyThemeIcons(isDark) {
+      const moon = document.getElementById('themeIconMoon');
+      const sun  = document.getElementById('themeIconSun');
+      if (!moon || !sun) return;
+      moon.style.display = isDark ? 'none' : 'block';
+      sun.style.display  = isDark ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyThemeIcons(isDark);
+
+      document.getElementById('themeToggleBtn').addEventListener('click', function () {
+        const nowDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('redactar-theme', nowDark ? 'dark' : 'light');
+        applyThemeIcons(nowDark);
+        if (window.lucide) window.lucide.createIcons();
+      });
+
+      // Escucha cambios del sistema (si no hay preferencia manual)
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+        if (!localStorage.getItem('redactar-theme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+          applyThemeIcons(e.matches);
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    });
+  </script>
+  <script>
     lucide.createIcons();
 
     // Asegurar que el botón "Borrar historial" esté oculto al inicio
@@ -4232,65 +4651,6 @@ ${body}`.trim();
       clearHistoryBtnInit.hidden = true;
     }
 
-    // Custom Select Dropdown para recipientRegion
-    (function() {
-      const recipientRegionBtn = document.getElementById('recipientRegionBtn');
-      const recipientRegionMenu = document.getElementById('recipientRegionMenu');
-      const recipientRegionText = document.getElementById('recipientRegionText');
-      const recipientRegionInput = document.getElementById('recipientRegion');
-      const recipientRegionOptions = recipientRegionMenu?.querySelectorAll('.custom-select-option');
-
-      if (!recipientRegionBtn || !recipientRegionMenu || !recipientRegionOptions) return;
-
-      // Toggle dropdown
-      recipientRegionBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isExpanded = recipientRegionBtn.getAttribute('aria-expanded') === 'true';
-        recipientRegionBtn.setAttribute('aria-expanded', !isExpanded);
-        recipientRegionMenu.hidden = isExpanded;
-      });
-
-      // Select option
-      recipientRegionOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const value = option.dataset.value;
-          const text = option.textContent;
-
-          // Update UI
-          recipientRegionText.textContent = text;
-          recipientRegionInput.value = value;
-
-          // Update selected state
-          recipientRegionOptions.forEach(opt => {
-            opt.classList.remove('selected');
-            opt.setAttribute('aria-checked', 'false');
-          });
-          option.classList.add('selected');
-          option.setAttribute('aria-checked', 'true');
-
-          // Close dropdown
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        });
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!recipientRegionBtn.contains(e.target) && !recipientRegionMenu.contains(e.target)) {
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        }
-      });
-
-      // Close on Escape key
-      recipientRegionBtn.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-          recipientRegionBtn.setAttribute('aria-expanded', 'false');
-          recipientRegionMenu.hidden = true;
-        }
-      });
-    })();
   </script>
 </body>
 </html>
