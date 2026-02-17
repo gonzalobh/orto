@@ -569,8 +569,15 @@
       padding: 20px;
       padding-bottom: 52px;
       border-radius: 20px;
-      transition: height 0.15s ease,
+      transition: min-height 0.3s ease,
+                  height 0.15s ease,
                   box-shadow 0.2s ease;
+    }
+    
+    #instruction.collapsed {
+      min-height: 80px;
+      max-height: 80px;
+      overflow: hidden;
     }
 
     .instruction-header {
@@ -3601,6 +3608,11 @@
         loadingMessageInterval = null;
       }
       
+      // Expand textarea back to normal
+      if (instructionEl) {
+        instructionEl.classList.remove('collapsed');
+      }
+      
       // Ocultar panel derecho
       mainContent.classList.remove('has-results');
       
@@ -4174,6 +4186,11 @@ ${body}`.trim();
         loadingMessageInterval = null;
       }
       
+      // Collapse textarea to give more focus to results
+      if (instructionEl) {
+        instructionEl.classList.add('collapsed');
+      }
+      
       // Mostrar panel derecho
       mainContent.classList.add('has-results');
       
@@ -4266,6 +4283,8 @@ ${body}`.trim();
 
     instructionEl.addEventListener('focus', () => {
       stopInstructionHint();
+      // Expand textarea when user clicks to edit
+      instructionEl.classList.remove('collapsed');
     });
 
     instructionEl.addEventListener('blur', () => {
