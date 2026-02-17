@@ -685,13 +685,15 @@
       font-weight: 500;
     }
 
-    .config-dropdown-option i {
+    .config-dropdown-option i,
+    .config-dropdown-option svg.lucide {
       width: 16px;
       height: 16px;
       opacity: 0;
     }
 
-    .config-dropdown-option.selected i {
+    .config-dropdown-option.selected i,
+    .config-dropdown-option.selected svg.lucide {
       opacity: 1;
     }
 
@@ -2308,32 +2310,6 @@
 
             <!-- Configuration Controls Row -->
             <div class="config-controls-row">
-              <!-- Tono Control -->
-              <div class="config-control-wrapper">
-                <button id="tonoBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                  <span id="tonoLabel">Neutro</span>
-                  <i data-lucide="chevron-down"></i>
-                </button>
-                <div id="tonoDropdown" class="config-dropdown" hidden>
-                  <button type="button" class="config-dropdown-option selected" data-value="neutro">
-                    <span>Neutro</span>
-                    <i data-lucide="check"></i>
-                  </button>
-                  <button type="button" class="config-dropdown-option" data-value="cordial">
-                    <span>Cordial</span>
-                    <i data-lucide="check"></i>
-                  </button>
-                  <button type="button" class="config-dropdown-option" data-value="firme">
-                    <span>Firme</span>
-                    <i data-lucide="check"></i>
-                  </button>
-                  <button type="button" class="config-dropdown-option" data-value="urgente">
-                    <span>Urgente</span>
-                    <i data-lucide="check"></i>
-                  </button>
-                </div>
-              </div>
-
               <!-- Formalidad Control -->
               <div class="config-control-wrapper">
                 <button id="formalidadBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
@@ -2481,8 +2457,6 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const formalidadBtn = document.getElementById('formalidadBtn');
     const formalidadDropdown = document.getElementById('formalidadDropdown');
-    const tonoBtn = document.getElementById('tonoBtn');
-    const tonoDropdown = document.getElementById('tonoDropdown');
     const regionBtn = document.getElementById('regionBtn');
     const regionDropdown = document.getElementById('regionDropdown');
     const outputEl = document.getElementById('output');
@@ -2515,7 +2489,6 @@
     const TEMPLATE_KEY = 'redactar_templates_v1';
     const SELECTION_MIN_LENGTH = 3;
     const STORAGE_KEY = 'formalidadPreference';
-    const TONO_KEY = 'tonoPreference';
     const REGION_KEY = 'regionPreference';
     const PROFILE_KEY = 'userProfile';
 
@@ -2536,13 +2509,10 @@
     let instructionHintTransitionTimer = null;
     let instructionHintTypingTimer = null;
     let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
-    let tonoValue = localStorage.getItem(TONO_KEY) || 'neutro';
+    let tonoValue = 'neutro';
     let regionValue = localStorage.getItem(REGION_KEY) || '';
     if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
       formalidadValue = 'auto';
-    }
-    if (!['neutro', 'cordial', 'firme', 'urgente'].includes(tonoValue)) {
-      tonoValue = 'neutro';
     }
     if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
       regionValue = '';
@@ -2592,14 +2562,10 @@
 
     function updateFormalidadChecks() {
       formalidadOptions.forEach((btn) => {
-        const icon = btn.querySelector('i[data-lucide="check"]');
-        if (!icon) return;
         if (btn.dataset.value === formalidadValue) {
           btn.classList.add('selected');
-          icon.style.opacity = '1';
         } else {
           btn.classList.remove('selected');
-          icon.style.opacity = '0';
         }
       });
     }
@@ -2612,10 +2578,6 @@
       formalidadBtn.setAttribute('aria-expanded', !isExpanded);
       formalidadDropdown.hidden = isExpanded;
       // Close other dropdowns if open
-      if (tonoBtn && tonoDropdown) {
-        tonoBtn.setAttribute('aria-expanded', 'false');
-        tonoDropdown.hidden = true;
-      }
       if (regionBtn && regionDropdown) {
         regionBtn.setAttribute('aria-expanded', 'false');
         regionDropdown.hidden = true;
@@ -2634,70 +2596,6 @@
         updateFormalidadChecks();
         formalidadDropdown.hidden = true;
         formalidadBtn.setAttribute('aria-expanded', 'false');
-      });
-    });
-
-    // Longitud control
-    const tonoLabel = document.getElementById('tonoLabel');
-    const tonoOptions = tonoDropdown?.querySelectorAll('.config-dropdown-option') || [];
-
-    const tonoLabels = {
-      neutro: 'Neutro',
-      cordial: 'Cordial',
-      firme: 'Firme',
-      urgente: 'Urgente'
-    };
-
-    localStorage.setItem(TONO_KEY, tonoValue);
-
-    if (tonoLabel) {
-      tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
-    }
-
-    function updateTonoChecks() {
-      tonoOptions.forEach((btn) => {
-        const icon = btn.querySelector('i[data-lucide="check"]');
-        if (!icon) return;
-        if (btn.dataset.value === tonoValue) {
-          btn.classList.add('selected');
-          icon.style.opacity = '1';
-        } else {
-          btn.classList.remove('selected');
-          icon.style.opacity = '0';
-        }
-      });
-    }
-
-    updateTonoChecks();
-
-    tonoBtn?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isExpanded = tonoBtn.getAttribute('aria-expanded') === 'true';
-      tonoBtn.setAttribute('aria-expanded', !isExpanded);
-      tonoDropdown.hidden = isExpanded;
-      // Close other dropdowns if open
-      if (formalidadBtn && formalidadDropdown) {
-        formalidadBtn.setAttribute('aria-expanded', 'false');
-        formalidadDropdown.hidden = true;
-      }
-      if (regionBtn && regionDropdown) {
-        regionBtn.setAttribute('aria-expanded', 'false');
-        regionDropdown.hidden = true;
-      }
-    });
-
-    tonoOptions.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        tonoValue = btn.dataset.value || 'neutro';
-        localStorage.setItem(TONO_KEY, tonoValue);
-
-        if (tonoLabel) {
-          tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
-        }
-
-        updateTonoChecks();
-        tonoDropdown.hidden = true;
-        tonoBtn.setAttribute('aria-expanded', 'false');
       });
     });
 
@@ -2722,14 +2620,10 @@
 
     function updateRegionChecks() {
       regionOptions.forEach((btn) => {
-        const icon = btn.querySelector('i[data-lucide="check"]');
-        if (!icon) return;
         if (btn.dataset.value === regionValue) {
           btn.classList.add('selected');
-          icon.style.opacity = '1';
         } else {
           btn.classList.remove('selected');
-          icon.style.opacity = '0';
         }
       });
     }
@@ -2745,10 +2639,6 @@
       if (formalidadBtn && formalidadDropdown) {
         formalidadBtn.setAttribute('aria-expanded', 'false');
         formalidadDropdown.hidden = true;
-      }
-      if (tonoBtn && tonoDropdown) {
-        tonoBtn.setAttribute('aria-expanded', 'false');
-        tonoDropdown.hidden = true;
       }
     });
 
@@ -2773,12 +2663,6 @@
         if (!formalidadBtn.contains(e.target) && !formalidadDropdown.contains(e.target)) {
           formalidadDropdown.hidden = true;
           formalidadBtn.setAttribute('aria-expanded', 'false');
-        }
-      }
-      if (tonoBtn && tonoDropdown) {
-        if (!tonoBtn.contains(e.target) && !tonoDropdown.contains(e.target)) {
-          tonoDropdown.hidden = true;
-          tonoBtn.setAttribute('aria-expanded', 'false');
         }
       }
       if (regionBtn && regionDropdown) {
@@ -3163,15 +3047,6 @@
         formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.auto;
       }
       updateFormalidadChecks();
-      
-      // Apply tono
-      const templateTono = data.tone;
-      tonoValue = ['neutro', 'cordial', 'firme', 'urgente'].includes(templateTono) ? templateTono : 'neutro';
-      localStorage.setItem(TONO_KEY, tonoValue);
-      if (tonoLabel) {
-        tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
-      }
-      updateTonoChecks();
       
       // Apply region
       const templateRegion = data.recipientRegion || '';
