@@ -1,9 +1,8 @@
 // ============================================================
-// email.js — Pipeline de 4 agentes
-// Agente 1: Redactor   → genera el email base con hint de longitud
-// Agente 2: Longitud   → ajusta y refuerza breve / detallado / completo
-// Agente 3: Localizador → adapta al país
-// Agente 4: Validador  → verifica tu/usted y coherencia regional
+// email.js — Pipeline de 3 agentes
+// Agente 1: Redactor   → genera el email con tono + longitud automática
+// Agente 2: Localizador → adapta al país
+// Agente 3: Validador  → verifica tu/usted y coherencia regional
 // Las versiones se generan en PARALELO (Promise.all)
 // ============================================================
 
@@ -43,61 +42,74 @@ async function callOpenAI({ model = "gpt-4o", temperature = 0.3, systemPrompt, u
 
 // ─────────────────────────────────────────────
 // AGENTE 1: Redactor
-// Genera el email base con suficiente contenido
-// según la longitud solicitada.
+// Genera el email con el tono indicado.
+// La longitud la decide el agente según el contenido
+// y el tipo de email — no el usuario.
 // ─────────────────────────────────────────────
-async function agentRedactor({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, persona, length }) {
+async function agentRedactor({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, tone, persona }) {
 
-  const PERSONAS = {
-    directa: "Escribe de forma directa, ejecutiva y sin rodeos.",
-    empatica: "Escribe de forma diplomática, empática y considerada.",
-    formal: "Escribe de forma estructurada, formal y protocolar.",
+  const TONE_SPECS = {
+    neutro: `
+TONO: NEUTRO (estándar profesional)
+- Tono equilibrado, ni frío ni cálido.
+- Directo al punto sin carga emocional.
+- Apropiado para la mayoría de comunicaciones profesionales.
+- Longitud: la necesaria para cubrir el contenido sin más.
+`,
+    cordial: `
+TONO: CORDIAL
+- Tono cálido, empático y considerado.
+- Muestra interés genuino en la relación con el destinatario.
+- Suaviza los mensajes difíciles con diplomacia.
+- Incluye frases de cortesía naturales (no exageradas).
+- Longitud: suficiente para que no suene abrupto.
+`,
+    firme: `
+TONO: FIRME
+- Tono directo, seguro y sin ambigüedades.
+- Comunica la posición claramente sin ser agresivo.
+- Usa lenguaje de acción: "necesitamos", "esperamos", "requerimos".
+- Sin rodeos ni justificaciones excesivas.
+- Ideal para: reclamos, negociaciones, situaciones que requieren acción.
+- Longitud: concisa pero completa — cada línea tiene un propósito.
+`,
+    urgente: `
+TONO: URGENTE
+- Comunica inmediatez y prioridad desde el asunto.
+- El primer párrafo establece la urgencia claramente.
+- Usa frases de tiempo concretas: "antes del viernes", "esta semana", "en las próximas 24 horas".
+- Sin introducción larga — va directo al problema y la acción requerida.
+- Cierre que refuerza la urgencia sin sonar desesperado.
+- Longitud: moderada — lo suficiente para ser claro, sin dilatar el mensaje.
+`,
   };
 
-  const LENGTH_HINTS = {
-    breve: `
-LONGITUD OBJETIVO: BREVE
-- Genera un email corto con solo la idea principal.
-- Cuerpo: 3 a 5 líneas máximo.
-- No desarrolles argumentos secundarios.
-- Sin bullets ni numeración.
-`,
-    detallado: `
-LONGITUD OBJETIVO: DETALLADO
-- Genera un email con contexto suficiente.
-- Cuerpo: 6 a 10 líneas.
-- Incluye: contexto del problema, impacto, acción requerida y próximos pasos.
-- Sin bullets ni numeración.
-`,
-    completo: `
-LONGITUD OBJETIVO: COMPLETO
-- Genera un email exhaustivo y bien desarrollado.
-- Cuerpo: 12 a 18 líneas mínimo.
-- Desarrolla TODOS estos elementos por separado:
-  1. Contexto detallado del problema con ejemplos o datos concretos
-  2. Impacto específico en la operación
-  3. Historial o patrón del problema
-  4. Acción requerida con urgencia
-  5. Próximos pasos concretos y plazos
-  6. Consecuencias si no se actúa
-- Usa párrafos separados o bullets para organizar.
-- NO comprimas la información — desarrolla cada punto con detalle.
-`,
+  const PERSONAS = {
+    directa: "Enfoque ejecutivo: ve directo al punto, sin introducciones largas.",
+    empatica: "Enfoque relacional: muestra comprensión antes de presentar el problema o solicitud.",
+    formal: "Enfoque estructurado: organiza el email con claridad, párrafo por párrafo.",
   };
 
   const systemPrompt = `
 Eres un redactor experto de emails profesionales.
 ${PERSONAS[persona] || PERSONAS.directa}
 
-TU ÚNICA TAREA: Redactar el contenido del email correctamente con la longitud indicada.
+TU ÚNICA TAREA: Redactar un email profesional natural y efectivo.
 
-REGLAS DE LONGITUD (OBLIGATORIO):
-${LENGTH_HINTS[length] || LENGTH_HINTS.detallado}
+TONO OBLIGATORIO:
+${TONE_SPECS[tone] || TONE_SPECS.neutro}
+
+LONGITUD: Decide tú la longitud apropiada según el contenido y el tono.
+- Si la instrucción es simple → email corto (3-5 líneas de cuerpo).
+- Si la instrucción tiene múltiples puntos → email más largo (6-12 líneas).
+- Si el tono es urgente → preferir concisión.
+- Si el tono es cordial → permitir algo más de desarrollo.
+- NUNCA rellenes con frases vacías para alargar. Cada línea debe aportar valor.
 
 REGLAS DE FORMALIDAD:
 - Si la preferencia es "tu": usa TÚ/TE/TU en todo el email sin excepción.
 - Si la preferencia es "usted": usa USTED/LE/SU en todo el email sin excepción.
-- Si la preferencia es "auto": decide como lo haría un profesional real según los roles y contexto.
+- Si la preferencia es "auto": decide como lo haría un profesional real.
   * Usa USTED para: clientes, contactos nuevos, jerarquía superior, B2B formal.
   * Usa TÚ para: compañeros, contexto informal o cercano.
   * Si tienes dudas → usa USTED.
@@ -117,12 +129,12 @@ Instrucción: ${instruction}
 Remitente: ${senderName}${senderRole ? ` (${senderRole})` : ""}
 Destinatario: ${clientName}${recipientRole ? ` (${recipientRole})` : ""}
 Preferencia de formalidad: ${formalityPreference}
-Longitud requerida: ${length}
+Tono requerido: ${tone}
 
-Genera el email completo cumpliendo estrictamente la longitud indicada.
+Genera el email.
 `;
 
-  const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.4, jsonMode: true });
+  const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.45, jsonMode: true });
 
   let parsed;
   try {
@@ -138,81 +150,7 @@ Genera el email completo cumpliendo estrictamente la longitud indicada.
 }
 
 // ─────────────────────────────────────────────
-// AGENTE 2: Longitud
-// Verifica y corrige la longitud si el Redactor
-// no cumplió exactamente la especificación.
-// ─────────────────────────────────────────────
-async function agentLongitud({ subject, body, length }) {
-
-  const LENGTH_SPECS = {
-    breve: `
-BREVE:
-- Cuerpo: 3 a 5 líneas máximo (sin contar saludo ni despedida).
-- Si tiene más líneas: elimina lo que no sea esencial hasta cumplir el límite.
-- Frases cortas y directas. Sin bullets.
-`,
-    detallado: `
-DETALLADO:
-- Cuerpo: 6 a 10 líneas (sin contar saludo ni despedida).
-- Si tiene menos: agrega contexto o detalle relevante.
-- Si tiene más: consolida sin perder ideas clave.
-`,
-    completo: `
-COMPLETO:
-- Cuerpo: 12 a 18 líneas mínimo (sin contar saludo ni despedida).
-- Si tiene menos de 12 líneas: EXPANDE desarrollando más cada punto.
-  * Agrega antecedentes concretos.
-  * Desarrolla el impacto con más detalle.
-  * Incluye próximos pasos específicos con plazos.
-  * Añade consecuencias si no se toma acción.
-- Usa párrafos separados o bullets para organizar.
-- NO comprimas — el objetivo es un email completo y exhaustivo.
-`,
-  };
-
-  const systemPrompt = `
-Eres un editor especializado en controlar la longitud de emails profesionales.
-
-TU ÚNICA TAREA: Verificar que el email cumpla exactamente con la especificación de longitud y corregirlo si no cumple.
-NO cambies el significado, el tono, la formalidad (tu/usted) ni el idioma.
-NO cambies el asunto salvo que sea imprescindible.
-Conserva nombres, fechas, números y hechos.
-
-ESPECIFICACIÓN DE LONGITUD OBLIGATORIA:
-${LENGTH_SPECS[length] || LENGTH_SPECS.detallado}
-
-Responde SOLO con JSON válido:
-{ "subject": "string", "body": "string" }
-`;
-
-  const userPrompt = `
-Email a verificar y ajustar:
-
-Asunto: ${subject}
-
-Cuerpo:
-${body}
-
-Verifica si cumple la especificación de longitud "${length}" y corrígelo si es necesario.
-`;
-
-  const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.2, jsonMode: true });
-
-  let parsed;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    throw new Error("Agente Longitud: JSON inválido");
-  }
-
-  return {
-    subject: typeof parsed.subject === "string" ? parsed.subject.trim() : subject,
-    body: typeof parsed.body === "string" ? parsed.body.trim() : body,
-  };
-}
-
-// ─────────────────────────────────────────────
-// AGENTE 3: Localizador
+// AGENTE 2: Localizador
 // Adapta vocabulario, tono y expresiones al país.
 // ─────────────────────────────────────────────
 async function agentLocalizador({ subject, body, region }) {
@@ -253,7 +191,7 @@ País objetivo: CHILE
 - Cierre natural: "Saludos", "Quedamos atentos".
 - Tono: directo y respetuoso, equilibrio entre claridad y formalidad.
 - Vocabulario: "computador", "celular", "cotización".
-- Evita: muletillas ("po", "cachai"), tono demasiado cálido o demasiado frío.
+- Evita: muletillas ("po", "cachai"), tono demasiado cálido o frío.
 `,
     Colombia: `
 País objetivo: COLOMBIA
@@ -312,7 +250,7 @@ Localiza para ${region}.
 }
 
 // ─────────────────────────────────────────────
-// AGENTE 4: Validador
+// AGENTE 3: Validador
 // Verifica mezcla tu/usted e incoherencias regionales.
 // Usa gpt-4o-mini para reducir costo y latencia.
 // ─────────────────────────────────────────────
@@ -328,8 +266,8 @@ TU ÚNICA TAREA: Verificar y corregir dos problemas específicos:
    - Si hay mezcla: unifica todo al modo predominante (o al preferido: ${formalityPreference}).
    - Si no hay mezcla: no cambies nada.
 
-2. INCOHERENCIA REGIONAL (${region}):
-   - Detecta si hay expresiones claramente incorrectas para ${region}.
+2. INCOHERENCIA REGIONAL (${region || "neutro"}):
+   - Detecta si hay expresiones claramente incorrectas para la región.
    - Solo corrige las expresiones evidentemente fuera de lugar.
    - No sobre-corrijas ni cambies el estilo general.
 
@@ -337,7 +275,7 @@ NO cambies el significado, la longitud ni la estructura del email.
 Si el email está bien, devuélvelo exactamente igual.
 
 Responde SOLO con JSON válido:
-{ "subject": "string", "body": "string", "corrections": "string" }
+{ "subject": "string", "body": "string" }
 `;
 
   const userPrompt = `
@@ -347,7 +285,7 @@ Cuerpo:
 ${body}
 
 Preferencia de formalidad: ${formalityPreference}
-Región: ${region}
+Región: ${region || "no especificada"}
 
 Valida y corrige si es necesario.
 `;
@@ -364,36 +302,29 @@ Valida y corrige si es necesario.
   try {
     parsed = JSON.parse(raw);
   } catch {
-    return { subject, body, corrections: "Validación omitida" };
+    return { subject, body };
   }
 
   return {
     subject: typeof parsed.subject === "string" ? parsed.subject.trim() : subject,
     body: typeof parsed.body === "string" ? parsed.body.trim() : body,
-    corrections: typeof parsed.corrections === "string" ? parsed.corrections.trim() : "Sin correcciones",
   };
 }
 
 // ─────────────────────────────────────────────
 // PIPELINE COMPLETO para una versión
 // ─────────────────────────────────────────────
-async function runPipeline({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, length, region, persona }) {
+async function runPipeline({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, tone, region, persona }) {
 
   const draft = await agentRedactor({
     mode, instruction, originalEmail,
     senderName, clientName, senderRole, recipientRole,
-    formalityPreference, persona, length,
-  });
-
-  const adjusted = await agentLongitud({
-    subject: draft.subject,
-    body: draft.body,
-    length,
+    formalityPreference, tone, persona,
   });
 
   const localized = await agentLocalizador({
-    subject: adjusted.subject,
-    body: adjusted.body,
+    subject: draft.subject,
+    body: draft.body,
     region,
   });
 
@@ -428,7 +359,7 @@ export default async function handler(req, res) {
       mode, instruction, originalEmail,
       senderName, clientName, recipientRegion,
       senderRole, recipientRole,
-      formality, formalidad, length, versions,
+      formality, formalidad, tone, versions,
     } = req.body || {};
 
     const safeMode = mode === "reply" ? "reply" : "compose";
@@ -447,8 +378,8 @@ export default async function handler(req, res) {
     const safeFormalityPreference = ["auto", "tu", "usted"].includes(rawFormalityPreference)
       ? rawFormalityPreference : "auto";
 
-    const rawLength = typeof length === "string" ? length.trim().toLowerCase() : "detallado";
-    const safeLength = ["breve", "detallado", "completo"].includes(rawLength) ? rawLength : "detallado";
+    const rawTone = typeof tone === "string" ? tone.trim().toLowerCase() : "neutro";
+    const safeTone = ["neutro", "cordial", "firme", "urgente"].includes(rawTone) ? rawTone : "neutro";
 
     const regionMap = {
       españa: "Spain", spain: "Spain",
@@ -477,7 +408,7 @@ export default async function handler(req, res) {
         senderRole: safeSenderRole,
         recipientRole: safeRecipientRole,
         formalityPreference: safeFormalityPreference,
-        length: safeLength,
+        tone: safeTone,
         region: safeRegion,
         persona: PERSONAS[i] || "directa",
       })
