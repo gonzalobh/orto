@@ -29,6 +29,132 @@
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
+    html.dark {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --bg-main: #1c1c1e;
+      --bg-input: #2c2c2e;
+      --border-color: #3a3a3c;
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1a6;
+      --text-tertiary: #6e6e73;
+      --accent: #f5f5f7;
+      --accent-color: #f5f5f7;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    html.dark body {
+      background: #111111;
+    }
+
+    html.dark header {
+      background: #111111;
+    }
+
+    html.dark .left-panel,
+    html.dark .right-panel,
+    html.dark .results-panel,
+    html.dark .mode-toggle,
+    html.dark .output-tabs-sticky {
+      background: #1c1c1e !important;
+      border-color: #3a3a3c;
+    }
+
+    html.dark .history-search-wrapper {
+      background: #1c1c1e !important;
+    }
+
+    html.dark .save-template-floating {
+      background-color: #2c2c2e !important;
+    }
+
+    html.dark .form-container,
+    html.dark textarea,
+    html.dark input[type="text"],
+    html.dark input[type="email"],
+    html.dark select {
+      background: #1c1c1e;
+      color: var(--text-primary);
+      border-color: #3a3a3c;
+    }
+
+    html.dark textarea::placeholder,
+    html.dark input::placeholder {
+      color: #6e6e73;
+    }
+
+    html.dark .dropdown-option,
+    html.dark .dropdown-menu,
+    html.dark .profile-dropdown,
+    html.dark .custom-select-menu,
+    html.dark .templates-dropdown,
+    html.dark .region-dropdown {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c;
+      color: var(--text-primary);
+    }
+
+    html.dark .dropdown-option:hover,
+    html.dark .custom-select-option:hover {
+      background: #3a3a3c !important;
+    }
+
+    html.dark .profile-dropdown input {
+      background: #3a3a3c;
+      border-color: #48484a;
+      color: var(--text-primary);
+    }
+
+    html.dark .config-control-btn,
+    html.dark .custom-select-btn {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c !important;
+      color: var(--text-secondary) !important;
+    }
+
+    html.dark .config-control-btn:hover,
+    html.dark .custom-select-btn:hover {
+      border-color: #636366 !important;
+      color: var(--text-primary) !important;
+    }
+
+    html.dark .mode-toggle-btn {
+      color: var(--text-secondary);
+    }
+
+    html.dark .mode-toggle-btn.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+    }
+
+    /* Botón tema */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
       background: #fafaf9;
@@ -38,7 +164,9 @@
       -moz-osx-font-smoothing: grayscale;
       min-height: 100vh;
       position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
+
 
     .container {
       min-height: 100vh;
@@ -154,8 +282,7 @@
       border-radius: 12px;
       border: 1px solid var(--border-color);
       box-shadow: var(--shadow-sm);
-      height: calc(100vh - 140px); /* Altura fija con margen */
-      min-height: 500px; /* Altura mínima */
+      height: fit-content;
       position: relative;
       z-index: 2;
       overflow-y: auto;
@@ -2123,6 +2250,10 @@
       <div class="header-content">
         <h1>Redactar.ai</h1>
         <div class="header-actions">
+          <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+            <i data-lucide="moon" id="themeIconMoon"></i>
+            <i data-lucide="sun" id="themeIconSun" style="display:none"></i>
+          </button>
           <div class="profile-dropdown-wrapper">
             <button id="profileBtn" class="icon-btn header-icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
               <i data-lucide="user"></i>
@@ -4448,6 +4579,44 @@ ${body}`.trim();
     });
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // ── Theme: auto (system) + manual override ──────────────────────────
+    (function () {
+      const stored = localStorage.getItem('redactar-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = stored ? stored === 'dark' : prefersDark;
+      if (isDark) document.documentElement.classList.add('dark');
+    })();
+
+    function applyThemeIcons(isDark) {
+      const moon = document.getElementById('themeIconMoon');
+      const sun  = document.getElementById('themeIconSun');
+      if (!moon || !sun) return;
+      moon.style.display = isDark ? 'none' : 'block';
+      sun.style.display  = isDark ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyThemeIcons(isDark);
+
+      document.getElementById('themeToggleBtn').addEventListener('click', function () {
+        const nowDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('redactar-theme', nowDark ? 'dark' : 'light');
+        applyThemeIcons(nowDark);
+        if (window.lucide) window.lucide.createIcons();
+      });
+
+      // Escucha cambios del sistema (si no hay preferencia manual)
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+        if (!localStorage.getItem('redactar-theme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+          applyThemeIcons(e.matches);
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    });
+  </script>
   <script>
     lucide.createIcons();
 
