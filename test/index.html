@@ -260,7 +260,7 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: clamp(32px, 4vw, 56px);
-      padding: 2rem;
+      padding: 1rem 2rem 2rem 2rem;
       max-width: 800px;
       margin: 0 auto;
       width: 100%;
@@ -1177,7 +1177,7 @@
     }
 
     .output-container {
-      max-width: 100%;
+      max-width: 650px;
       margin: 0;
     }
 
@@ -1524,8 +1524,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
       gap: 1rem;
       padding: 2rem 0;
+      min-height: 300px;
     }
 
     .skeleton-spinner {
@@ -1541,12 +1543,11 @@
       font-size: 0.875rem;
       color: var(--text-secondary);
       font-weight: 500;
+      transition: opacity 0.15s ease;
     }
 
     .skeleton-substatus {
-      font-size: 0.75rem;
-      color: var(--text-tertiary);
-      margin-top: 0.25rem;
+      display: none;
     }
 
     .output-loading::after {
@@ -1686,8 +1687,7 @@
     }
 
     .version-card:hover {
-      border-color: var(--text-secondary);
-      box-shadow: var(--shadow-sm);
+      /* Hover effect removed */
     }
 
     .version-label {
@@ -2074,7 +2074,7 @@
     @media (max-width: 1023px) {
       .main-content {
         grid-template-columns: 1fr;
-        padding: 1.5rem;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
         gap: 1.5rem;
         max-width: 100%;
         height: auto; /* En mobile, dejamos que crezca naturalmente */
@@ -2117,7 +2117,7 @@
       }
 
       .main-content {
-        padding: 1rem;
+        padding: 0.5rem 1rem 1rem 1rem;
       }
 
       .left-panel,
@@ -2199,7 +2199,7 @@
     /* Extra small screens (phones in portrait) */
     @media (max-width: 480px) {
       .main-content {
-        padding: 0.75rem;
+        padding: 0.5rem 0.75rem 0.75rem 0.75rem;
       }
       
       .left-panel,
@@ -3578,6 +3578,12 @@
     function renderEmptyState() {
       hideSelectionPopover();
       
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Ocultar panel derecho
       mainContent.classList.remove('has-results');
       
@@ -3615,27 +3621,55 @@
       `;
     }
 
-    function renderLoadingState(substatusText) {
+    let loadingMessageInterval = null;
+    
+    function renderLoadingState() {
       hideSelectionPopover();
       stopTipsRotation();
       
+      // Clear any existing interval
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Mostrar panel derecho con loading
       mainContent.classList.add('has-results');
+      
+      const messages = [
+        'Pensando en la mejor forma de decirlo...',
+        'Ajustando el tono...',
+        'Refinando el mensaje...'
+      ];
+      
+      let currentMessageIndex = 0;
       
       outputEl.innerHTML = `
         <div class="skeleton-loader">
           <div class="skeleton-progress">
             <div class="skeleton-spinner"></div>
-            <div class="skeleton-status">Analizando contexto...</div>
-            <div class="skeleton-substatus">${substatusText || 'Generando email profesional'}</div>
+            <div class="skeleton-status" id="loadingMessage">${messages[0]}</div>
           </div>
         </div>
       `;
+      
+      // Rotate messages every 2.5 seconds
+      loadingMessageInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+        const messageEl = document.getElementById('loadingMessage');
+        if (messageEl) {
+          messageEl.style.opacity = '0';
+          setTimeout(() => {
+            messageEl.textContent = messages[currentMessageIndex];
+            messageEl.style.opacity = '1';
+          }, 150);
+        }
+      }, 2500);
     }
 
     function renderPlaceholder(message, loading = false) {
       if (loading) {
-        renderLoadingState(message);
+        renderLoadingState();
       } else {
         renderEmptyState();
       }
@@ -4117,6 +4151,12 @@ ${body}`.trim();
     function renderVersions(versions) {
       hideSelectionPopover();
       
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
       // Mostrar panel derecho
       mainContent.classList.add('has-results');
       
@@ -4302,10 +4342,7 @@ ${body}`.trim();
       isGenerating = true;
       generateButton.disabled = true;
       versionsButton.disabled = true;
-      const loadingSub = (selectedVersions === 3)
-        ? 'Generando +2 variantes profesionales'
-        : 'Generando email profesional';
-      renderPlaceholder(loadingSub, true);
+      renderPlaceholder(null, true);
 
       try {
         const res = await fetch('/api/email', {
