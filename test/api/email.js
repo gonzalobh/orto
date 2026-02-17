@@ -1,7 +1,7 @@
 // ============================================================
 // email.js — Pipeline de 4 agentes
-// Agente 1: Redactor   → genera el email base
-// Agente 2: Longitud   → ajusta breve / detallado / completo
+// Agente 1: Redactor   → genera el email base con hint de longitud
+// Agente 2: Longitud   → ajusta y refuerza breve / detallado / completo
 // Agente 3: Localizador → adapta al país
 // Agente 4: Validador  → verifica tu/usted y coherencia regional
 // Las versiones se generan en PARALELO (Promise.all)
@@ -43,11 +43,10 @@ async function callOpenAI({ model = "gpt-4o", temperature = 0.3, systemPrompt, u
 
 // ─────────────────────────────────────────────
 // AGENTE 1: Redactor
-// Genera el email base. Solo se preocupa del contenido,
-// la instrucción, los roles y la decisión de formalidad.
-// NO intenta controlar longitud ni localización.
+// Genera el email base con suficiente contenido
+// según la longitud solicitada.
 // ─────────────────────────────────────────────
-async function agentRedactor({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, persona }) {
+async function agentRedactor({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, persona, length }) {
 
   const PERSONAS = {
     directa: "Escribe de forma directa, ejecutiva y sin rodeos.",
@@ -55,13 +54,45 @@ async function agentRedactor({ mode, instruction, originalEmail, senderName, cli
     formal: "Escribe de forma estructurada, formal y protocolar.",
   };
 
+  const LENGTH_HINTS = {
+    breve: `
+LONGITUD OBJETIVO: BREVE
+- Genera un email corto con solo la idea principal.
+- Cuerpo: 3 a 5 líneas máximo.
+- No desarrolles argumentos secundarios.
+- Sin bullets ni numeración.
+`,
+    detallado: `
+LONGITUD OBJETIVO: DETALLADO
+- Genera un email con contexto suficiente.
+- Cuerpo: 6 a 10 líneas.
+- Incluye: contexto del problema, impacto, acción requerida y próximos pasos.
+- Sin bullets ni numeración.
+`,
+    completo: `
+LONGITUD OBJETIVO: COMPLETO
+- Genera un email exhaustivo y bien desarrollado.
+- Cuerpo: 12 a 18 líneas mínimo.
+- Desarrolla TODOS estos elementos por separado:
+  1. Contexto detallado del problema con ejemplos o datos concretos
+  2. Impacto específico en la operación
+  3. Historial o patrón del problema
+  4. Acción requerida con urgencia
+  5. Próximos pasos concretos y plazos
+  6. Consecuencias si no se actúa
+- Usa párrafos separados o bullets para organizar.
+- NO comprimas la información — desarrolla cada punto con detalle.
+`,
+  };
+
   const systemPrompt = `
 Eres un redactor experto de emails profesionales.
 ${PERSONAS[persona] || PERSONAS.directa}
 
-TU ÚNICA TAREA: Redactar el contenido del email correctamente.
-NO te preocupes por la longitud ni por el vocabulario regional.
-Enfócate en que el mensaje sea claro, coherente y cumpla la instrucción.
+TU ÚNICA TAREA: Redactar el contenido del email correctamente con la longitud indicada.
+
+REGLAS DE LONGITUD (OBLIGATORIO):
+${LENGTH_HINTS[length] || LENGTH_HINTS.detallado}
 
 REGLAS DE FORMALIDAD:
 - Si la preferencia es "tu": usa TÚ/TE/TU en todo el email sin excepción.
@@ -86,8 +117,9 @@ Instrucción: ${instruction}
 Remitente: ${senderName}${senderRole ? ` (${senderRole})` : ""}
 Destinatario: ${clientName}${recipientRole ? ` (${recipientRole})` : ""}
 Preferencia de formalidad: ${formalityPreference}
+Longitud requerida: ${length}
 
-Genera el email.
+Genera el email completo cumpliendo estrictamente la longitud indicada.
 `;
 
   const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.4, jsonMode: true });
@@ -107,8 +139,8 @@ Genera el email.
 
 // ─────────────────────────────────────────────
 // AGENTE 2: Longitud
-// Recibe el email base y lo reescribe para que
-// cumpla EXACTAMENTE con la longitud solicitada.
+// Verifica y corrige la longitud si el Redactor
+// no cumplió exactamente la especificación.
 // ─────────────────────────────────────────────
 async function agentLongitud({ subject, body, length }) {
 
@@ -116,32 +148,32 @@ async function agentLongitud({ subject, body, length }) {
     breve: `
 BREVE:
 - Cuerpo: 3 a 5 líneas máximo (sin contar saludo ni despedida).
-- Elimina todo lo que no sea esencial.
-- Frases cortas y directas.
-- Si ya es breve, devuélvelo igual.
-- Ideal para: confirmaciones, respuestas rápidas, acuses de recibo.
+- Si tiene más líneas: elimina lo que no sea esencial hasta cumplir el límite.
+- Frases cortas y directas. Sin bullets.
 `,
     detallado: `
 DETALLADO:
 - Cuerpo: 6 a 10 líneas (sin contar saludo ni despedida).
-- Incluye contexto suficiente sin excederse.
-- Una idea principal bien desarrollada con próximos pasos claros.
-- Ideal para: la mayoría de comunicaciones profesionales estándar.
+- Si tiene menos: agrega contexto o detalle relevante.
+- Si tiene más: consolida sin perder ideas clave.
 `,
     completo: `
 COMPLETO:
-- Cuerpo: 12 a 18 líneas (sin contar saludo ni despedida).
-- Desarrolla todos los puntos relevantes con detalle.
-- Puede incluir bullets o numeración para organizar la información.
-- Incluye antecedentes, explicaciones y próximos pasos detallados.
-- Ideal para: propuestas, explicaciones complejas, comunicaciones formales importantes.
+- Cuerpo: 12 a 18 líneas mínimo (sin contar saludo ni despedida).
+- Si tiene menos de 12 líneas: EXPANDE desarrollando más cada punto.
+  * Agrega antecedentes concretos.
+  * Desarrolla el impacto con más detalle.
+  * Incluye próximos pasos específicos con plazos.
+  * Añade consecuencias si no se toma acción.
+- Usa párrafos separados o bullets para organizar.
+- NO comprimas — el objetivo es un email completo y exhaustivo.
 `,
   };
 
   const systemPrompt = `
 Eres un editor especializado en controlar la longitud de emails profesionales.
 
-TU ÚNICA TAREA: Reescribir el email para que cumpla exactamente con la especificación de longitud.
+TU ÚNICA TAREA: Verificar que el email cumpla exactamente con la especificación de longitud y corregirlo si no cumple.
 NO cambies el significado, el tono, la formalidad (tu/usted) ni el idioma.
 NO cambies el asunto salvo que sea imprescindible.
 Conserva nombres, fechas, números y hechos.
@@ -154,14 +186,14 @@ Responde SOLO con JSON válido:
 `;
 
   const userPrompt = `
-Email a ajustar:
+Email a verificar y ajustar:
 
 Asunto: ${subject}
 
 Cuerpo:
 ${body}
 
-Ajusta la longitud según la especificación.
+Verifica si cumple la especificación de longitud "${length}" y corrígelo si es necesario.
 `;
 
   const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.2, jsonMode: true });
@@ -181,8 +213,7 @@ Ajusta la longitud según la especificación.
 
 // ─────────────────────────────────────────────
 // AGENTE 3: Localizador
-// Recibe el email con longitud correcta y adapta
-// vocabulario, tono y expresiones al país objetivo.
+// Adapta vocabulario, tono y expresiones al país.
 // ─────────────────────────────────────────────
 async function agentLocalizador({ subject, body, region }) {
 
@@ -229,17 +260,14 @@ País objetivo: COLOMBIA
 - Usa español colombiano profesional.
 - Saludo natural: "Estimado/a", "Cordial saludo".
 - Cierre natural: "Cordialmente", "Quedo atento/a", "Saludos".
-- Tono: formal, respetuoso y cordial. Colombia tiende a ser más protocolar que otros países LATAM.
+- Tono: formal, respetuoso y cordial.
 - Vocabulario: "computador", "celular", "cotización".
 - Evita: expresiones peninsulares, tono demasiado informal.
 `,
   };
 
   const regionSpec = REGION_SPECS[region];
-
-  if (!regionSpec) {
-    return { subject, body };
-  }
+  if (!regionSpec) return { subject, body };
 
   const systemPrompt = `
 Eres un experto en localización cultural de emails profesionales en español.
@@ -285,9 +313,7 @@ Localiza para ${region}.
 
 // ─────────────────────────────────────────────
 // AGENTE 4: Validador
-// Verifica que el email no mezcle tu/usted
-// y que suene coherente regionalmente.
-// Si detecta problemas, los corrige.
+// Verifica mezcla tu/usted e incoherencias regionales.
 // Usa gpt-4o-mini para reducir costo y latencia.
 // ─────────────────────────────────────────────
 async function agentValidador({ subject, body, formalityPreference, region }) {
@@ -312,8 +338,6 @@ Si el email está bien, devuélvelo exactamente igual.
 
 Responde SOLO con JSON válido:
 { "subject": "string", "body": "string", "corrections": "string" }
-
-El campo "corrections" debe ser un resumen breve de qué se corrigió, o "Sin correcciones" si no hubo cambios.
 `;
 
   const userPrompt = `
@@ -355,28 +379,24 @@ Valida y corrige si es necesario.
 // ─────────────────────────────────────────────
 async function runPipeline({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, length, region, persona }) {
 
-  // Agente 1: Redactor
   const draft = await agentRedactor({
     mode, instruction, originalEmail,
     senderName, clientName, senderRole, recipientRole,
-    formalityPreference, persona,
+    formalityPreference, persona, length,
   });
 
-  // Agente 2: Longitud
   const adjusted = await agentLongitud({
     subject: draft.subject,
     body: draft.body,
     length,
   });
 
-  // Agente 3: Localizador
   const localized = await agentLocalizador({
     subject: adjusted.subject,
     body: adjusted.body,
     region,
   });
 
-  // Agente 4: Validador
   const validated = await agentValidador({
     subject: localized.subject,
     body: localized.body,
@@ -411,7 +431,6 @@ export default async function handler(req, res) {
       formality, formalidad, length, versions,
     } = req.body || {};
 
-    // ── Sanitización de inputs (igual que antes) ──
     const safeMode = mode === "reply" ? "reply" : "compose";
     const safeInstruction = typeof instruction === "string" ? instruction.trim() : "";
     const safeOriginalEmail = typeof originalEmail === "string" ? originalEmail.trim() : "";
@@ -446,10 +465,8 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Faltan campos obligatorios" });
     }
 
-    // ── Personas para cada versión (garantizan diversidad real) ──
     const PERSONAS = ["directa", "empatica", "formal"];
 
-    // ── Lanzar versiones EN PARALELO ──
     const pipelinePromises = Array.from({ length: safeVersions }, (_, i) =>
       runPipeline({
         mode: safeMode,
