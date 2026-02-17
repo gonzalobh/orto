@@ -910,6 +910,12 @@
       opacity: 1;
     }
 
+    /* Override: never show check icon on hover unless selected */
+    .config-dropdown-option:not(.selected):hover i,
+    .config-dropdown-option:not(.selected):hover svg.lucide {
+      opacity: 0 !important;
+    }
+
     .icon-btn {
       border: 0;
       background: transparent;
@@ -2313,20 +2319,20 @@
               <!-- Formalidad Control -->
               <div class="config-control-wrapper">
                 <button id="formalidadBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                  <span id="formalidadLabel">Automático</span>
+                  <span id="formalidadLabel">Formal (Usted)</span>
                   <i data-lucide="chevron-down"></i>
                 </button>
                 <div id="formalidadDropdown" class="config-dropdown" hidden>
-                  <button type="button" class="config-dropdown-option selected" data-value="auto">
-                    <span>Automático</span>
+                  <button type="button" class="config-dropdown-option selected" data-value="usted">
+                    <span>Formal (Usted)</span>
                     <i data-lucide="check"></i>
                   </button>
                   <button type="button" class="config-dropdown-option" data-value="tu">
                     <span>Informal (Tú)</span>
                     <i data-lucide="check"></i>
                   </button>
-                  <button type="button" class="config-dropdown-option" data-value="usted">
-                    <span>Formal (Usted)</span>
+                  <button type="button" class="config-dropdown-option" data-value="auto">
+                    <span>Auto</span>
                     <i data-lucide="check"></i>
                   </button>
                 </div>
@@ -2508,11 +2514,11 @@
     let instructionHintResumeTimer = null;
     let instructionHintTransitionTimer = null;
     let instructionHintTypingTimer = null;
-    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
+    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'usted';
     let tonoValue = 'neutro';
     let regionValue = localStorage.getItem(REGION_KEY) || '';
     if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
-      formalidadValue = 'auto';
+      formalidadValue = 'usted';
     }
     if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
       regionValue = '';
@@ -2549,7 +2555,7 @@
     const formalidadOptions = formalidadDropdown?.querySelectorAll('.config-dropdown-option') || [];
 
     const formalidadLabels = {
-      auto: 'Automático',
+      auto: 'Auto',
       tu: 'Informal (Tú)',
       usted: 'Formal (Usted)'
     };
@@ -2557,7 +2563,7 @@
     localStorage.setItem(STORAGE_KEY, formalidadValue);
 
     if (formalidadLabel) {
-      formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.auto;
+      formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
     }
 
     function updateFormalidadChecks() {
@@ -2586,11 +2592,11 @@
 
     formalidadOptions.forEach((btn) => {
       btn.addEventListener('click', () => {
-        formalidadValue = btn.dataset.value || 'auto';
+        formalidadValue = btn.dataset.value || 'usted';
         localStorage.setItem(STORAGE_KEY, formalidadValue);
 
         if (formalidadLabel) {
-          formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.auto;
+          formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
         }
 
         updateFormalidadChecks();
@@ -3041,10 +3047,10 @@
       
       // Apply formalidad
       const templateFormalidad = data.formalidad ?? data.formality;
-      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'auto';
+      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'usted';
       localStorage.setItem(STORAGE_KEY, formalidadValue);
       if (formalidadLabel) {
-        formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.auto;
+        formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
       }
       updateFormalidadChecks();
       
