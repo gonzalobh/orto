@@ -1,6 +1,6 @@
 // ============================================================
 // email.js — Pipeline de 3 agentes
-// Agente 1: Redactor   → genera el email con tono + longitud automática
+// Agente 1: Redactor   → genera el email con tono específico
 // Agente 2: Localizador → adapta al país
 // Agente 3: Validador  → verifica tu/usted y coherencia regional
 // Las versiones se generan en PARALELO (Promise.all)
@@ -41,48 +41,117 @@ async function callOpenAI({ model = "gpt-4o", temperature = 0.3, systemPrompt, u
 }
 
 // ─────────────────────────────────────────────
+// DEFINICIÓN DE TONOS
+// Cada tono fuerza cambios estructurales concretos:
+// asunto, apertura, verbos, cierre, longitud.
+// ─────────────────────────────────────────────
+const TONE_SPECS = {
+
+  neutro: {
+    temperature: 0.3,
+    prompt: `
+TONO: NEUTRO — informativo y profesional, sin carga emocional.
+
+ASUNTO: Descriptivo y neutral. Ej: "Actualización sobre su pedido", "Estado de su solicitud"
+APERTURA: Ir directo al hecho. Ej: "Le escribimos para informarle que..."
+CUERPO: Exponer los hechos en orden. Sin disculpas, sin urgencia, sin drama.
+VERBOS: "informar", "comunicar", "notificar", "indicar"
+CIERRE: Neutro y disponible. Ej: "Quedamos a su disposición para cualquier consulta."
+DESPEDIDA: "Atentamente," / "Saludos,"
+
+PROHIBIDO en este tono:
+- Disculpas ("lamentamos", "lo sentimos", "pedimos disculpas")
+- Urgencia ("urgente", "inmediatamente", "a la brevedad")
+- Frases emocionales ("entendemos su frustración", "valoramos su paciencia")
+- Compromisos concretos de fechas
+
+LONGITUD: Concisa. Solo los hechos necesarios.
+`
+  },
+
+  cordial: {
+    temperature: 0.5,
+    prompt: `
+TONO: CORDIAL — empático, cálido, orientado a preservar la relación.
+
+ASUNTO: Empático y personal. Ej: "Una actualización importante sobre su pedido", "Queremos mantenerle informado"
+APERTURA: Empezar reconociendo al cliente. Ej: "Antes que nada, queremos agradecerle su paciencia..." / "Nos ponemos en contacto con usted para compartirle una actualización importante..."
+CUERPO:
+  1. Reconocer el inconveniente con empatía genuina
+  2. Explicar la situación con honestidad
+  3. Mostrar que se está trabajando en ello
+  4. Ofrecer alternativas o compensación si aplica
+VERBOS: "lamentamos", "entendemos", "valoramos", "agradecemos", "acompañamos"
+CIERRE: Cálido y comprometido. Ej: "Estamos aquí para lo que necesite. Su satisfacción es nuestra prioridad."
+DESPEDIDA: "Con un cordial saludo," / "Afectuosamente,"
+
+PROHIBIDO en este tono:
+- Lenguaje frío o técnico ("le notificamos", "comunicamos")
+- Frases genéricas sin emoción ("quedamos a su disposición")
+- Urgencia o presión
+
+LONGITUD: Moderada. Suficiente para que el cliente sienta que hay una persona real detrás.
+`
+  },
+
+  firme: {
+    temperature: 0.3,
+    prompt: `
+TONO: FIRME — directo, claro, orientado a la acción. Sin rodeos ni excusas.
+
+ASUNTO: Directo y orientado a acción. Ej: "Retraso en su pedido: próximos pasos", "Acción requerida: pedido pendiente"
+APERTURA: Ir al punto sin introducción. La primera frase debe contener el mensaje principal.
+  Ej: "Su pedido lleva dos semanas de retraso y a la fecha no contamos con una fecha de entrega confirmada."
+CUERPO:
+  1. El problema claramente enunciado (sin eufemismos)
+  2. Lo que se está haciendo al respecto
+  3. Qué necesita saber o hacer el cliente
+VERBOS: "necesitamos", "requerimos", "confirmamos", "actuamos", "esperamos"
+CIERRE: Concreto con próximo paso. Ej: "Le contactaremos en cuanto tengamos una fecha confirmada. Si tiene preguntas urgentes, puede escribirnos directamente."
+DESPEDIDA: "Saludos," / sin despedida elaborada
+
+PROHIBIDO en este tono:
+- Disculpas excesivas o vagas ("lamentamos los inconvenientes")
+- Frases de relleno ("quedamos atentos a cualquier consulta")
+- Lenguaje pasivo ("podría ser que", "es posible que")
+- Suavizadores innecesarios
+
+LONGITUD: Breve y densa. Cada frase debe tener un propósito.
+`
+  },
+
+  urgente: {
+    temperature: 0.4,
+    prompt: `
+TONO: URGENTE — comunica prioridad e inmediatez. El receptor debe sentir que esto requiere atención ahora.
+
+ASUNTO: Debe incluir "Urgente" o indicador de prioridad. Ej: "URGENTE: Actualización sobre su pedido", "Acción inmediata requerida — pedido #[X]"
+APERTURA: La primera frase debe establecer la urgencia y el problema simultáneamente.
+  Ej: "Le contactamos de manera urgente en relación con su pedido, que acumula dos semanas de retraso sin fecha de entrega confirmada."
+CUERPO:
+  1. El problema con su gravedad (2 semanas es mucho — nombrarlo directamente)
+  2. La acción inmediata que se está tomando
+  3. Lo que el cliente debe hacer o esperar en las próximas horas/días
+  4. Un plazo concreto aunque sea aproximado
+VERBOS: "actuamos", "escalamos", "priorizamos", "contactamos ahora", "resolveremos antes de"
+CIERRE: Con compromiso de tiempo concreto. Ej: "Le daremos una actualización antes del [día/fecha]. Si no recibe noticias, contáctenos directamente a [canal]."
+DESPEDIDA: Sin adornos. "Saludos," o nada.
+
+PROHIBIDO en este tono:
+- Frases pasivas o genéricas ("quedamos atentos")
+- Suavizadores ("podría ser posible", "quizás")
+- Apertura de cortesía larga antes del problema
+- Disculpas que diluyan la urgencia
+
+LONGITUD: Moderada. Suficiente para transmitir acción, no tan larga que diluya la urgencia.
+`
+  }
+};
+
+// ─────────────────────────────────────────────
 // AGENTE 1: Redactor
-// Genera el email con el tono indicado.
-// La longitud la decide el agente según el contenido
-// y el tipo de email — no el usuario.
 // ─────────────────────────────────────────────
 async function agentRedactor({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, tone, persona }) {
-
-  const TONE_SPECS = {
-    neutro: `
-TONO: NEUTRO (estándar profesional)
-- Tono equilibrado, ni frío ni cálido.
-- Directo al punto sin carga emocional.
-- Apropiado para la mayoría de comunicaciones profesionales.
-- Longitud: la necesaria para cubrir el contenido sin más.
-`,
-    cordial: `
-TONO: CORDIAL
-- Tono cálido, empático y considerado.
-- Muestra interés genuino en la relación con el destinatario.
-- Suaviza los mensajes difíciles con diplomacia.
-- Incluye frases de cortesía naturales (no exageradas).
-- Longitud: suficiente para que no suene abrupto.
-`,
-    firme: `
-TONO: FIRME
-- Tono directo, seguro y sin ambigüedades.
-- Comunica la posición claramente sin ser agresivo.
-- Usa lenguaje de acción: "necesitamos", "esperamos", "requerimos".
-- Sin rodeos ni justificaciones excesivas.
-- Ideal para: reclamos, negociaciones, situaciones que requieren acción.
-- Longitud: concisa pero completa — cada línea tiene un propósito.
-`,
-    urgente: `
-TONO: URGENTE
-- Comunica inmediatez y prioridad desde el asunto.
-- El primer párrafo establece la urgencia claramente.
-- Usa frases de tiempo concretas: "antes del viernes", "esta semana", "en las próximas 24 horas".
-- Sin introducción larga — va directo al problema y la acción requerida.
-- Cierre que refuerza la urgencia sin sonar desesperado.
-- Longitud: moderada — lo suficiente para ser claro, sin dilatar el mensaje.
-`,
-  };
 
   const PERSONAS = {
     directa: "Enfoque ejecutivo: ve directo al punto, sin introducciones largas.",
@@ -90,30 +159,25 @@ TONO: URGENTE
     formal: "Enfoque estructurado: organiza el email con claridad, párrafo por párrafo.",
   };
 
+  const toneSpec = TONE_SPECS[tone] || TONE_SPECS.neutro;
+
   const systemPrompt = `
-Eres un redactor experto de emails profesionales.
+Eres un redactor experto de emails profesionales en español.
 ${PERSONAS[persona] || PERSONAS.directa}
 
-TU ÚNICA TAREA: Redactar un email profesional natural y efectivo.
+════════════════════════════════════════
+INSTRUCCIONES DE TONO — OBLIGATORIO CUMPLIR
+El tono determina TODO: el asunto, la apertura, los verbos, el cierre y la longitud.
+Debes seguir estas instrucciones al pie de la letra. No uses un tono genérico.
 
-TONO OBLIGATORIO:
-${TONE_SPECS[tone] || TONE_SPECS.neutro}
-
-LONGITUD: Decide tú la longitud apropiada según el contenido y el tono.
-- Si la instrucción es simple → email corto (3-5 líneas de cuerpo).
-- Si la instrucción tiene múltiples puntos → email más largo (6-12 líneas).
-- Si el tono es urgente → preferir concisión.
-- Si el tono es cordial → permitir algo más de desarrollo.
-- NUNCA rellenes con frases vacías para alargar. Cada línea debe aportar valor.
+${toneSpec.prompt}
+════════════════════════════════════════
 
 REGLAS DE FORMALIDAD:
-- Si la preferencia es "tu": usa TÚ/TE/TU en todo el email sin excepción.
-- Si la preferencia es "usted": usa USTED/LE/SU en todo el email sin excepción.
-- Si la preferencia es "auto": decide como lo haría un profesional real.
-  * Usa USTED para: clientes, contactos nuevos, jerarquía superior, B2B formal.
-  * Usa TÚ para: compañeros, contexto informal o cercano.
-  * Si tienes dudas → usa USTED.
-- NUNCA mezcles tú y usted en el mismo email.
+- "tu": usa TÚ/TE/TU en todo el email sin excepción.
+- "usted": usa USTED/LE/SU en todo el email sin excepción.
+- "auto": decide según el contexto. Clientes y contactos nuevos → USTED. Compañeros → TÚ. En caso de duda → USTED.
+- NUNCA mezcles tú y usted.
 
 Responde SOLO con JSON válido:
 { "subject": "string", "body": "string" }
@@ -129,12 +193,17 @@ Instrucción: ${instruction}
 Remitente: ${senderName}${senderRole ? ` (${senderRole})` : ""}
 Destinatario: ${clientName}${recipientRole ? ` (${recipientRole})` : ""}
 Preferencia de formalidad: ${formalityPreference}
-Tono requerido: ${tone}
+Tono requerido: ${tone.toUpperCase()}
 
-Genera el email.
+Genera el email siguiendo EXACTAMENTE las instrucciones de tono indicadas arriba.
 `;
 
-  const raw = await callOpenAI({ systemPrompt, userPrompt, temperature: 0.45, jsonMode: true });
+  const raw = await callOpenAI({
+    systemPrompt,
+    userPrompt,
+    temperature: toneSpec.temperature,
+    jsonMode: true
+  });
 
   let parsed;
   try {
@@ -151,7 +220,6 @@ Genera el email.
 
 // ─────────────────────────────────────────────
 // AGENTE 2: Localizador
-// Adapta vocabulario, tono y expresiones al país.
 // ─────────────────────────────────────────────
 async function agentLocalizador({ subject, body, region }) {
 
@@ -163,7 +231,7 @@ País objetivo: ESPAÑA
 - Cierre natural: "Un saludo", "Quedamos a su disposición", "Atentamente".
 - Tono: directo, conciso, profesional. Menos efusivo que LATAM.
 - Vocabulario: "ordenador" si aplica, "móvil", "presupuesto".
-- Evita: "cordialmente", "estimado cliente" genérico, tono latinoamericano cálido.
+- Evita: "cordialmente", tono latinoamericano cálido.
 - No uses vosotros salvo que el email se dirija claramente a un grupo.
 `,
     Mexico: `
@@ -189,9 +257,9 @@ País objetivo: CHILE
 - Usa español chileno profesional y sobrio.
 - Saludo natural: "Estimado/a", "Junto con saludar".
 - Cierre natural: "Saludos", "Quedamos atentos".
-- Tono: directo y respetuoso, equilibrio entre claridad y formalidad.
+- Tono: directo y respetuoso.
 - Vocabulario: "computador", "celular", "cotización".
-- Evita: muletillas ("po", "cachai"), tono demasiado cálido o frío.
+- Evita: muletillas ("po", "cachai").
 `,
     Colombia: `
 País objetivo: COLOMBIA
@@ -211,10 +279,10 @@ País objetivo: COLOMBIA
 Eres un experto en localización cultural de emails profesionales en español.
 
 TU ÚNICA TAREA: Adaptar el vocabulario, saludos, despedidas y expresiones al país objetivo.
-NO cambies el significado, la longitud ni la formalidad (tu/usted) del email.
+NO cambies el significado, la longitud, el tono ni la formalidad (tu/usted) del email.
 NO agregues ni elimines información.
 Localiza de forma SUTIL — debe sonar natural, no una caricatura del país.
-PROHIBIDO: muletillas, estereotipos, jerga callejera o acentos escritos.
+PROHIBIDO: muletillas, estereotipos, jerga callejera.
 
 ESPECIFICACIÓN REGIONAL:
 ${regionSpec}
@@ -224,8 +292,6 @@ Responde SOLO con JSON válido:
 `;
 
   const userPrompt = `
-Email a localizar:
-
 Asunto: ${subject}
 
 Cuerpo:
@@ -240,7 +306,7 @@ Localiza para ${region}.
   try {
     parsed = JSON.parse(raw);
   } catch {
-    throw new Error("Agente Localizador: JSON inválido");
+    return { subject, body };
   }
 
   return {
@@ -250,28 +316,24 @@ Localiza para ${region}.
 }
 
 // ─────────────────────────────────────────────
-// AGENTE 3: Validador
-// Verifica mezcla tu/usted e incoherencias regionales.
-// Usa gpt-4o-mini para reducir costo y latencia.
+// AGENTE 3: Validador (gpt-4o-mini — bajo costo)
 // ─────────────────────────────────────────────
 async function agentValidador({ subject, body, formalityPreference, region }) {
 
   const systemPrompt = `
 Eres un corrector final de emails profesionales en español.
 
-TU ÚNICA TAREA: Verificar y corregir dos problemas específicos:
+TU ÚNICA TAREA: Verificar y corregir dos problemas:
 
 1. MEZCLA DE FORMALIDAD:
    - Detecta si el email mezcla "tú/te/tu" con "usted/le/su".
-   - Si hay mezcla: unifica todo al modo predominante (o al preferido: ${formalityPreference}).
+   - Si hay mezcla: unifica al modo predominante (preferido: ${formalityPreference}).
    - Si no hay mezcla: no cambies nada.
 
 2. INCOHERENCIA REGIONAL (${region || "neutro"}):
-   - Detecta si hay expresiones claramente incorrectas para la región.
-   - Solo corrige las expresiones evidentemente fuera de lugar.
-   - No sobre-corrijas ni cambies el estilo general.
+   - Corrige solo expresiones evidentemente fuera de lugar para la región.
+   - No sobre-corrijas.
 
-NO cambies el significado, la longitud ni la estructura del email.
 Si el email está bien, devuélvelo exactamente igual.
 
 Responde SOLO con JSON válido:
@@ -280,14 +342,9 @@ Responde SOLO con JSON válido:
 
   const userPrompt = `
 Asunto: ${subject}
-
-Cuerpo:
-${body}
-
-Preferencia de formalidad: ${formalityPreference}
+Cuerpo: ${body}
+Formalidad: ${formalityPreference}
 Región: ${region || "no especificada"}
-
-Valida y corrige si es necesario.
 `;
 
   const raw = await callOpenAI({
@@ -312,7 +369,7 @@ Valida y corrige si es necesario.
 }
 
 // ─────────────────────────────────────────────
-// PIPELINE COMPLETO para una versión
+// PIPELINE COMPLETO
 // ─────────────────────────────────────────────
 async function runPipeline({ mode, instruction, originalEmail, senderName, clientName, senderRole, recipientRole, formalityPreference, tone, region, persona }) {
 
@@ -374,7 +431,9 @@ export default async function handler(req, res) {
     const incomingFormalidad = formalidad ?? formality;
     const rawFormalityPreference = typeof incomingFormalidad === "string"
       ? incomingFormalidad.trim().toLowerCase()
-      : (typeof incomingFormalidad?.preference === "string" ? incomingFormalidad.preference.trim().toLowerCase() : "auto");
+      : (typeof incomingFormalidad?.preference === "string"
+        ? incomingFormalidad.preference.trim().toLowerCase()
+        : "auto");
     const safeFormalityPreference = ["auto", "tu", "usted"].includes(rawFormalityPreference)
       ? rawFormalityPreference : "auto";
 
