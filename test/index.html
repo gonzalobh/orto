@@ -2308,23 +2308,27 @@
 
             <!-- Configuration Controls Row -->
             <div class="config-controls-row">
-              <!-- Longitud Control -->
+              <!-- Tono Control -->
               <div class="config-control-wrapper">
-                <button id="longitudBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
-                  <span id="longitudLabel">Detallado</span>
+                <button id="tonoBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="tonoLabel">Neutro</span>
                   <i data-lucide="chevron-down"></i>
                 </button>
-                <div id="longitudDropdown" class="config-dropdown" hidden>
-                  <button type="button" class="config-dropdown-option" data-value="breve">
-                    <span>Breve</span>
+                <div id="tonoDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="neutro">
+                    <span>Neutro</span>
                     <i data-lucide="check"></i>
                   </button>
-                  <button type="button" class="config-dropdown-option selected" data-value="detallado">
-                    <span>Detallado</span>
+                  <button type="button" class="config-dropdown-option" data-value="cordial">
+                    <span>Cordial</span>
                     <i data-lucide="check"></i>
                   </button>
-                  <button type="button" class="config-dropdown-option" data-value="completo">
-                    <span>Completo</span>
+                  <button type="button" class="config-dropdown-option" data-value="firme">
+                    <span>Firme</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="urgente">
+                    <span>Urgente</span>
                     <i data-lucide="check"></i>
                   </button>
                 </div>
@@ -2477,8 +2481,8 @@
     const originalEmailGroupEl = document.getElementById('originalEmailGroup');
     const formalidadBtn = document.getElementById('formalidadBtn');
     const formalidadDropdown = document.getElementById('formalidadDropdown');
-    const longitudBtn = document.getElementById('longitudBtn');
-    const longitudDropdown = document.getElementById('longitudDropdown');
+    const tonoBtn = document.getElementById('tonoBtn');
+    const tonoDropdown = document.getElementById('tonoDropdown');
     const regionBtn = document.getElementById('regionBtn');
     const regionDropdown = document.getElementById('regionDropdown');
     const outputEl = document.getElementById('output');
@@ -2511,7 +2515,7 @@
     const TEMPLATE_KEY = 'redactar_templates_v1';
     const SELECTION_MIN_LENGTH = 3;
     const STORAGE_KEY = 'formalidadPreference';
-    const LONGITUD_KEY = 'longitudPreference';
+    const TONO_KEY = 'tonoPreference';
     const REGION_KEY = 'regionPreference';
     const PROFILE_KEY = 'userProfile';
 
@@ -2532,13 +2536,13 @@
     let instructionHintTransitionTimer = null;
     let instructionHintTypingTimer = null;
     let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'auto';
-    let longitudValue = localStorage.getItem(LONGITUD_KEY) || 'detallado';
+    let tonoValue = localStorage.getItem(TONO_KEY) || 'neutro';
     let regionValue = localStorage.getItem(REGION_KEY) || '';
     if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
       formalidadValue = 'auto';
     }
-    if (!['breve', 'detallado', 'completo'].includes(longitudValue)) {
-      longitudValue = 'detallado';
+    if (!['neutro', 'cordial', 'firme', 'urgente'].includes(tonoValue)) {
+      tonoValue = 'neutro';
     }
     if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
       regionValue = '';
@@ -2608,9 +2612,9 @@
       formalidadBtn.setAttribute('aria-expanded', !isExpanded);
       formalidadDropdown.hidden = isExpanded;
       // Close other dropdowns if open
-      if (longitudBtn && longitudDropdown) {
-        longitudBtn.setAttribute('aria-expanded', 'false');
-        longitudDropdown.hidden = true;
+      if (tonoBtn && tonoDropdown) {
+        tonoBtn.setAttribute('aria-expanded', 'false');
+        tonoDropdown.hidden = true;
       }
       if (regionBtn && regionDropdown) {
         regionBtn.setAttribute('aria-expanded', 'false');
@@ -2634,26 +2638,27 @@
     });
 
     // Longitud control
-    const longitudLabel = document.getElementById('longitudLabel');
-    const longitudOptions = longitudDropdown?.querySelectorAll('.config-dropdown-option') || [];
+    const tonoLabel = document.getElementById('tonoLabel');
+    const tonoOptions = tonoDropdown?.querySelectorAll('.config-dropdown-option') || [];
 
-    const longitudLabels = {
-      breve: 'Breve',
-      detallado: 'Detallado',
-      completo: 'Completo'
+    const tonoLabels = {
+      neutro: 'Neutro',
+      cordial: 'Cordial',
+      firme: 'Firme',
+      urgente: 'Urgente'
     };
 
-    localStorage.setItem(LONGITUD_KEY, longitudValue);
+    localStorage.setItem(TONO_KEY, tonoValue);
 
-    if (longitudLabel) {
-      longitudLabel.textContent = longitudLabels[longitudValue] || longitudLabels.detallado;
+    if (tonoLabel) {
+      tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
     }
 
-    function updateLongitudChecks() {
-      longitudOptions.forEach((btn) => {
+    function updateTonoChecks() {
+      tonoOptions.forEach((btn) => {
         const icon = btn.querySelector('i[data-lucide="check"]');
         if (!icon) return;
-        if (btn.dataset.value === longitudValue) {
+        if (btn.dataset.value === tonoValue) {
           btn.classList.add('selected');
           icon.style.opacity = '1';
         } else {
@@ -2663,13 +2668,13 @@
       });
     }
 
-    updateLongitudChecks();
+    updateTonoChecks();
 
-    longitudBtn?.addEventListener('click', (e) => {
+    tonoBtn?.addEventListener('click', (e) => {
       e.stopPropagation();
-      const isExpanded = longitudBtn.getAttribute('aria-expanded') === 'true';
-      longitudBtn.setAttribute('aria-expanded', !isExpanded);
-      longitudDropdown.hidden = isExpanded;
+      const isExpanded = tonoBtn.getAttribute('aria-expanded') === 'true';
+      tonoBtn.setAttribute('aria-expanded', !isExpanded);
+      tonoDropdown.hidden = isExpanded;
       // Close other dropdowns if open
       if (formalidadBtn && formalidadDropdown) {
         formalidadBtn.setAttribute('aria-expanded', 'false');
@@ -2681,18 +2686,18 @@
       }
     });
 
-    longitudOptions.forEach((btn) => {
+    tonoOptions.forEach((btn) => {
       btn.addEventListener('click', () => {
-        longitudValue = btn.dataset.value || 'detallado';
-        localStorage.setItem(LONGITUD_KEY, longitudValue);
+        tonoValue = btn.dataset.value || 'neutro';
+        localStorage.setItem(TONO_KEY, tonoValue);
 
-        if (longitudLabel) {
-          longitudLabel.textContent = longitudLabels[longitudValue] || longitudLabels.detallado;
+        if (tonoLabel) {
+          tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
         }
 
-        updateLongitudChecks();
-        longitudDropdown.hidden = true;
-        longitudBtn.setAttribute('aria-expanded', 'false');
+        updateTonoChecks();
+        tonoDropdown.hidden = true;
+        tonoBtn.setAttribute('aria-expanded', 'false');
       });
     });
 
@@ -2741,9 +2746,9 @@
         formalidadBtn.setAttribute('aria-expanded', 'false');
         formalidadDropdown.hidden = true;
       }
-      if (longitudBtn && longitudDropdown) {
-        longitudBtn.setAttribute('aria-expanded', 'false');
-        longitudDropdown.hidden = true;
+      if (tonoBtn && tonoDropdown) {
+        tonoBtn.setAttribute('aria-expanded', 'false');
+        tonoDropdown.hidden = true;
       }
     });
 
@@ -2770,10 +2775,10 @@
           formalidadBtn.setAttribute('aria-expanded', 'false');
         }
       }
-      if (longitudBtn && longitudDropdown) {
-        if (!longitudBtn.contains(e.target) && !longitudDropdown.contains(e.target)) {
-          longitudDropdown.hidden = true;
-          longitudBtn.setAttribute('aria-expanded', 'false');
+      if (tonoBtn && tonoDropdown) {
+        if (!tonoBtn.contains(e.target) && !tonoDropdown.contains(e.target)) {
+          tonoDropdown.hidden = true;
+          tonoBtn.setAttribute('aria-expanded', 'false');
         }
       }
       if (regionBtn && regionDropdown) {
@@ -3127,7 +3132,7 @@
       return {
         instruction: document.getElementById('instruction').value,
         formalidad: formalidadValue,
-        longitud: longitudValue,
+        tone: tonoValue,
         recipientRegion: regionValue,
         mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
       };
@@ -3159,14 +3164,14 @@
       }
       updateFormalidadChecks();
       
-      // Apply longitud
-      const templateLongitud = data.longitud;
-      longitudValue = ['breve', 'detallado', 'completo'].includes(templateLongitud) ? templateLongitud : 'detallado';
-      localStorage.setItem(LONGITUD_KEY, longitudValue);
-      if (longitudLabel) {
-        longitudLabel.textContent = longitudLabels[longitudValue] || longitudLabels.detallado;
+      // Apply tono
+      const templateTono = data.tone;
+      tonoValue = ['neutro', 'cordial', 'firme', 'urgente'].includes(templateTono) ? templateTono : 'neutro';
+      localStorage.setItem(TONO_KEY, tonoValue);
+      if (tonoLabel) {
+        tonoLabel.textContent = tonoLabels[tonoValue] || tonoLabels.neutro;
       }
-      updateLongitudChecks();
+      updateTonoChecks();
       
       // Apply region
       const templateRegion = data.recipientRegion || '';
@@ -4304,7 +4309,7 @@ ${body}`.trim();
       const senderInput = profile.name || '';
       const senderRole = profile.role || '';
       const formality = formalidadValue;
-      const length = longitudValue;
+      const tone = tonoValue;
 
       const senderName = senderInput || 'El equipo';
       const clientName = 'cliente';
@@ -4336,7 +4341,7 @@ ${body}`.trim();
             senderRole,
             recipientRole,
             formalidad: formality,
-            length,
+            tone,
             versions
           })
         });
