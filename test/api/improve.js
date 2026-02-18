@@ -1,6 +1,6 @@
 const MODE_PROMPTS = {
   improve:
-    "Mejora la claridad y redacción del siguiente texto sin cambiar su significado. Mantén el idioma original.",
+    "Reescribe el siguiente texto mejorando notablemente su claridad, fluidez y profesionalismo. DEBES cambiar la redacción de forma visible — no devuelvas el mismo texto. Mantén el significado y el idioma original.",
   expand:
     "Expande el siguiente texto agregando más detalle y claridad sin cambiar su intención. Mantén el idioma original.",
   simplify:
@@ -27,8 +27,8 @@ export default async function handler(req, res) {
     }
 
     const systemPrompt =
-      "Eres un editor profesional de textos. Sigue exactamente las instrucciones y responde solo con el resultado final.";
-    const userPrompt = `${MODE_PROMPTS[safeMode]}\n\nInstrucciones obligatorias:\n- No agregues explicaciones.\n- Devuelve solo el texto final.\n- Mantén el idioma original.\n- Mantén exactamente el mismo uso de mayúsculas y minúsculas que el texto original.\n\nTexto:\n${safeText}`;
+      "Eres un editor profesional de textos. Sigue exactamente las instrucciones y responde solo con el resultado final. Cuando se te pida mejorar un texto, SIEMPRE debes reescribirlo de forma notablemente distinta al original.";
+    const userPrompt = `${MODE_PROMPTS[safeMode]}\n\nInstrucciones obligatorias:\n- No agregues explicaciones.\n- Devuelve solo el texto final.\n- Mantén el idioma original.\n- Mantén exactamente el mismo uso de mayúsculas y minúsculas que el texto original.\n- Si es "mejorar": la redacción final DEBE ser claramente diferente a la original.\n\nTexto:\n${safeText}`;
 
     const upstreamResponse = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -38,7 +38,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        temperature: 0.3,
+        temperature: safeMode === "improve" ? 0.7 : 0.3,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
