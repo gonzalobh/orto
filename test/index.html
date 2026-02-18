@@ -1755,6 +1755,51 @@
       font-weight: 500;
     }
 
+    .version-section {
+      position: relative;
+    }
+
+    .version-section .inline-copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.15s ease;
+      z-index: 10;
+    }
+
+    .version-section:hover .inline-copy-btn {
+      opacity: 1;
+    }
+
+    .version-section .inline-copy-btn:hover {
+      background: var(--bg-secondary);
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .version-section .inline-copy-btn.copied {
+      background: var(--text-primary);
+      color: white;
+      border-color: var(--text-primary);
+      opacity: 1;
+    }
+
+    .version-section .inline-copy-btn i {
+      width: 14px;
+      height: 14px;
+    }
+
     .version-copy-btn.copied {
       background: var(--text-primary);
       color: white;
@@ -3730,6 +3775,37 @@ ${body}`.trim();
       });
     }
 
+    function handleInlineCopyClick(event) {
+      const button = event.target.closest('.inline-copy-btn');
+      if (!button) return;
+
+      const section = button.closest('.version-section');
+      if (!section) return;
+
+      const contentEl = section.querySelector('.version-content');
+      if (!contentEl) return;
+
+      const content = contentEl.innerText.trim();
+
+      navigator.clipboard.writeText(content).then(() => {
+        const originalHtml = button.innerHTML;
+        button.innerHTML = '<i data-lucide="check"></i>';
+        button.classList.add('copied');
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+        setTimeout(() => {
+          button.innerHTML = originalHtml;
+          button.classList.remove('copied');
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        }, 2000);
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+      });
+    }
+
     function sendViaGmail(emailContainer) {
       if (!emailContainer) {
         alert('Primero genera un email.');
@@ -4118,6 +4194,13 @@ ${body}`.trim();
     }
 
     async function handleOutputClick(event) {
+      // Handle inline copy buttons
+      const inlineCopyBtn = event.target.closest('.inline-copy-btn');
+      if (inlineCopyBtn) {
+        handleInlineCopyClick(event);
+        return;
+      }
+
       const translateOption = event.target.closest('.translate-option');
       if (translateOption) {
         const dropdown = translateOption.closest('.translate-dropdown');
@@ -4186,16 +4269,18 @@ ${body}`.trim();
           <div class="version-section">
             <div class="version-title">Asunto</div>
             <div class="version-content" data-role="email-subject" contenteditable="true">${escapeHtml(item.subject)}</div>
+            <button class="inline-copy-btn copy-subject-btn" type="button" title="Copiar asunto">
+              <i data-lucide="copy"></i>
+            </button>
           </div>
           <div class="version-section">
             <div class="version-title">Cuerpo</div>
             <div class="version-content generated-email" data-role="email-body" contenteditable="true">${escapeHtml(item.body)}</div>
+            <button class="inline-copy-btn copy-body-btn" type="button" title="Copiar cuerpo">
+              <i data-lucide="copy"></i>
+            </button>
           </div>
           <div class="version-actions">
-            <button class="icon-btn version-copy-btn" type="button" data-tooltip="Copiar" data-subject="${encodeURIComponent(item.subject)}" data-body="${encodeURIComponent(item.body)}">
-              <i data-lucide="copy"></i>
-              <span>Copiar</span>
-            </button>
 
             <button class="icon-btn expand-btn" type="button" data-tooltip="Expandir">
               <i data-lucide="maximize-2"></i>
