@@ -2661,7 +2661,7 @@
           <div class="input-group">
             <div class="instruction-header">
               <label class="input-label" for="instruction">¿Qué email quieres enviar?</label>
-              <button id="historyModalBtn" class="history-icon-btn" type="button" title="Ver historial" onclick="openHistoryModal()">
+              <button id="historyModalBtn" class="history-icon-btn" type="button" title="Ver historial" onclick="document.getElementById('historyModal').hidden=false">
                 <i data-lucide="history"></i>
               </button>
             </div>
@@ -2800,11 +2800,11 @@
       </div>
       <!-- History Modal -->
   <div id="historyModal" class="history-modal" hidden>
-    <div class="history-modal-backdrop"></div>
+    <div class="history-modal-backdrop" onclick="document.getElementById('historyModal').hidden=true"></div>
     <div class="history-modal-content">
       <div class="history-modal-header">
         <h3>Historial</h3>
-        <button class="history-modal-close" type="button" aria-label="Cerrar">
+        <button class="history-modal-close" type="button" aria-label="Cerrar" onclick="document.getElementById('historyModal').hidden=true">
           <i data-lucide="x"></i>
         </button>
       </div>
@@ -2848,7 +2848,10 @@
 
     // History Modal Elements
     const historyModal = document.getElementById('historyModal');
-    const historyModalBtn = document.getElementById('historyModalBtn');const historyModalClose = historyModal?.querySelector('.history-modal-close');
+    const historyModalBtn = document.getElementById('historyModalBtn');
+    console.log('History modal element:', historyModal);
+    console.log('History button element:', historyModalBtn);
+    const historyModalClose = historyModal?.querySelector('.history-modal-close');
     const historyModalBackdrop = historyModal?.querySelector('.history-modal-backdrop');
     const historyModalList = document.getElementById('historyModalList');
     const historyModalSearch = document.getElementById('historyModalSearch');
@@ -2856,11 +2859,13 @@
     
     // History Modal Functions
     function openHistoryModal() {
-      if (!historyModal) return;
+      console.log('Opening history modal...');
+      if (!historyModal) {
+        console.error('historyModal element not found!');
+        return;
+      }
+      console.log('Modal found, opening...');
       historyModal.hidden = false;
-      renderHistoryModal();
-      if (window.lucide) window.lucide.createIcons();
-    }historyModal.hidden = false;
       renderHistoryModal();
       if (window.lucide) window.lucide.createIcons();
     }
@@ -4082,7 +4087,9 @@ ${body}`.trim();
             window.lucide.createIcons();
           }
         }, 2000);
-      }).catch((err) => {});
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+      });
     }
 
     function handleInlineCopyClick(event) {
@@ -4111,7 +4118,9 @@ ${body}`.trim();
             window.lucide.createIcons();
           }
         }, 2000);
-      }).catch((err) => {});
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+      });
     }
 
     function sendViaGmail(emailContainer) {
@@ -4392,7 +4401,9 @@ ${body}`.trim();
         }
         if (proposalWrap) proposalWrap.classList.add('visible');
         setPopoverLoading(false, '');
-      } catch (error) {setPopoverLoading(false, 'No se pudo generar propuesta.');
+      } catch (error) {
+        console.error('Error en mejora de selección:', error);
+        setPopoverLoading(false, 'No se pudo generar propuesta.');
       }
     }
 
@@ -4471,7 +4482,9 @@ ${body}`.trim();
 
         // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
-      } catch (err) {// Quitar spinner, vuelve al ícono normal
+      } catch (err) {
+        console.error('Error al traducir:', err);
+        // Quitar spinner, vuelve al ícono normal
         button.classList.remove('translating');
       } finally {
         button.disabled = false;
@@ -4859,7 +4872,9 @@ ${body}`.trim();
         const newText = await regenerateVersion(originalText, mode);
         contentEl.innerText = newText;
         syncCardAfterBodyEdit(contentEl);
-      } catch (err) {} finally {
+      } catch (err) {
+        console.error(err);
+      } finally {
         contentEl.style.opacity = 1;
       }
     });
@@ -4945,7 +4960,12 @@ ${body}`.trim();
 
     
     // History Modal Event Listeners
-    // Event listener removed - using onclick inline else {}
+    if (historyModalBtn) {
+      console.log('History button found, adding event listener');
+      historyModalBtn.addEventListener('click', openHistoryModal);
+    } else {
+      console.error('History button NOT found!');
+    }
     historyModalClose?.addEventListener('click', closeHistoryModal);
     historyModalBackdrop?.addEventListener('click', closeHistoryModal);
     clearHistoryModalBtn?.addEventListener('click', clearAllHistory);
@@ -5040,6 +5060,73 @@ ${body}`.trim();
     document.addEventListener('DOMContentLoaded', () => {
       renderTemplateMenu();
     });
+  
+    // Detectar cuando el modal se abre
+    var modal = document.getElementById('historyModal');
+    if (modal) {
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === 'hidden') {
+            if (!modal.hidden) {
+              // Modal acaba de abrirse
+              loadHistoryContent();
+            }
+          }
+        });
+      });
+      
+      observer.observe(modal, { attributes: true });
+    }
+    
+    function loadHistoryContent() {
+      var list = document.getElementById('historyModalList');
+      if (!list) return;
+      
+      var history = [];
+      try {
+        history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      } catch(e) {}
+      
+      if (history.length === 0) {
+        list.innerHTML = '<div style="padding:2rem;text-align:center;">No hay emails en el historial.</div>';
+        return;
+      }
+      
+      var html = '';
+      for (var i = 0; i < history.length; i++) {
+        var item = history[i];
+        var preview = 'Sin asunto';
+        if (item.versions && item.versions[0] && item.versions[0].subject) {
+          preview = item.versions[0].subject;
+        } else if (item.instruction) {
+          preview = item.instruction;
+        }
+        
+        html += '<div onclick="clickHistoryItem(' + i + ')" style="padding:1rem;border-bottom:1px solid #ddd;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'white\'">';
+        html += '<div style="font-weight:500;">' + preview.substring(0, 80) + '</div>';
+        html += '</div>';
+      }
+      
+      list.innerHTML = html;
+    }
+    
+    function clickHistoryItem(index) {
+      var history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      var item = history[index];
+      if (!item) return;
+      
+      var instructionEl = document.getElementById('instruction');
+      if (instructionEl && item.instruction) {
+        instructionEl.value = item.instruction;
+      }
+      
+      document.getElementById('historyModal').hidden = true;
+      
+      if (item.versions && item.versions.length > 0 && typeof renderVersions === 'function') {
+        renderVersions(item.versions);
+      }
+    }
+
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
