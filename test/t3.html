@@ -2820,7 +2820,7 @@
         <div id="historyModalList" class="history-list"></div>
       </div>
       <div class="history-modal-footer">
-        <button id="clearHistoryModalBtn" class="btn-clear-history" type="button">
+        <button id="clearHistoryModalBtn" class="btn-clear-history" type="button" onclick="clearAllHistoryClick()">
           <i data-lucide="trash-2"></i>
           <span>Borrar historial</span>
         </button>
@@ -5060,73 +5060,6 @@ ${body}`.trim();
     document.addEventListener('DOMContentLoaded', () => {
       renderTemplateMenu();
     });
-  
-    // Detectar cuando el modal se abre
-    var modal = document.getElementById('historyModal');
-    if (modal) {
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === 'hidden') {
-            if (!modal.hidden) {
-              // Modal acaba de abrirse
-              loadHistoryContent();
-            }
-          }
-        });
-      });
-      
-      observer.observe(modal, { attributes: true });
-    }
-    
-    function loadHistoryContent() {
-      var list = document.getElementById('historyModalList');
-      if (!list) return;
-      
-      var history = [];
-      try {
-        history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
-      } catch(e) {}
-      
-      if (history.length === 0) {
-        list.innerHTML = '<div style="padding:2rem;text-align:center;">No hay emails en el historial.</div>';
-        return;
-      }
-      
-      var html = '';
-      for (var i = 0; i < history.length; i++) {
-        var item = history[i];
-        var preview = 'Sin asunto';
-        if (item.versions && item.versions[0] && item.versions[0].subject) {
-          preview = item.versions[0].subject;
-        } else if (item.instruction) {
-          preview = item.instruction;
-        }
-        
-        html += '<div onclick="clickHistoryItem(' + i + ')" style="padding:1rem;border-bottom:1px solid #ddd;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background=\'#f5f5f5\'" onmouseout="this.style.background=\'white\'">';
-        html += '<div style="font-weight:500;">' + preview.substring(0, 80) + '</div>';
-        html += '</div>';
-      }
-      
-      list.innerHTML = html;
-    }
-    
-    function clickHistoryItem(index) {
-      var history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
-      var item = history[index];
-      if (!item) return;
-      
-      var instructionEl = document.getElementById('instruction');
-      if (instructionEl && item.instruction) {
-        instructionEl.value = item.instruction;
-      }
-      
-      document.getElementById('historyModal').hidden = true;
-      
-      if (item.versions && item.versions.length > 0 && typeof renderVersions === 'function') {
-        renderVersions(item.versions);
-      }
-    }
-
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
   
@@ -5175,9 +5108,118 @@ ${body}`.trim();
     lucide.createIcons();
 
     // Asegurar que el botón "Borrar historial" esté oculto al inicio
-    const clearHistoryBtnInit = document.getElementById('clearHistoryBtn');
+
+    function clearAllHistoryClick() {
+      if (!confirm('¿Borrar todo el historial? Esta acción no se puede deshacer.')) return;
+      localStorage.setItem('emailHistory', JSON.stringify([]));
+      loadHistoryIntoModal();
+    }
+
+      const clearHistoryBtnInit = document.getElementById('clearHistoryBtn');
     if (clearHistoryBtnInit) {
       clearHistoryBtnInit.hidden = true;
+    }
+
+  
+    // Auto-load history when modal opens
+    (function() {
+      var modal = document.getElementById('historyModal');
+      if (!modal) return;
+      
+      var observer = new MutationObserver(function(mutations) {
+        if (!modal.hidden) {
+          loadHistoryIntoModal();
+        }
+      });
+      
+      observer.observe(modal, { attributes: true, attributeFilter: ['hidden'] });
+    })();
+    
+    function loadHistoryIntoModal() {
+      var list = document.getElementById('historyModalList');
+      if (!list) return;
+      
+      var history = [];
+      try {
+        history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      } catch(e) {
+        history = [];
+      }
+      
+      if (history.length === 0) {
+        list.innerHTML = '<div class="empty-state"><p>No hay emails en el historial.</p></div>';
+        return;
+      }
+      
+      var html = '';
+      for (var i = 0; i < history.length; i++) {
+        var item = history[i];
+        var preview = 'Sin asunto';
+        
+        if (item.versions && item.versions[0] && item.versions[0].subject) {
+          preview = item.versions[0].subject;
+        } else if (item.instruction) {
+          preview = item.instruction;
+        }
+        
+        var timestamp = item.timestamp ? new Date(item.timestamp) : new Date();
+        var now = new Date();
+        var diffMs = now - timestamp;
+        var diffMins = Math.floor(diffMs / 60000);
+        var diffHours = Math.floor(diffMs / 3600000);
+        var diffDays = Math.floor(diffMs / 86400000);
+        
+        var timeAgo = '';
+        if (diffMins < 1) timeAgo = 'Hace un momento';
+        else if (diffMins < 60) timeAgo = 'Hace ' + diffMins + ' min';
+        else if (diffHours < 24) timeAgo = 'Hace ' + diffHours + ' hora' + (diffHours > 1 ? 's' : '');
+        else timeAgo = 'Hace ' + diffDays + ' día' + (diffDays > 1 ? 's' : '');
+        
+        html += '<div class="history-item" data-index="' + i + '" onclick="loadHistoryItemClick(event, ' + i + ')">';
+        html += '  <div class="history-item-content">';
+        html += '    <div class="history-item-title">' + escapeHtml(preview) + '</div>';
+        html += '    <div class="history-item-meta">' + timeAgo + '</div>';
+        html += '  </div>';
+        html += '  <button class="history-item-delete" type="button" onclick="deleteHistoryClick(event, ' + i + ')" title="Eliminar">';
+        html += '    <i data-lucide="trash-2"></i>';
+        html += '  </button>';
+        html += '</div>';
+      }
+      
+      list.innerHTML = html;
+      if (window.lucide) window.lucide.createIcons();
+    }
+    
+    function loadHistoryItemClick(event, index) {
+      event.stopPropagation();
+      var history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      var item = history[index];
+      if (!item) return;
+      
+      instructionEl.value = item.instruction || '';
+      formalidadValue = item.formality || 'usted';
+      regionValue = item.region || '';
+      
+      updateFormalidadUI();
+      updateRegionUI();
+      updateGenerateButtonState();
+      autoGrow(instructionEl);
+      
+      if (item.versions && item.versions.length > 0) {
+        renderVersions(item.versions);
+      }
+      
+      document.getElementById('historyModal').hidden = true;
+    }
+    
+    function deleteHistoryClick(event, index) {
+      event.stopPropagation();
+      if (!confirm('¿Eliminar este email del historial?')) return;
+      
+      var history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
+      history.splice(index, 1);
+      localStorage.setItem('emailHistory', JSON.stringify(history));
+      loadHistoryIntoModal();
     }
 
   </script>
