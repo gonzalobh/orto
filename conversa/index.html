@@ -986,17 +986,18 @@
 
     /* ─── Modo Conversación ─── */
     .conv-mode {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, margin 0.3s ease;
-      margin-top: 0;
+      display: none;
+      margin-top: 1.125rem;
     }
 
     .conv-mode.conv-open {
-      max-height: 400px;
-      opacity: 1;
-      margin-top: 1.125rem;
+      display: block;
+      animation: convFadeIn 0.22s ease;
+    }
+
+    @keyframes convFadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
     }
 
     .conv-questions {
@@ -5227,68 +5228,74 @@ ${body}`.trim();
     const convContinueBtn = document.getElementById('convContinueBtn');
     const enrichedPreviewEl = document.getElementById('enrichedPreview');
 
-    // Answers store: { recipient: null, goal: null, context: null }
     const convAnswers = { recipient: null, goal: null, context: null };
     let convModeActive = false;
 
-    const VAGUE_THRESHOLD = 5; // palabras
+    // Contar palabras sin regex para evitar problemas de escaping
+    function wordCount(text) {
+      var t = text.replace(/^\s+|\s+$/g, '');
+      if (!t) return 0;
+      var count = 1;
+      for (var i = 0; i < t.length; i++) {
+        if (t[i] === ' ' || t[i] === '\t' || t[i] === '\n') count++;
+      }
+      return count;
+    }
 
     function isVague(text) {
-      return text.trim().split(/\s+/).filter(Boolean).length < VAGUE_THRESHOLD;
+      return wordCount(text.trim()) < 9;
     }
 
     function openConvMode() {
       convModeActive = true;
-      convModeEl.setAttribute('aria-hidden', 'false');
+      convModeEl.style.display = 'block';
+      // Force reflow before adding class for transition
+      convModeEl.getBoundingClientRect();
       convModeEl.classList.add('conv-open');
-      // Re-init lucide for the new button
       if (window.lucide) lucide.createIcons();
     }
 
     function closeConvMode() {
       convModeActive = false;
       convModeEl.classList.remove('conv-open');
-      convModeEl.setAttribute('aria-hidden', 'true');
+      convModeEl.style.display = '';
     }
 
     function resetConvAnswers() {
       convAnswers.recipient = null;
       convAnswers.goal = null;
       convAnswers.context = null;
-      document.querySelectorAll('.conv-chip').forEach(c => c.classList.remove('conv-chip-selected'));
+      document.querySelectorAll('.conv-chip').forEach(function(c) { c.classList.remove('conv-chip-selected'); });
       updateEnrichedPreview();
     }
 
     function buildEnrichedInstruction() {
-      const base = instructionEl.value.trim();
-      const parts = [];
-      if (convAnswers.recipient) parts.push(`dirigido a: ${convAnswers.recipient}`);
-      if (convAnswers.goal) parts.push(`objetivo: ${convAnswers.goal}`);
-      if (convAnswers.context) parts.push(`contexto: ${convAnswers.context}`);
+      var base = instructionEl.value.trim();
+      var parts = [];
+      if (convAnswers.recipient) parts.push('dirigido a: ' + convAnswers.recipient);
+      if (convAnswers.goal) parts.push('objetivo: ' + convAnswers.goal);
+      if (convAnswers.context) parts.push('contexto: ' + convAnswers.context);
       if (parts.length === 0) return base;
-      return `${base}. (${parts.join(', ')})`;
+      return base + '. (' + parts.join(', ') + ')';
     }
 
     function updateEnrichedPreview() {
-      const parts = [];
+      var parts = [];
       if (convAnswers.recipient) parts.push(convAnswers.recipient);
       if (convAnswers.goal) parts.push(convAnswers.goal);
       if (convAnswers.context) parts.push(convAnswers.context);
-      enrichedPreviewEl.textContent = parts.length > 0 ? parts.join(' · ') : '';
+      if (enrichedPreviewEl) enrichedPreviewEl.textContent = parts.length > 0 ? parts.join(' · ') : '';
     }
 
-    // Chip clicks
-    document.querySelectorAll('.conv-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        const q = chip.dataset.q;
-        const v = chip.dataset.v;
-        // Toggle: if already selected, deselect
+    document.querySelectorAll('.conv-chip').forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        var q = chip.dataset.q;
+        var v = chip.dataset.v;
         if (convAnswers[q] === v) {
           convAnswers[q] = null;
           chip.classList.remove('conv-chip-selected');
         } else {
-          // Deselect previous in same group
-          document.querySelectorAll(`.conv-chip[data-q="${q}"]`).forEach(c => c.classList.remove('conv-chip-selected'));
+          document.querySelectorAll('.conv-chip[data-q="' + q + '"]').forEach(function(c) { c.classList.remove('conv-chip-selected'); });
           convAnswers[q] = v;
           chip.classList.add('conv-chip-selected');
         }
@@ -5296,23 +5303,25 @@ ${body}`.trim();
       });
     });
 
-    // Skip: just generate with original instruction
-    convSkipBtn.addEventListener('click', () => {
-      closeConvMode();
-      resetConvAnswers();
-      generateEmail();
-    });
+    if (convSkipBtn) {
+      convSkipBtn.addEventListener('click', function() {
+        closeConvMode();
+        resetConvAnswers();
+        generateEmail();
+      });
+    }
 
-    // Continue: generate with enriched instruction
-    convContinueBtn.addEventListener('click', () => {
-      const enriched = buildEnrichedInstruction();
-      closeConvMode();
-      generateEmailWithInstruction(enriched);
-      resetConvAnswers();
-    });
+    if (convContinueBtn) {
+      convContinueBtn.addEventListener('click', function() {
+        var enriched = buildEnrichedInstruction();
+        closeConvMode();
+        generateEmailWithInstruction(enriched);
+        resetConvAnswers();
+      });
+    }
 
-    // Reset conv mode when user edits instruction
-    instructionEl.addEventListener('input', () => {
+    // Cerrar conv mode si el usuario reescribe
+    instructionEl.addEventListener('input', function() {
       if (convModeActive) {
         closeConvMode();
         resetConvAnswers();
@@ -5463,7 +5472,15 @@ ${body}`.trim();
 
     instructionEl.addEventListener('keydown', (event) => {
       if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
-        generateEmail();
+        if (!generateButton.disabled) {
+          const text = instructionEl.value.trim();
+          if (isVague(text) && !convModeActive) {
+            openConvMode();
+          } else {
+            closeConvMode();
+            generateEmail();
+          }
+        }
       }
     });
 
