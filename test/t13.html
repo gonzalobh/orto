@@ -1,0 +1,5270 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Redactar.ai</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #fafafa;
+      --bg-tertiary: #f5f5f5;
+      --bg-main: #ffffff;
+      --bg-input: #ffffff;
+      --border-color: #e5e5e5;
+      --text-primary: #1d1d1f;
+      --text-secondary: #737373;
+      --text-tertiary: #a3a3a3;
+      --accent: #1d1d1f;
+      --accent-color: #1d1d1f;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    html.dark {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --bg-main: #1c1c1e;
+      --bg-input: #2c2c2e;
+      --border-color: #3a3a3c;
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1a6;
+      --text-tertiary: #6e6e73;
+      --accent: #f5f5f7;
+      --accent-color: #f5f5f7;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
+
+    html.dark body {
+      background: #111111;
+    }
+
+    html.dark header {
+      background: #111111;
+    }
+
+    html.dark .left-panel,
+    html.dark .right-panel,
+    html.dark .results-panel,
+    html.dark .mode-toggle,
+    html.dark .output-tabs-sticky {
+      background: #1c1c1e !important;
+      border-color: #3a3a3c;
+    }
+
+    html.dark .history-search-wrapper {
+      background: var(--bg-primary) !important;
+    }
+
+    html.dark .save-template-floating {
+      background-color: #2c2c2e !important;
+    }
+
+    html.dark .form-container,
+    html.dark textarea,
+    html.dark input[type="text"],
+    html.dark input[type="email"],
+    html.dark select {
+      background: #1c1c1e;
+      color: var(--text-primary);
+      border-color: #3a3a3c;
+    }
+
+    html.dark textarea::placeholder,
+    html.dark input::placeholder {
+      color: #6e6e73;
+    }
+
+    html.dark .dropdown-option,
+    html.dark .dropdown-menu,
+    html.dark .profile-dropdown,
+    html.dark .custom-select-menu,
+    html.dark .templates-dropdown,
+    html.dark .region-dropdown {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c;
+      color: var(--text-primary);
+    }
+
+    html.dark .dropdown-option:hover,
+    html.dark .custom-select-option:hover {
+      background: #3a3a3c !important;
+    }
+
+    html.dark .profile-dropdown input {
+      background: #3a3a3c;
+      border-color: #48484a;
+      color: var(--text-primary);
+    }
+
+    html.dark .config-control-btn,
+    html.dark .custom-select-btn {
+      background: #2c2c2e !important;
+      border-color: #3a3a3c !important;
+      color: var(--text-secondary) !important;
+    }
+
+    html.dark .config-control-btn:hover,
+    html.dark .custom-select-btn:hover {
+      border-color: #636366 !important;
+      color: var(--text-primary) !important;
+    }
+
+    html.dark .mode-toggle-btn {
+      color: var(--text-secondary);
+    }
+
+    html.dark .mode-toggle-btn.active {
+      color: var(--text-primary);
+      border-bottom-color: var(--text-primary);
+    }
+
+    /* Botón tema */
+    .theme-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .theme-toggle-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #fafaf9;
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      min-height: 100vh;
+      position: relative;
+      transition: background-color 0.25s ease, color 0.25s ease;
+    }
+
+
+    .container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header limpio estilo TrustMRR */
+    header {
+      padding: 1.5rem 2.5rem;
+      background: #fafaf9;
+      border-bottom: 0px solid var(--border-color);
+      position: relative;
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-icon-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .header-icon-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .header-icon-btn i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Barra de controles superior */
+    .controls-bar {
+      padding: 1.5rem 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .controls-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .controls-right {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Layout principal */
+    .main-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(32px, 4vw, 56px);
+      padding: 1rem 2rem 2rem 2rem;
+      max-width: 800px;
+      margin: 0 auto;
+      width: 100%;
+      align-items: start;
+      transition: max-width 0.3s ease, grid-template-columns 0.3s ease;
+      max-height: calc(100vh - 70px); /* Máximo: viewport height menos header */
+      overflow: visible; /* Permite que crezca naturalmente */
+    }
+
+    .main-content.has-results {
+      grid-template-columns: 35fr 65fr;
+      max-width: 1400px;
+    }
+
+    /* Panel izquierdo limpio */
+    .left-panel {
+      background: #f2f1f0;
+      padding: 0;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      height: fit-content;
+      position: relative;
+      z-index: 2;
+      overflow: visible;
+    }
+
+    .form-container {
+      max-width: 100%;
+      margin: 0;
+      padding: 28px 32px 32px 32px;
+    }
+
+    .section-label {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+
+    .section-label-end {
+      margin-left: auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .section-label-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .section-label-row select {
+      max-width: 180px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+    }
+
+    /* Custom Select Dropdown */
+    .custom-select-wrapper {
+      position: relative;
+    }
+
+    .custom-select-btn {
+      min-width: 150px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.5rem 2rem 0.5rem 0.75rem;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .custom-select-btn:hover,
+    .custom-select-btn:focus-visible {
+      border-color: var(--text-primary);
+      outline: none;
+    }
+
+    .custom-select-btn[aria-expanded="true"] {
+      border-color: var(--text-primary);
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .select-arrow {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .custom-select-btn[aria-expanded="true"] .select-arrow {
+      transform: rotate(180deg);
+    }
+
+    .custom-select-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      min-width: 150px;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem;
+      list-style: none;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      max-height: 240px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .custom-select-menu:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .custom-select-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.5rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-align: left;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.15s ease;
+    }
+
+    .custom-select-option:hover,
+    .custom-select-option:focus-visible {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .custom-select-option.selected {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .custom-select-menu hr {
+      border: 0;
+      border-top: 1px solid var(--border-color);
+      margin: 0.25rem;
+    }
+
+    .template-manage-btn {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .template-manage-btn:hover,
+    .template-manage-btn:focus-visible {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 0;
+      background: #f2f1f0;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .mode-toggle-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-secondary);
+      padding: 0.875rem 1.25rem;
+      font-family: inherit;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mode-toggle-btn:hover,
+    .mode-toggle-btn:focus-visible {
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      outline: none;
+    }
+
+    .mode-toggle-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: transparent;
+    }
+
+    .mode-toggle-btn i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .collapsible-group {
+      max-height: 320px;
+      opacity: 1;
+      transform: translateY(0);
+      overflow: hidden;
+      transition: max-height 0.25s ease, opacity 0.25s ease, transform 0.25s ease, margin-bottom 0.25s ease;
+    }
+
+    .collapsible-group.mode-hidden {
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-6px);
+      margin-bottom: 0;
+      pointer-events: none;
+    }
+
+    .input-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-container > .input-group:first-child {
+      margin-top: 1.5rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.625rem;
+      letter-spacing: -0.01em;
+    }
+
+    /* Inputs estilo TrustMRR */
+    textarea,
+    input[type="text"],
+    select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 1.1rem;
+      color: #1d1d1f;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      transition: all 0.15s ease;
+      outline: none;
+      resize: none;
+    }
+
+    textarea {
+      min-height: 160px;
+      line-height: 1.6;
+    }
+
+    .instruction-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    #instruction {
+      width: 100%;
+      min-height: 220px;
+      max-height: 400px;
+      resize: none;
+      line-height: 1.5;
+      padding: 20px;
+      padding-bottom: 52px;
+      border-radius: 20px;
+      transition: height 0.15s ease,
+                  box-shadow 0.2s ease;
+    }
+
+    .instruction-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .header-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Configuration Controls Row */
+    .config-controls-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .config-control-wrapper {
+      position: relative;
+    }
+
+    .config-control-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      padding: 0.5rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .config-control-btn:hover {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    .config-control-btn i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .templates-btn {
+      position: relative;
+    }
+
+    .templates-btn:hover {
+      background: var(--bg-secondary);
+    }
+
+    #templatesMenu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 200px;
+    }
+
+    .config-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem;
+      min-width: 160px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .config-dropdown:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .config-dropdown-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: none;
+      border: none;
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      transition: all 0.15s ease;
+    }
+
+    .config-dropdown-option:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .config-dropdown-option.selected {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .config-dropdown-option i,
+    .config-dropdown-option svg.lucide {
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+    }
+
+    .config-dropdown-option.selected i,
+    .config-dropdown-option.selected svg.lucide {
+      opacity: 1;
+    }
+
+    .profile-dropdown-wrapper {
+      position: relative;
+    }
+
+    .profile-dropdown {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      min-width: 260px;
+      box-shadow: var(--shadow-lg);
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .profile-dropdown:not([hidden]) {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .profile-dropdown-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.875rem;
+    }
+
+    .profile-dropdown-field {
+      margin-bottom: 0.75rem;
+    }
+
+    .profile-dropdown-field:last-of-type {
+      margin-bottom: 1rem;
+    }
+
+    .profile-dropdown-field label {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 0.375rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .profile-dropdown-field input {
+      width: 100%;
+      padding: 0.5rem 0.625rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .profile-dropdown-field input:focus {
+      border-color: var(--text-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-save-btn {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0.5rem 0.875rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .profile-save-btn:hover {
+      background: #000;
+    }
+
+    .profile-save-btn:active {
+      transform: scale(0.98);
+    }
+
+    .save-template-floating {
+      position: absolute;
+      left: 10px;
+      bottom: 10px;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1px solid #727272;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: opacity .25s ease, background-color .15s ease, transform .25s ease, border-color .15s ease;
+      opacity: 0;
+      transform: translateY(4px);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .save-template-floating.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .save-template-floating:hover {
+      background-color: #fafaf9;
+      color: var(--text-primary);
+      border-color: var(--text-primary);
+    }
+
+    .instruction-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      max-width: 92%;
+      min-height: 88px;
+      padding: 14px 16px;
+      color: #6b7280;
+      font-size: 1.1rem;
+      font-style: normal;
+      line-height: 1.5;
+      opacity: 0;
+      transition: opacity 260ms ease;
+      pointer-events: none;
+      user-select: none;
+      white-space: normal;
+      z-index: 1;
+    }
+
+    /* Legacy - now using .btn-generate-primary */
+    .generate-inline {
+      position: absolute;
+      right: 14px;
+      bottom: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1a1a1a;
+      color: #ffffff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      z-index: 3;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .generate-inline:hover:not(:disabled) {
+      background: #000000;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+
+    .generate-inline:disabled {
+      background: #e5e5e5;
+      color: #9a9a9a;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .generate-inline i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .generate-inline.active {
+      background: #1a1a1a;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    
+    /* Primary generate button */
+    .btn-generate-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: #1a1a1a;
+      border: none;
+      padding: 0.625rem 1.5rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+    
+    .btn-generate-primary:hover:not(:disabled) {
+      background: #000000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+      transform: translateY(-1px);
+    }
+    
+    .btn-generate-primary:disabled {
+      background: #e5e5e5;
+      color: #9a9a9a;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+    
+    .btn-generate-primary i {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Split Generate Button */
+    .split-generate-btn {
+      display: inline-flex;
+      align-items: stretch;
+      background: #1a1a1a;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      overflow: visible;
+      transition: box-shadow 0.2s ease;
+      position: relative;
+    }
+    .split-generate-btn:has(button:not(:disabled)):hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    }
+    .split-generate-btn:has(button:disabled) {
+      background: #e5e5e5;
+      box-shadow: none;
+    }
+    .split-generate-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #ffffff;
+      background: transparent;
+      border: none;
+      padding: 0.625rem 0.875rem 0.625rem 1.1rem;
+      border-radius: 14px 0 0 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease;
+    }
+    .split-generate-main:hover:not(:disabled) { background: rgba(255,255,255,0.08); }
+    .split-generate-main:disabled { color: #9a9a9a; cursor: not-allowed; }
+    .split-generate-main i { width: 16px; height: 16px; }
+    .split-generate-divider {
+      width: 1px;
+      background: rgba(255,255,255,0.2);
+      margin: 8px 0;
+      flex-shrink: 0;
+    }
+    .split-generate-btn:has(button:disabled) .split-generate-divider { background: rgba(0,0,0,0.12); }
+    .split-generate-variants {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      background: transparent;
+      border: none;
+      padding: 0.625rem 0.75rem 0.625rem 0.625rem;
+      border-radius: 0 14px 14px 0;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease;
+    }
+    .split-generate-variants:hover:not(:disabled) { background: rgba(255,255,255,0.08); color: #ffffff; }
+    .split-generate-variants:disabled { color: #9a9a9a; cursor: not-allowed; }
+    .split-chevron { width: 13px; height: 13px; opacity: 0.7; transition: transform 0.2s ease; }
+    .split-generate-variants[aria-expanded="true"] .split-chevron { transform: rotate(180deg); }
+    #splitGenerateWrapper .versions-menu { bottom: calc(100% + 0.4rem); top: auto; right: 0; left: auto; min-width: 130px; }
+
+    /* History access button */
+    .btn-history-access {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-history-access:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
+    }
+
+    .btn-history-access i {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* History modal */
+    .history-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 1rem;
+      animation: historyFadeIn 0.15s ease;
+    }
+
+    @keyframes historyFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .history-modal {
+      width: min(600px, 100%);
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: historySlideUp 0.2s ease;
+    }
+
+    @keyframes historySlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .history-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .history-modal-header h3 {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .history-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .history-modal-close {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .history-modal-close:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .history-modal-close i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .history-modal-search {
+      padding: 0 1.5rem 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .history-modal-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 1.5rem 1.5rem;
+      min-height: 200px;
+    }
+
+    .history-modal-body::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .history-modal-body::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .history-modal-body::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(6px); }
+      to { opacity:1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .instruction-hint {
+        transition: none;
+      }
+    }
+
+    textarea:focus,
+    input[type="text"]:focus,
+    select:focus {
+      border-color: var(--text-primary);
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    textarea::placeholder,
+    input[type="text"]::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    /* Lucide icons must inherit text color */
+    .lucide {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.5;
+      color: currentColor;
+      opacity: 0.75;
+      vertical-align: middle;
+      transition: opacity 0.15s ease;
+    }
+
+    /* Slight emphasis on hover */
+    button:hover .lucide {
+      opacity: 1;
+    }
+
+    /* Override: never show check icon on hover unless selected */
+    .config-dropdown-option:not(.selected):hover i,
+    .config-dropdown-option:not(.selected):hover svg.lucide {
+      opacity: 0 !important;
+    }
+
+    .icon-btn {
+      border: 0;
+      background: transparent;
+      padding: 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: inherit;
+      opacity: 0.65;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font: inherit;
+      font-size: 0.8125rem;
+    }
+
+    .icon-btn i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .icon-btn:hover,
+    .icon-btn:focus-visible {
+      opacity: 1;
+      background: rgba(0, 0, 0, 0.04);
+      outline: none;
+    }
+
+    .icon-only {
+      padding: 6px;
+    }
+
+    .icon-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Grid para los dos inputs en fila */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.875rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .strategy-controls {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* ===== Campos compartidos siempre visibles ===== */
+
+    .shared-fields {
+      margin-top: 20px;
+      margin-bottom: 1.25rem;
+    }
+
+    .input-group-row {
+      margin-bottom: 18px;
+    }
+
+    .input-group-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .group-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+    }
+
+    .input-pair {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .input-wrapper input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      background: var(--bg-input);
+      transition: border-color 0.15s ease;
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent);
+    }
+
+    .inner-label {
+      position: absolute;
+      top: -7px;
+      right: 10px;
+      background: var(--bg-main);
+      padding: 0 4px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      pointer-events: none;
+    }
+
+    .strategy-dropdown {
+      position: relative;
+      position: relative;
+    }
+
+    .versions-control {
+      position: relative;
+    }
+
+    .strategy-btn {
+      width: 100%;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 0.5rem 0.45rem;
+      font-size: 0.6875rem;
+      line-height: 1.3;
+      color: var(--text-secondary);
+      font-family: inherit;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .strategy-btn:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+
+    .strategy-title {
+      display: block;
+      color: var(--text-primary);
+      font-size: 0.675rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+    }
+
+    .strategy-subtitle {
+      display: block;
+      margin-top: 0.18rem;
+      color: var(--text-secondary);
+      font-size: 0.625rem;
+      font-weight: 400;
+    }
+
+    .strategy-btn:hover,
+    .strategy-btn:focus-visible,
+    .strategy-btn[aria-expanded="true"] {
+      border-color: #d0d0d0;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+    }
+
+    .strategy-btn:focus-visible,
+    .strategy-option:focus-visible {
+      outline: 2px solid #c7c7c7;
+      outline-offset: 2px;
+    }
+
+    .strategy-menu {
+      position: absolute;
+      top: calc(100% + 0.3rem);
+      left: 0;
+      min-width: 168px;
+      list-style: none;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.375rem;
+      box-shadow: var(--shadow-md);
+      display: none;
+      z-index: 100;
+    }
+
+    .strategy-menu.open {
+      display: block;
+    }
+
+    .strategy-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .strategy-option i.check {
+      width: 16px;
+      height: 16px;
+      opacity: 0.7;
+    }
+
+    .strategy-option:hover,
+    .strategy-option:focus-visible,
+    .strategy-option.selected {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Contador de caracteres */
+    .char-counter {
+      text-align: right;
+      font-size: 0.6875rem;
+      color: var(--text-tertiary);
+      margin-top: 0.375rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .versions-menu {
+      right: 0;
+      left: auto;
+      min-width: 120px;
+    }
+
+    /* Panel derecho limpio */
+    .right-panel {
+      display: none;
+      background: #f2f1f0;
+      padding: 28px 32px 32px 32px;
+      margin-top: 4px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow-y: auto;
+      height: calc(100vh - 140px); /* Altura fija igual a left-panel */
+      min-height: 500px; /* Altura mínima igual a left-panel */
+      position: relative;
+      z-index: 2;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .main-content.has-results .right-panel {
+      display: block;
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .output-container {
+      max-width: 100%;
+      margin: 0;
+    }
+
+    .output-header {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      position: sticky;
+      top: -30px;
+      background: #f2f1f0;
+      z-index: 100;
+      padding-bottom: 0.75rem;
+      margin-left: -32px;
+      margin-right: -32px;
+      padding-left: 32px;
+      padding-right: 32px;
+      margin-top: -28px;
+      padding-top: 25px;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.15);
+    }
+
+    .output-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .output-header-row {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .close-panel-btn {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .close-panel-btn:hover {
+      background: var(--hover-bg);
+      color: var(--text-primary);
+    }
+    .close-panel-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .output-header-top {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .output-tabs {
+      display: flex;
+      align-items: center;
+    }
+
+    .history-clear-btn {
+      color: var(--text-secondary);
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+
+    .history-clear-btn[hidden] {
+      display: none !important;
+    }
+
+    .history-clear-btn i,
+    .history-delete i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .output-tab {
+      position: relative;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      padding: 0.4rem 0.2rem 0.55rem;
+      margin-right: 1.1rem;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+
+    .output-tab:hover,
+    .output-tab:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .output-tab.active {
+      color: var(--text-primary);
+    }
+
+    .output-tab.active::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -1px;
+      height: 2px;
+      background: var(--text-primary);
+      border-radius: 2px;
+    }
+
+    .output-panels {
+      width: 100%;
+    }
+
+    .output-panel[hidden] {
+      display: none;
+    }
+
+    /* Output cards */
+    .output-cards {
+      display: grid;
+      gap: 0.875rem;
+    }
+
+    .output-empty,
+    .output-loading {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      min-height: 180px;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+    }
+
+    /* Estado vacío mejorado */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 500px;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .empty-state-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 1.5rem;
+      opacity: 0.4;
+    }
+
+    .empty-state-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .empty-state-subtitle {
+      font-size: 0.9375rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+      max-width: 400px;
+    }
+
+    .example-prompts {
+      display: grid;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .example-item {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .example-item:hover {
+      border-color: var(--text-primary);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .example-icon {
+      flex-shrink: 0;
+      font-size: 1.25rem;
+    }
+
+
+
+    .tips-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: var(--text-primary);
+    }
+
+    .tips-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 0.75rem;
+      opacity: 0.7;
+    }
+
+    .tips-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .tips-content {
+      font-size: 0.9375rem;
+      line-height: 1.6;
+      color: var(--text-primary);
+      transition: all 0.4s ease;
+    }
+
+    .tips-content.fade-out {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    .tips-content.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Ejemplos de casos de uso */
+    .examples-panel {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .examples-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .examples-grid {
+      display: grid;
+      gap: 0.625rem;
+    }
+
+    .example-item {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      font-size: 0.8125rem;
+      color: var(--text-primary);
+      transition: all 0.15s ease;
+      cursor: pointer;
+      position: relative;
+      padding-left: 2.25rem;
+    }
+
+    .example-item::before {
+      content: '📧';
+      position: absolute;
+      left: 0.875rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.875rem;
+    }
+
+    .example-item:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--text-secondary);
+      transform: translateX(4px);
+    }
+
+    /* Skeleton loader premium */
+    .skeleton-loader {
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .skeleton-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .skeleton-line {
+      height: 12px;
+      background: var(--bg-primary);
+      border-radius: 6px;
+      margin-bottom: 0.625rem;
+      opacity: 0.6;
+    }
+
+    .skeleton-line.title {
+      height: 14px;
+      width: 40%;
+      margin-bottom: 1rem;
+    }
+
+    .skeleton-line.short {
+      width: 70%;
+    }
+
+    .skeleton-line.long {
+      width: 95%;
+    }
+
+    .skeleton-progress {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      padding: 2rem 0;
+      min-height: 300px;
+    }
+
+    .skeleton-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid var(--border-color);
+      border-top-color: var(--accent-gray);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    .skeleton-status {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+      transition: opacity 0.15s ease;
+    }
+
+    .skeleton-substatus {
+      display: none;
+    }
+
+    .output-loading::after {
+      content: '';
+      position: absolute;
+      bottom: 1.25rem;
+      left: 1.25rem;
+      width: 2px;
+      height: 18px;
+      background: var(--text-primary);
+      animation: blink 1s infinite;
+    }
+
+    .history-search-wrapper {
+      padding: 0 0 1rem 0;
+      position: sticky;
+      top: 0;
+      background: var(--bg-primary);
+      z-index: 10;
+    }
+
+    .history-search-input {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .history-search-input:focus {
+      border-color: var(--text-primary);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .history-search-input::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    .history-list {
+      display: grid;
+      gap: 0.875rem;
+      padding-right: 0.25rem;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .history-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb:hover {
+      background: var(--text-tertiary);
+    }
+
+    .history-item {
+      width: 100%;
+      text-align: left;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+      position: relative;
+    }
+
+    .history-item:hover,
+    .history-item:focus-visible {
+      border-color: var(--text-secondary);
+      box-shadow: var(--shadow-sm);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .history-item-title {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+      line-height: 1.35;
+    }
+
+    .history-item-time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .history-item-snippet {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+      word-break: break-word;
+      padding-right: 1.75rem;
+    }
+
+    .history-delete {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+
+    .history-empty {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.75rem;
+      min-height: 180px;
+      font-size: 0.8125rem;
+      color: var(--text-tertiary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .version-card {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.15s ease;
+    }
+
+    .version-card:hover {
+      /* Hover effect removed */
+    }
+
+    .version-label {
+      display: inline-block;
+      margin-bottom: 1rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .version-section {
+      margin-bottom: 1.125rem;
+    }
+
+    .version-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.5rem;
+    }
+
+    .version-content {
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+      word-break: break-word;
+      padding: 0.5rem;
+      padding-right: 2rem;
+      border-radius: 6px;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease;
+      cursor: text;
+      outline: none;
+      position: relative;
+    }
+
+    .version-content:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .version-content:focus {
+      background-color: rgba(0, 0, 0, 0.03);
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .version-content[data-role="email-subject"] {
+      font-weight: 500;
+    }
+
+    .version-section {
+      position: relative;
+    }
+
+    .version-content-wrapper {
+      position: relative;
+    }
+
+    .version-content-wrapper .inline-copy-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      border: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.15s ease;
+      z-index: 10;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .version-content-wrapper:hover .inline-copy-btn {
+      opacity: 1;
+    }
+
+    .version-content-wrapper .inline-copy-btn:hover {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .version-content-wrapper .inline-copy-btn.copied {
+      background: var(--text-primary);
+      color: white;
+      opacity: 1;
+    }
+
+    .version-content-wrapper .inline-copy-btn i {
+      width: 12px;
+      height: 12px;
+    }
+
+
+    .version-copy-btn.copied {
+      background: var(--text-primary);
+      color: white;
+      border-color: var(--text-primary);
+    }
+
+    .version-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .version-actions .icon-btn,
+    .restore-original-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      border: 0;
+      background: transparent;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      color: #374151;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      transition: background-color 0.15s ease, color 0.15s ease;
+      opacity: 1;
+      width: 32px;
+      height: 32px;
+      position: relative;
+    }
+
+    /* Tooltip custom con CSS */
+    .version-actions .icon-btn::before,
+    .restore-original-btn::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      background: #2b2b2b;
+      color: #fff;
+      font-size: 0.75rem;
+      padding: 0.375rem 0.625rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Flecha del tooltip - triángulo CSS real */
+    .version-actions .icon-btn::after,
+    .restore-original-btn::after {
+      content: "";
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #2b2b2b;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 99;
+    }
+
+    .version-actions .icon-btn:hover::before,
+    .version-actions .icon-btn:hover::after,
+    .restore-original-btn:hover::before,
+    .restore-original-btn:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .version-actions .icon-btn:hover::after,
+    .restore-original-btn:hover::after {
+      transform: translateX(-50%);
+    }
+
+    /* Ocultar el texto, solo mostrar íconos */
+    .version-actions .icon-btn span,
+    .restore-original-btn span {
+      display: none;
+    }
+
+    .version-actions .icon-btn:hover,
+    .version-actions .icon-btn:focus-visible,
+    .restore-original-btn:hover:not(:disabled),
+    .restore-original-btn:focus-visible {
+      background: #f3f4f6;
+      color: #111827;
+      outline: none;
+    }
+
+    .translate-dropdown {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .translate-btn {
+      margin-left: auto;
+    }
+
+    .translate-btn:hover:not(:disabled),
+    .translate-btn:focus-visible,
+    .translate-btn[aria-expanded="true"] {
+      background: #f3f4f6;
+      color: #111827;
+      outline: none;
+    }
+
+    .translate-btn:disabled {
+      opacity: 1;
+      cursor: not-allowed;
+    }
+
+    /* Spinner HTML dentro del botón (oculto por defecto) */
+    .translate-spinner {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      max-width: 16px;
+      max-height: 16px;
+      border: 2px solid #e5e7eb;
+      border-top-color: #6b7280;
+      border-radius: 50%;
+      animation: spin-translate 0.8s linear infinite;
+      display: none;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    /* Cuando está traduciendo: mostrar spinner, ocultar ícono */
+    .translate-btn.translating .translate-spinner {
+      display: block !important;
+    }
+
+    .translate-btn.translating i,
+    .translate-btn.translating > span {
+      display: none !important;
+    }
+
+    @keyframes spin-translate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .version-actions .restore-original-btn {
+      display: none !important;
+      margin-left: 0.25rem;
+    }
+
+    .version-actions .restore-original-btn.visible {
+      display: inline-flex !important;
+    }
+
+    .translate-menu {
+      position: absolute;
+      top: calc(100% + 0.35rem);
+      left: 0;
+      list-style: none;
+      min-width: 130px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      padding: 0.35rem;
+      display: none;
+      z-index: 10;
+    }
+
+    .translate-menu.open {
+      display: block;
+    }
+
+    .translate-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .translate-option:hover,
+    .translate-option:focus-visible {
+      background: var(--bg-primary);
+      outline: none;
+    }
+
+    /* Tone dropdown */
+    .tone-dropdown {
+      position: relative;
+    }
+
+    .tone-btn[aria-expanded="true"] {
+      background: #f3f4f6;
+      color: #111827;
+      outline: none;
+    }
+
+    .tone-btn.retoning .tone-spinner {
+      display: block !important;
+    }
+    .tone-btn.retoning i,
+    .tone-btn.retoning > span {
+      display: none !important;
+    }
+
+    .tone-spinner {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      min-height: 16px;
+      max-width: 16px;
+      max-height: 16px;
+      border: 2px solid #e5e7eb;
+      border-top-color: #6b7280;
+      border-radius: 50%;
+      animation: spin-translate 0.8s linear infinite;
+      display: none;
+      flex-shrink: 0;
+      box-sizing: border-box;
+    }
+
+    .tone-menu {
+      position: absolute;
+      top: calc(100% + 0.35rem);
+      left: 0;
+      list-style: none;
+      min-width: 140px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      padding: 0.35rem;
+      display: none;
+      z-index: 10;
+    }
+
+    .tone-menu.open {
+      display: block;
+    }
+
+    .tone-option {
+      width: 100%;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: var(--text-primary);
+      text-align: left;
+      padding: 0.45rem 0.625rem;
+      font-family: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .tone-option:hover,
+    .tone-option:focus-visible {
+      background: var(--bg-primary);
+      outline: none;
+    }
+
+    .selection-popover {
+      position: fixed;
+      z-index: 60;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: var(--shadow-md);
+      padding: 0.45rem;
+      display: none;
+      min-width: 180px;
+    }
+
+    .selection-popover.visible { display: block; }
+
+    .selection-actions {
+      display: flex;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .selection-action-btn {
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-size: 0.6875rem;
+      font-family: inherit;
+      padding: 0.32rem 0.48rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .selection-action-btn:hover:not(:disabled),
+    .selection-action-btn:focus-visible {
+      border-color: #d0d0d0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .selection-action-btn:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .send-gmail-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .selection-status {
+      margin-top: 0.35rem;
+      font-size: 0.67rem;
+      color: var(--text-tertiary);
+    }
+
+    .selection-proposal {
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.5rem;
+      display: none;
+    }
+
+    .selection-proposal.visible { display: block; }
+
+    .selection-proposal-label {
+      font-size: 0.67rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.3rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .selection-proposal-text {
+      font-size: 0.75rem;
+      color: var(--text-primary);
+      line-height: 1.45;
+      white-space: pre-wrap;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.45rem;
+      max-height: 140px;
+      overflow: auto;
+    }
+
+    .selection-proposal-actions {
+      margin-top: 0.4rem;
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Responsive */
+    @media (min-width: 1024px) {
+      .main-content.has-results {
+        grid-template-columns: 35fr 65fr;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .main-content {
+        grid-template-columns: 1fr;
+        padding: 1rem 1.5rem 1.5rem 1.5rem;
+        gap: 1.5rem;
+        max-width: 100%;
+        height: auto; /* En mobile, dejamos que crezca naturalmente */
+        overflow: visible;
+      }
+      
+      .main-content.has-results {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+
+      .left-panel,
+      .right-panel {
+        padding: 2rem;
+        height: 600px; /* Altura fija en tablet */
+        min-height: 400px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      header {
+        padding: 1rem 1.25rem;
+      }
+
+      header h1 {
+        font-size: 1rem;
+      }
+
+      .controls-bar {
+        padding: 1rem 1.25rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+      }
+
+      .controls-left,
+      .controls-right {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .main-content {
+        padding: 0.5rem 1rem 1rem 1rem;
+      }
+
+      .left-panel,
+      .right-panel {
+        padding: 1.5rem;
+        border-radius: 16px;
+      }
+
+      .input-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .strategy-controls {
+        grid-template-columns: 1fr;
+      }
+
+      .form-container,
+      .output-container {
+        max-width: 100%;
+      }
+      
+
+      
+      /* Mobile: Stack config controls or wrap them */
+      .config-controls-row {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .config-control-wrapper {
+        flex-shrink: 0;
+      }
+      
+      /* Mobile: Reduce form padding */
+      .form-container {
+        padding: 1.25rem 1rem 1.5rem 1rem;
+      }
+      
+      /* Mobile: Adjust textarea size */
+      #instruction {
+        min-height: 150px;
+        padding: 16px;
+        padding-bottom: 52px;
+        font-size: 1rem;
+      }
+      
+      textarea,
+      input[type="text"] {
+        font-size: 1rem;
+      }
+      
+      /* Mobile: Smaller config buttons */
+      .config-control-btn {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.65rem;
+      }
+      
+      /* Mobile: Adjust mode toggle buttons */
+      .mode-toggle-btn {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.85rem;
+      }
+
+      .output-header {
+        margin-left: -1.5rem;
+        margin-right: -1.5rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        margin-top: -1.5rem;
+        padding-top: 1rem;
+      }
+    }
+
+
+    
+    /* Extra small screens (phones in portrait) */
+    @media (max-width: 480px) {
+      .main-content {
+        padding: 0.75rem;
+      }
+      
+      .left-panel,
+      .right-panel {
+        padding: 1rem;
+        border-radius: 12px;
+      }
+      
+      .form-container {
+        padding: 1rem 0.875rem 1.25rem 0.875rem;
+      }
+      
+      .input-label {
+        font-size: 0.875rem;
+      }
+      
+      #instruction {
+        min-height: 140px;
+        padding: 14px;
+        padding-bottom: 50px;
+        font-size: 0.9375rem;
+      }
+      
+      textarea,
+      input[type="text"] {
+        font-size: 0.9375rem;
+        padding: 0.625rem 0.875rem;
+      }
+      
+      .config-control-btn {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.55rem;
+      }
+      
+      header h1 {
+        font-size: 0.9375rem;
+      }
+      
+      .mode-toggle-btn {
+        font-size: 0.75rem;
+        padding: 0.45rem 0.75rem;
+      }
+      
+      .generate-button {
+        font-size: 0.8125rem;
+        padding: 0.625rem 1.25rem;
+      }
+    }
+
+    /* Scrollbar personalizado */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #d0d0d0;
+    }
+
+    /* Scrollbar para Firefox */
+    .left-panel,
+    .right-panel {
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-color) transparent;
+    }
+
+
+
+    .template-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1500;
+      padding: 1rem;
+    }
+
+    .template-modal {
+      width: min(760px, 100%);
+      max-height: 80vh;
+      overflow-y: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-primary);
+      box-shadow: var(--shadow-lg);
+      padding: 1rem;
+    }
+
+    .template-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .template-list {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .template-row {
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.625rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .template-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+
+    .template-action-btn {
+      border: 1px solid var(--border-color);
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 0.35rem 0.55rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .template-action-btn:hover,
+    .template-action-btn:focus-visible {
+      border-color: var(--text-secondary);
+      outline: none;
+    }
+
+    @media (max-width: 640px) {
+      .input-pair {
+        flex-direction: column;
+      }
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>Redactar.ai</h1>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="theme-toggle-btn" type="button" aria-label="Cambiar tema" title="Cambiar tema">
+            <i data-lucide="moon" id="themeIconMoon"></i>
+            <i data-lucide="sun" id="themeIconSun" style="display:none"></i>
+          </button>
+          <div class="profile-dropdown-wrapper">
+            <button id="profileBtn" class="icon-btn header-icon-btn" type="button" aria-haspopup="true" aria-expanded="false">
+              <i data-lucide="user"></i>
+              <span>Perfil</span>
+            </button>
+            <div class="profile-dropdown" id="profileDropdown" hidden>
+              <div class="profile-dropdown-title">Tu perfil</div>
+              <div class="profile-dropdown-field">
+                <label for="profileName">Nombre</label>
+                <input type="text" id="profileName" placeholder="Juan Pérez">
+              </div>
+              <div class="profile-dropdown-field">
+                <label for="profileRole">Cargo</label>
+                <input type="text" id="profileRole" placeholder="Gerente de Ventas">
+              </div>
+              <button id="profileSaveBtn" class="profile-save-btn" type="button">Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+
+    <div class="main-content" id="mainContent">
+      <!-- Panel izquierdo -->
+      <div class="left-panel">
+        <div class="form-container">
+          
+          <div class="input-group collapsible-group mode-hidden" id="originalEmailGroup">
+            <label class="input-label" for="originalEmail">Email original</label>
+            <textarea
+              id="originalEmail"
+              placeholder="Pega aquí el email que recibiste..."
+            ></textarea>
+          </div>
+
+          <div class="input-group">
+            <div class="instruction-header" style="display: flex; align-items: center; justify-content: space-between;">
+              <label class="input-label" for="instruction">¿Qué email quieres enviar?</label>
+              <button id="historyBtn" class="btn-history-access" type="button" title="Ver historial">
+                <i data-lucide="history"></i>
+              </button>
+            </div>
+
+            <!-- Configuration Controls Row -->
+            <div class="config-controls-row">
+              <!-- Formalidad Control -->
+              <div class="config-control-wrapper">
+                <button id="formalidadBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="formalidadLabel">Formal (Usted)</span>
+                  <i data-lucide="chevron-down"></i>
+                </button>
+                <div id="formalidadDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="usted">
+                    <span>Formal (Usted)</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="tu">
+                    <span>Informal (Tú)</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="auto">
+                    <span>Auto</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Región Control -->
+              <div class="config-control-wrapper">
+                <button id="regionBtn" class="config-control-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <span id="regionLabel">Internacional</span>
+                  <i data-lucide="chevron-down"></i>
+                </button>
+                <div id="regionDropdown" class="config-dropdown" hidden>
+                  <button type="button" class="config-dropdown-option selected" data-value="">
+                    <span>Internacional</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="españa">
+                    <span>España</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="méxico">
+                    <span>México</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="argentina">
+                    <span>Argentina</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="chile">
+                    <span>Chile</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                  <button type="button" class="config-dropdown-option" data-value="colombia">
+                    <span>Colombia</span>
+                    <i data-lucide="check"></i>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Plantilla Button -->
+              <div class="config-control-wrapper">
+                <button id="templatesBtn" class="config-control-btn templates-btn" type="button" aria-haspopup="true" aria-expanded="false">
+                  <i data-lucide="folder"></i>
+                  <span>Plantilla</span>
+                </button>
+                <div class="custom-select-menu" id="templatesMenu" role="menu" hidden></div>
+              </div>
+            </div>
+
+            <div class="instruction-wrapper">
+              <textarea
+                id="instruction"
+                maxlength="300"
+                aria-label="Describe brevemente el email que deseas generar"
+              ></textarea>
+
+              
+
+              
+
+              <button id="saveTemplateFloating"
+                class="save-template-floating"
+                type="button">
+                Guardar como plantilla
+              </button>
+              <div class="instruction-hint" aria-hidden="true"></div>
+            </div>
+            <div class="char-counter">
+              <span id="charCount">0</span>/300
+            </div>
+
+            <div style="display: flex; justify-content: center; align-items: center; margin-top: 0.875rem; max-width: 680px; margin-left: auto; margin-right: auto;">
+              <div class="split-generate-btn versions-control" id="splitGenerateWrapper">
+                <button id="generateButton" class="split-generate-main" type="button" disabled>
+                  <span>Generar</span>
+                  <i data-lucide="arrow-right"></i>
+                </button>
+                <div class="split-generate-divider"></div>
+                <button id="versionsButton" class="split-generate-variants" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="versionsMenu" disabled>
+                  <span id="versionsLabel">×1</span>
+                  <i data-lucide="chevron-up" class="split-chevron"></i>
+                </button>
+                <ul class="strategy-menu versions-menu" id="versionsMenu" role="menu" aria-label="Cantidad de versiones">
+                  <li role="none"><button class="strategy-option versions-option selected" type="button" role="menuitemradio" aria-checked="true" data-value="1"><span>1 variante</span><i class="check hidden" data-lucide="check"></i></button></li>
+                  <li role="none"><button class="strategy-option versions-option" type="button" role="menuitemradio" aria-checked="false" data-value="3"><span>3 variantes</span><i class="check hidden" data-lucide="check"></i></button></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+      <!-- Panel derecho -->
+      <div class="right-panel">
+        <div class="output-container">
+          <div class="output-header">
+            <div class="output-header-row">
+              <h2>Resultados</h2>
+              <button id="closeRightPanelBtn" class="icon-btn close-panel-btn" type="button" title="Cerrar panel">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="output-panels">
+            <div id="panelNew" class="output-panel" role="tabpanel">
+              <div id="output" class="output-cards">
+                <div class="output-empty">El email generado aparecerá aquí...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const mainContent = document.getElementById('mainContent');
+    const instructionEl = document.getElementById('instruction');
+    const originalEmailEl = document.getElementById('originalEmail');
+    const originalEmailGroupEl = document.getElementById('originalEmailGroup');
+    const formalidadBtn = document.getElementById('formalidadBtn');
+    const formalidadDropdown = document.getElementById('formalidadDropdown');
+    const regionBtn = document.getElementById('regionBtn');
+    const regionDropdown = document.getElementById('regionDropdown');
+    const outputEl = document.getElementById('output');
+    const tabNewBtn = document.getElementById('tabNew');
+    const tabHistoryBtn = document.getElementById('historyBtn');
+    const panelNewEl = document.getElementById('panelNew');
+    let historyModalOverlay = null;
+
+    // Close right panel button
+    document.getElementById('closeRightPanelBtn')?.addEventListener('click', () => {
+      mainContent.classList.remove('has-results');
+    });
+    let historyListEl = null;
+    let historySearchInput = null;
+    const generateButton = document.getElementById('generateButton');
+    const versionsControl = document.querySelector('.versions-control');
+    const versionsButton = document.getElementById('versionsButton');
+    const versionsLabel = document.getElementById('versionsLabel');
+    const versionsMenu = document.getElementById('versionsMenu');
+    const versionsOptions = Array.from(document.querySelectorAll('.versions-option'));
+    const charCount = document.getElementById('charCount');
+    const instructionHintEl = document.querySelector('.instruction-hint');
+    const strategyButtons = Array.from(document.querySelectorAll('.strategy-btn:not(#versionsButton)'));
+    const strategyMenus = Array.from(document.querySelectorAll('.strategy-menu:not(#versionsMenu)'));
+    const modeButtons = Array.from(document.querySelectorAll('.mode-toggle-btn'));
+    const templatesBtn = document.getElementById('templatesBtn');
+    const templatesMenu = document.getElementById('templatesMenu');
+    const saveBtn = document.getElementById('saveTemplateFloating');
+    const profileBtn = document.getElementById('profileBtn');
+    const profileDropdown = document.getElementById('profileDropdown');
+    const profileNameInput = document.getElementById('profileName');
+    const profileRoleInput = document.getElementById('profileRole');
+    const profileSaveBtn = document.getElementById('profileSaveBtn');
+    const TEMPLATE_KEY = 'redactar_templates_v1';
+    const SELECTION_MIN_LENGTH = 3;
+    const STORAGE_KEY = 'formalidadPreference';
+    const REGION_KEY = 'regionPreference';
+    const PROFILE_KEY = 'userProfile';
+
+    let currentMode = 'compose';
+    let selectedVersions = Number(localStorage.getItem('versionsPreference')) || 1;
+    let selectionPopoverEl = null;
+    let currentSelectionState = null;
+    let currentRange = null;
+    let isMouseSelectionActive = false;
+    let isInteractingWithPopover = false;
+
+    const HISTORY_KEY = 'emails_history_v1';
+    let isGenerating = false;
+    let instructionHintIndex = 0;
+    let instructionHintCycleTimer = null;
+    let instructionHintResumeTimer = null;
+    let instructionHintTransitionTimer = null;
+    let instructionHintTypingTimer = null;
+    let formalidadValue = localStorage.getItem(STORAGE_KEY) || 'usted';
+    let tonoValue = 'neutro';
+    let regionValue = localStorage.getItem(REGION_KEY) || '';
+    if (!['auto', 'tu', 'usted'].includes(formalidadValue)) {
+      formalidadValue = 'usted';
+    }
+    if (!['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(regionValue)) {
+      regionValue = '';
+    }
+
+
+    function autoGrow(el) {
+      if (!el) return;
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 320) + 'px';
+    }
+
+    instructionEl.addEventListener('input', () => autoGrow(instructionEl));
+    window.addEventListener('load', () => autoGrow(instructionEl));
+
+    const INSTRUCTION_EXAMPLES = [
+      "enviar email para felicitar a un empleado por su cumpleaños",
+      "responder a un cliente que pide descuento y rechazar amablemente",
+      "agradecer una reunión y resumir los próximos pasos",
+      "pedir documentos pendientes de forma cordial",
+      "anunciar cambio de horario al equipo"
+    ];
+
+    function normalizeText(value) {
+      return (value || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[̀-ͯ]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    const formalidadLabel = document.getElementById('formalidadLabel');
+    const formalidadOptions = formalidadDropdown?.querySelectorAll('.config-dropdown-option') || [];
+
+    const formalidadLabels = {
+      auto: 'Auto',
+      tu: 'Informal (Tú)',
+      usted: 'Formal (Usted)'
+    };
+
+    localStorage.setItem(STORAGE_KEY, formalidadValue);
+
+    if (formalidadLabel) {
+      formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
+    }
+
+    function updateFormalidadChecks() {
+      formalidadOptions.forEach((btn) => {
+        if (btn.dataset.value === formalidadValue) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    updateFormalidadChecks();
+
+    formalidadBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = formalidadBtn.getAttribute('aria-expanded') === 'true';
+      formalidadBtn.setAttribute('aria-expanded', !isExpanded);
+      formalidadDropdown.hidden = isExpanded;
+      // Close other dropdowns if open
+      if (regionBtn && regionDropdown) {
+        regionBtn.setAttribute('aria-expanded', 'false');
+        regionDropdown.hidden = true;
+      }
+    });
+
+    formalidadOptions.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        formalidadValue = btn.dataset.value || 'usted';
+        localStorage.setItem(STORAGE_KEY, formalidadValue);
+
+        if (formalidadLabel) {
+          formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
+        }
+
+        updateFormalidadChecks();
+        formalidadDropdown.hidden = true;
+        formalidadBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Región control
+    const regionLabel = document.getElementById('regionLabel');
+    const regionOptions = regionDropdown?.querySelectorAll('.config-dropdown-option') || [];
+
+    const regionLabels = {
+      '': 'Internacional',
+      'españa': 'España',
+      'méxico': 'México',
+      'argentina': 'Argentina',
+      'chile': 'Chile',
+      'colombia': 'Colombia'
+    };
+
+    localStorage.setItem(REGION_KEY, regionValue);
+
+    if (regionLabel) {
+      regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+    }
+
+    function updateRegionChecks() {
+      regionOptions.forEach((btn) => {
+        if (btn.dataset.value === regionValue) {
+          btn.classList.add('selected');
+        } else {
+          btn.classList.remove('selected');
+        }
+      });
+    }
+
+    updateRegionChecks();
+
+    regionBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isExpanded = regionBtn.getAttribute('aria-expanded') === 'true';
+      regionBtn.setAttribute('aria-expanded', !isExpanded);
+      regionDropdown.hidden = isExpanded;
+      // Close other dropdowns if open
+      if (formalidadBtn && formalidadDropdown) {
+        formalidadBtn.setAttribute('aria-expanded', 'false');
+        formalidadDropdown.hidden = true;
+      }
+    });
+
+    regionOptions.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        regionValue = btn.dataset.value || '';
+        localStorage.setItem(REGION_KEY, regionValue);
+
+        if (regionLabel) {
+          regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+        }
+
+        updateRegionChecks();
+        regionDropdown.hidden = true;
+        regionBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (e) => {
+      if (formalidadBtn && formalidadDropdown) {
+        if (!formalidadBtn.contains(e.target) && !formalidadDropdown.contains(e.target)) {
+          formalidadDropdown.hidden = true;
+          formalidadBtn.setAttribute('aria-expanded', 'false');
+        }
+      }
+      if (regionBtn && regionDropdown) {
+        if (!regionBtn.contains(e.target) && !regionDropdown.contains(e.target)) {
+          regionDropdown.hidden = true;
+          regionBtn.setAttribute('aria-expanded', 'false');
+        }
+      }
+    });
+
+    // Profile management
+    function loadProfile() {
+      const saved = localStorage.getItem(PROFILE_KEY);
+      if (saved) {
+        try {
+          const profile = JSON.parse(saved);
+          return profile;
+        } catch (e) {
+          return { name: '', role: '' };
+        }
+      }
+      return { name: '', role: '' };
+    }
+
+    function saveProfile(name, role) {
+      const profile = { name, role };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+    }
+
+    function initProfile() {
+      const profile = loadProfile();
+      profileNameInput.value = profile.name || '';
+      profileRoleInput.value = profile.role || '';
+    }
+
+    function toggleProfileDropdown() {
+      const isHidden = profileDropdown.hasAttribute('hidden');
+      if (isHidden) {
+        profileDropdown.removeAttribute('hidden');
+        profileBtn.setAttribute('aria-expanded', 'true');
+      } else {
+        profileDropdown.setAttribute('hidden', '');
+        profileBtn.setAttribute('aria-expanded', 'false');
+      }
+    }
+
+    function closeProfileDropdown() {
+      profileDropdown.setAttribute('hidden', '');
+      profileBtn.setAttribute('aria-expanded', 'false');
+    }
+
+    profileBtn?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleProfileDropdown();
+    });
+
+    profileSaveBtn?.addEventListener('click', () => {
+      const name = profileNameInput.value.trim();
+      const role = profileRoleInput.value.trim();
+      saveProfile(name, role);
+      closeProfileDropdown();
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!profileBtn?.contains(e.target) && !profileDropdown?.contains(e.target)) {
+        closeProfileDropdown();
+      }
+    });
+
+    function shouldDisableGenerateButton() {
+      const instruction = instructionEl?.value.trim() || '';
+      return !instruction;
+    }
+
+    function updateGenerateButtonState() {
+      if (!generateButton) return;
+
+      if (isGenerating) {
+        generateButton.disabled = true;
+        generateButton.classList.remove('active');
+        return;
+      }
+
+      const hasText = (instructionEl?.value || '').trim().length > 0;
+      const isDisabled = shouldDisableGenerateButton();
+      generateButton.disabled = isDisabled;
+      versionsButton.disabled = isDisabled;
+      generateButton.classList.toggle('active', hasText);
+    }
+
+
+    function clearInstructionHintTimers() {
+      if (instructionHintCycleTimer) {
+        clearTimeout(instructionHintCycleTimer);
+        instructionHintCycleTimer = null;
+      }
+      if (instructionHintResumeTimer) {
+        clearTimeout(instructionHintResumeTimer);
+        instructionHintResumeTimer = null;
+      }
+      if (instructionHintTransitionTimer) {
+        clearTimeout(instructionHintTransitionTimer);
+        instructionHintTransitionTimer = null;
+      }
+      if (instructionHintTypingTimer) {
+        clearTimeout(instructionHintTypingTimer);
+        instructionHintTypingTimer = null;
+      }
+    }
+
+    function randomDelay() {
+      return 3000 + Math.random() * 1000;
+    }
+
+    function typeInstructionHint(example) {
+      if (!instructionHintEl) return;
+      const words = example.split(/\s+/).filter(Boolean);
+      let currentWordIndex = 0;
+
+      instructionHintEl.textContent = '';
+
+      function typeNextWord() {
+        if (!instructionHintEl) return;
+        currentWordIndex += 1;
+        instructionHintEl.textContent = words.slice(0, currentWordIndex).join(' ');
+
+        if (currentWordIndex >= words.length) {
+          instructionHintCycleTimer = setTimeout(runInstructionHintCycle, randomDelay());
+          return;
+        }
+
+        const lastWord = words[currentWordIndex - 1] || '';
+        const punctuationPause = /[.,;:!?]$/.test(lastWord) ? 20 : 0;
+        instructionHintTypingTimer = setTimeout(typeNextWord, 42 + Math.random() * 34 + punctuationPause);
+      }
+
+      typeNextWord();
+    }
+
+    function cycleInstructionHint() {
+      if (!instructionHintEl) return;
+      instructionHintEl.style.opacity = '0';
+      instructionHintTransitionTimer = setTimeout(() => {
+        instructionHintIndex = (instructionHintIndex + 1) % INSTRUCTION_EXAMPLES.length;
+        instructionHintEl.style.opacity = '1';
+        typeInstructionHint(INSTRUCTION_EXAMPLES[instructionHintIndex]);
+      }, 220);
+    }
+
+    function runInstructionHintCycle() {
+      cycleInstructionHint();
+    }
+
+    function stopInstructionHint({ hide = true } = {}) {
+      if (!instructionHintEl) return;
+      if (hide) {
+        instructionHintEl.style.transition = 'opacity 150ms ease';
+        instructionHintEl.style.opacity = '0';
+      }
+      instructionHintTransitionTimer = setTimeout(() => {
+        clearInstructionHintTimers();
+      }, 160);
+    }
+
+    function startInstructionHint() {
+      if (!instructionEl || !instructionHintEl) return;
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+        return;
+      }
+
+      clearInstructionHintTimers();
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      instructionHintIndex = 0;
+      instructionHintEl.style.transition = reduceMotion ? 'none' : 'opacity 260ms ease';
+      instructionHintEl.style.opacity = '1';
+
+      if (reduceMotion) {
+        instructionHintEl.textContent = INSTRUCTION_EXAMPLES[0];
+        return;
+      }
+
+      typeInstructionHint(INSTRUCTION_EXAMPLES[0]);
+    }
+
+    function queueInstructionHintResume() {
+      if (!instructionEl) return;
+      clearInstructionHintTimers();
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+        return;
+      }
+      instructionHintResumeTimer = setTimeout(() => {
+        if (!instructionEl.value.trim()) {
+          startInstructionHint();
+        }
+      }, 2000);
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+
+      const isReply = mode === 'reply';
+
+      modeButtons.forEach((btn) => {
+        const active = btn.dataset.mode === mode;
+        btn.classList.toggle('active', active);
+        btn.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+
+      if (originalEmailGroupEl) {
+        originalEmailGroupEl.classList.toggle('mode-hidden', !isReply);
+      }
+
+
+      // Renderizar el estado vacío con preview cuando se cambia de modo
+      renderEmptyState();
+
+      updateGenerateButtonState();
+    }
+
+    function closeAllStrategyMenus() {
+      strategyMenus.forEach((menu) => menu.classList.remove('open'));
+      strategyButtons.forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    }
+
+    function closeVersionsMenu() {
+      versionsMenu?.classList.remove('open');
+      versionsButton?.setAttribute('aria-expanded', 'false');
+    }
+
+    function openVersionsMenu() {
+      closeAllStrategyMenus();
+      versionsMenu?.classList.add('open');
+      versionsButton?.setAttribute('aria-expanded', 'true');
+    }
+
+    function toggleVersionsMenu() {
+      const isOpen = versionsMenu?.classList.contains('open');
+      closeVersionsMenu();
+      if (!isOpen) {
+        openVersionsMenu();
+      }
+    }
+
+    function setVersionsSelection(optionButton) {
+      const selectedValue = Number(optionButton.dataset.value);
+      if (!selectedValue) return;
+
+      selectedVersions = selectedValue;
+      localStorage.setItem('versionsPreference', selectedValue);
+      versionsLabel.textContent = selectedVersions === 3 ? '×3' : '×1';
+      versionsOptions.forEach((opt) => {
+        const selected = opt === optionButton;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+        
+        // Update check icon
+        const icon = opt.querySelector('.check');
+        if (icon) {
+          if (selected) {
+            icon.classList.remove('hidden');
+          } else {
+            icon.classList.add('hidden');
+          }
+        }
+      });
+      closeVersionsMenu();
+    }
+
+    function extractSubjectAndBody(text) {
+      const subjectMatch = text.match(/Asunto\s*:\s*([^\n]+)/i);
+      const bodyMatch = text.match(/Cuerpo\s*:\s*([\s\S]+)/i);
+      const subject = subjectMatch ? subjectMatch[1].trim() : 'Asunto no especificado';
+      const body = bodyMatch ? bodyMatch[1].trim() : text.trim();
+      return { subject, body };
+    }
+
+    function parseVersions(rawText, requestedCount) {
+      const cleaned = rawText.trim();
+      if (!cleaned) return [];
+
+      const chunks = cleaned.split(/(?=Versi[oó]n\s+\d+)/gi).map((part) => part.trim()).filter(Boolean);
+      const parsed = chunks.length > 1 || /Versi[oó]n\s+\d+/i.test(chunks[0] || '')
+        ? chunks.map((chunk, index) => {
+            const withoutLabel = chunk.replace(/^Versi[oó]n\s+\d+\s*/i, '').trim();
+            return { version: index + 1, ...extractSubjectAndBody(withoutLabel) };
+          })
+        : [extractSubjectAndBody(cleaned)].map((item, index) => ({ version: index + 1, ...item }));
+
+      const sliced = parsed.slice(0, requestedCount);
+      while (sliced.length < requestedCount && parsed.length > 0) {
+        const base = parsed[sliced.length % parsed.length];
+        sliced.push({
+          version: sliced.length + 1,
+          subject: base.subject,
+          body: base.body
+        });
+      }
+      return sliced;
+    }
+
+
+    function escapeHtml(value) {
+      return value
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function openHistoryModal() {
+      if (historyModalOverlay) return; // already open
+
+      historyModalOverlay = document.createElement('div');
+      historyModalOverlay.className = 'history-modal-overlay';
+      historyModalOverlay.innerHTML = `
+        <div class="history-modal" role="dialog" aria-modal="true" aria-label="Historial de emails">
+          <div class="history-modal-header">
+            <h3>Historial</h3>
+            <div class="history-modal-actions">
+              <button class="history-modal-close" type="button" data-action="clear-history" title="Borrar historial">
+                <i data-lucide="trash-2"></i>
+              </button>
+              <button class="history-modal-close" type="button" data-action="close-history" title="Cerrar">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+          </div>
+          <div class="history-modal-search">
+            <input type="text" id="historySearch" class="history-search-input" placeholder="Buscar en historial..." />
+          </div>
+          <div class="history-modal-body">
+            <div id="historyList" class="history-list"></div>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(historyModalOverlay);
+
+      // Update references
+      historyListEl = historyModalOverlay.querySelector('#historyList');
+      historySearchInput = historyModalOverlay.querySelector('#historySearch');
+
+      // Render
+      renderHistory();
+
+      if (window.lucide) window.lucide.createIcons();
+
+      // Focus search
+      historySearchInput?.focus();
+
+      // Event listeners
+      historyModalOverlay.addEventListener('click', (event) => {
+        if (event.target === historyModalOverlay || event.target.closest('[data-action="close-history"]')) {
+          closeHistoryModal();
+          return;
+        }
+        if (event.target.closest('[data-action="clear-history"]')) {
+          clearHistory();
+          return;
+        }
+      });
+
+      historySearchInput?.addEventListener('input', (e) => {
+        renderHistory(e.target.value);
+      });
+
+      historyListEl?.addEventListener('click', handleHistoryClick);
+
+      historyListEl?.addEventListener('keydown', (event) => {
+        const item = event.target.closest('.history-item');
+        if (!item) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          item.click();
+        }
+      });
+
+      // Close on Escape
+      historyModalOverlay._escHandler = (e) => {
+        if (e.key === 'Escape') closeHistoryModal();
+      };
+      document.addEventListener('keydown', historyModalOverlay._escHandler);
+    }
+
+    function closeHistoryModal() {
+      if (!historyModalOverlay) return;
+      document.removeEventListener('keydown', historyModalOverlay._escHandler);
+      historyModalOverlay.remove();
+      historyModalOverlay = null;
+      historyListEl = null;
+      historySearchInput = null;
+    }
+
+    function initOutputTabs() {
+      tabHistoryBtn?.addEventListener('click', () => openHistoryModal());
+    }
+
+
+    function loadTemplates() {
+      return JSON.parse(localStorage.getItem(TEMPLATE_KEY) || '[]');
+    }
+
+    function saveTemplates(list) {
+      localStorage.setItem(TEMPLATE_KEY, JSON.stringify(list));
+    }
+
+    function getCurrentFormData() {
+      return {
+        instruction: document.getElementById('instruction').value,
+        formalidad: formalidadValue,
+        tone: tonoValue,
+        recipientRegion: regionValue,
+        mode: document.querySelector('.mode-toggle-btn.active')?.dataset.mode || 'compose'
+      };
+    }
+
+    function templateExists(instruction) {
+      const templates = loadTemplates();
+
+      return templates.some((t) =>
+        (t.data?.instruction || '').trim().toLowerCase() === instruction.trim().toLowerCase()
+      );
+    }
+
+    function updateRecipientRegionSelection(value) {
+      // Function disabled - recipientRegion UI was removed
+      return;
+    }
+
+    function applyTemplate(data) {
+      if (!data) return;
+      instructionEl.value = data.instruction || '';
+      
+      // Apply formalidad
+      const templateFormalidad = data.formalidad ?? data.formality;
+      formalidadValue = templateFormalidad === 'tu' || templateFormalidad === 'usted' ? templateFormalidad : 'usted';
+      localStorage.setItem(STORAGE_KEY, formalidadValue);
+      if (formalidadLabel) {
+        formalidadLabel.textContent = formalidadLabels[formalidadValue] || formalidadLabels.usted;
+      }
+      updateFormalidadChecks();
+      
+      // Apply region
+      const templateRegion = data.recipientRegion || '';
+      regionValue = ['', 'españa', 'méxico', 'argentina', 'chile', 'colombia'].includes(templateRegion) ? templateRegion : '';
+      localStorage.setItem(REGION_KEY, regionValue);
+      if (regionLabel) {
+        regionLabel.textContent = regionLabels[regionValue] || regionLabels[''];
+      }
+      updateRegionChecks();
+      
+      setMode(data.mode || 'compose');
+
+      [instructionEl, originalEmailEl].forEach((el) => {
+        el?.dispatchEvent(new Event('input', { bubbles: true }));
+      });
+      charCount.textContent = instructionEl.value.length;
+      closeTemplatesMenu();
+    }
+
+    function deleteTemplate(id) {
+      const list = loadTemplates().filter((t) => t.id !== id);
+      saveTemplates(list);
+      renderTemplateMenu();
+      renderTemplateManagerRows();
+    }
+
+    function openManagerModal() {
+      const overlay = document.createElement('div');
+      overlay.className = 'template-modal-overlay';
+      overlay.innerHTML = `
+        <div class="template-modal" role="dialog" aria-modal="true" aria-label="Gestionar planillas">
+          <div class="template-modal-header">
+            <strong>Gestionar planillas</strong>
+            <button class="icon-btn" type="button" data-action="close-manager">Cerrar</button>
+          </div>
+          <div class="template-list" id="templateManagerList"></div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || event.target.closest('[data-action="close-manager"]')) {
+          overlay.remove();
+        }
+      });
+
+      renderTemplateManagerRows();
+    }
+
+    function openSaveTemplateModal() {
+      const overlay = document.createElement('div');
+      overlay.className = 'template-modal-overlay';
+      overlay.innerHTML = `
+        <div class="template-modal" role="dialog" aria-modal="true" aria-label="Guardar plantilla" style="max-width: 400px;">
+          <div class="template-modal-header">
+            <strong>Guardar como plantilla</strong>
+            <button class="icon-btn" type="button" data-action="close-save">Cerrar</button>
+          </div>
+          <div style="padding: 1.5rem;">
+            <label for="templateNameInput" style="display: block; font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem;">
+              Nombre de la plantilla:
+            </label>
+            <input 
+              type="text" 
+              id="templateNameInput" 
+              style="width: 100%; padding: 0.625rem 0.875rem; font-size: 0.875rem; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-primary); color: var(--text-primary); font-family: inherit; margin-bottom: 1rem;"
+              placeholder="Ej: Email de seguimiento"
+              autofocus
+            />
+            <div style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button type="button" data-action="cancel-save" style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background: transparent; color: var(--text-primary); cursor: pointer; font-size: 0.875rem;">
+                Cancelar
+              </button>
+              <button type="button" data-action="confirm-save" style="padding: 0.5rem 1rem; border-radius: 8px; border: none; background: var(--accent); color: white; cursor: pointer; font-size: 0.875rem; font-weight: 500;">
+                Aceptar
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(overlay);
+
+      const input = overlay.querySelector('#templateNameInput');
+      
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay || event.target.closest('[data-action="close-save"]') || event.target.closest('[data-action="cancel-save"]')) {
+          overlay.remove();
+          return;
+        }
+        
+        if (event.target.closest('[data-action="confirm-save"]')) {
+          const name = input.value.trim();
+          if (!name) {
+            input.focus();
+            return;
+          }
+
+          const newTemplate = {
+            id: typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+              ? crypto.randomUUID()
+              : createHistoryId(),
+            name,
+            createdAt: Date.now(),
+            data: getCurrentFormData()
+          };
+
+          const list = loadTemplates();
+          list.push(newTemplate);
+          saveTemplates(list);
+          renderTemplateMenu();
+
+          saveBtn.classList.remove('visible');
+          overlay.remove();
+        }
+      });
+
+      // Enter key to save
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          overlay.querySelector('[data-action="confirm-save"]').click();
+        }
+      });
+    }
+
+    function renderTemplateManagerRows() {
+      const container = document.getElementById('templateManagerList');
+      if (!container) return;
+      const templates = loadTemplates();
+      if (!templates.length) {
+        container.innerHTML = '<div class="output-empty">No hay planillas guardadas.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      templates.forEach((t) => {
+        const row = document.createElement('div');
+        row.className = 'template-row';
+
+        const name = document.createElement('div');
+        name.textContent = t.name;
+
+        const actions = document.createElement('div');
+        actions.className = 'template-actions';
+
+        const loadBtn = document.createElement('button');
+        loadBtn.className = 'template-action-btn';
+        loadBtn.textContent = 'Cargar';
+        loadBtn.onclick = () => applyTemplate(t.data);
+
+        const renameBtn = document.createElement('button');
+        renameBtn.className = 'template-action-btn';
+        renameBtn.textContent = 'Renombrar';
+        renameBtn.onclick = () => {
+          const nextName = window.prompt('Nuevo nombre de la planilla:', t.name);
+          if (!nextName) return;
+          const list = loadTemplates().map((item) => item.id === t.id ? { ...item, name: nextName } : item);
+          saveTemplates(list);
+          renderTemplateMenu();
+          renderTemplateManagerRows();
+        };
+
+        const replaceBtn = document.createElement('button');
+        replaceBtn.className = 'template-action-btn';
+        replaceBtn.textContent = 'Reemplazar con actual';
+        replaceBtn.onclick = () => {
+          const list = loadTemplates().map((item) => item.id === t.id ? { ...item, data: getCurrentFormData() } : item);
+          saveTemplates(list);
+          renderTemplateMenu();
+          renderTemplateManagerRows();
+        };
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'template-action-btn';
+        deleteBtn.textContent = 'Eliminar';
+        deleteBtn.onclick = () => {
+          if (!window.confirm(`¿Eliminar planilla "${t.name}"?`)) return;
+          deleteTemplate(t.id);
+        };
+
+        actions.append(loadBtn, renameBtn, replaceBtn, deleteBtn);
+        row.append(name, actions);
+        container.appendChild(row);
+      });
+    }
+
+    function renderTemplateMenu() {
+      if (!templatesMenu) return;
+      const list = loadTemplates();
+      templatesMenu.innerHTML = '';
+
+      list.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'custom-select-option';
+        btn.textContent = t.name;
+        btn.type = 'button';
+        btn.onclick = () => applyTemplate(t.data);
+        templatesMenu.appendChild(btn);
+      });
+
+      const divider = document.createElement('hr');
+      const manage = document.createElement('button');
+      manage.className = 'template-manage-btn';
+      manage.type = 'button';
+      manage.textContent = 'Gestionar planillas…';
+      manage.onclick = () => {
+        closeTemplatesMenu();
+        openManagerModal();
+      };
+
+      templatesMenu.appendChild(divider);
+      templatesMenu.appendChild(manage);
+    }
+
+    function closeTemplatesMenu() {
+      if (!templatesBtn || !templatesMenu) return;
+      templatesBtn.setAttribute('aria-expanded', 'false');
+      templatesMenu.hidden = true;
+    }
+
+    function toggleTemplatesMenu() {
+      if (!templatesBtn || !templatesMenu) return;
+      const isExpanded = templatesBtn.getAttribute('aria-expanded') === 'true';
+      templatesBtn.setAttribute('aria-expanded', isExpanded ? 'false' : 'true');
+      templatesMenu.hidden = isExpanded;
+    }
+
+    function createHistoryId() {
+      if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+        return crypto.randomUUID();
+      }
+      return `${Date.now()}_${Math.random().toString(16).slice(2)}`;
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return [];
+        return parsed.map((entry) => ({ ...entry, id: entry?.id || createHistoryId() }));
+      } catch {
+        return [];
+      }
+    }
+
+    function saveHistory(list) {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    }
+
+    function saveToHistory(entry) {
+      const history = loadHistory();
+      const updated = [{ ...entry, id: entry.id || createHistoryId() }, ...history].slice(0, 30);
+      saveHistory(updated);
+    }
+
+    function deleteHistoryItem(id) {
+      if (!id) return;
+      const list = loadHistory().filter((entry) => entry.id !== id);
+      saveHistory(list);
+      renderHistory();
+    }
+
+    function clearHistory() {
+      if (!window.confirm('¿Borrar todo el historial?')) return;
+      localStorage.removeItem(HISTORY_KEY);
+      renderHistory();
+    }
+
+    function formatRelativeTime(ts) {
+      if (!ts) return 'Ahora';
+      const diffSeconds = Math.floor((Date.now() - ts) / 1000);
+      if (diffSeconds < 60) return 'Ahora';
+      if (diffSeconds < 3600) return `Hace ${Math.floor(diffSeconds / 60)} min`;
+      if (diffSeconds < 86400) return `Hace ${Math.floor(diffSeconds / 3600)} h`;
+      const diffDays = Math.floor(diffSeconds / 86400);
+      if (diffDays <= 7) return `Hace ${diffDays} día${diffDays > 1 ? 's' : ''}`;
+      const date = new Date(ts);
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+
+    function renderHistory(searchQuery = '') {
+      if (!historyListEl) return;
+      const history = loadHistory();
+      
+      // Filter history based on search query
+      const filteredHistory = searchQuery.trim() 
+        ? history.filter(entry => {
+            const instruction = (entry.instruction || '').toLowerCase();
+            const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
+            const subject = (firstVersion?.subject || '').toLowerCase();
+            const body = (firstVersion?.body || '').toLowerCase();
+            const search = searchQuery.toLowerCase();
+            return instruction.includes(search) || subject.includes(search) || body.includes(search);
+          })
+        : history;
+      
+      if (filteredHistory.length === 0) {
+        const emptyMessage = searchQuery.trim() 
+          ? 'No se encontraron emails que coincidan con tu búsqueda.'
+          : 'Todavía no hay emails en el historial.';
+        historyListEl.innerHTML = `<div class="history-empty">${emptyMessage}</div>`;
+        return;
+      }
+
+      historyListEl.innerHTML = filteredHistory
+        .map((entry) => {
+          const firstVersion = Array.isArray(entry.versions) && entry.versions.length > 0 ? entry.versions[0] : null;
+          const title = (entry.instruction || 'Sin instrucción').trim();
+          const subject = firstVersion?.subject || 'Sin asunto';
+          const body = firstVersion?.body || '';
+          const snippetBase = `Asunto: ${subject}: ${body}`;
+          const snippet = snippetBase.length > 120 ? `${snippetBase.slice(0, 120)}...` : snippetBase;
+          return `
+            <div class="history-item" role="button" tabindex="0" data-id="${escapeHtml(entry.id)}">
+              <button class="icon-btn history-delete" type="button" data-id="${escapeHtml(entry.id)}" aria-label="Borrar">
+                <i data-lucide="trash-2"></i>
+              </button>
+              <div class="history-item-title">${escapeHtml(title)}</div>
+              <div class="history-item-time">${escapeHtml(formatRelativeTime(entry.createdAt))}</div>
+              <div class="history-item-snippet">${escapeHtml(snippet)}</div>
+            </div>
+          `;
+        })
+        .join('');
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    }
+
+    function handleHistoryClick(event) {
+      const deleteButton = event.target.closest('.history-delete');
+      if (deleteButton) {
+        event.stopPropagation();
+        deleteHistoryItem(deleteButton.dataset.id);
+        return;
+      }
+
+      const item = event.target.closest('.history-item');
+      if (!item) return;
+      const history = loadHistory();
+      const entry = history.find((historyItem) => historyItem.id === item.dataset.id);
+      if (!entry || !Array.isArray(entry.versions) || entry.versions.length === 0) return;
+
+      // Close modal and render the selected entry
+      closeHistoryModal();
+      renderVersions(entry.versions);
+
+      if (typeof entry.instruction === 'string') {
+        instructionEl.value = entry.instruction;
+        charCount.textContent = instructionEl.value.length;
+      }
+    }
+
+    // Tips contextuales que rotan
+    const contextualTips = {
+      compose: [
+        'Sé específico en tu instrucción para mejores resultados',
+        'Menciona el objetivo del email para un tono más preciso',
+        'Incluye detalles clave que quieras resaltar',
+        'Especifica si necesitas un tono formal o casual'
+      ],
+      reply: [
+        'Resume el contexto clave del email original',
+        'Especifica qué quieres lograr con tu respuesta',
+        'Menciona si necesitas agregar nueva información',
+        'Indica el nivel de urgencia si es relevante'
+      ]
+    };
+
+    const useCaseExamples = [
+      'Seguimiento de propuesta comercial',
+      'Respuesta a solicitud de presupuesto',
+      'Agradecimiento post-reunión',
+      'Actualización de proyecto en curso',
+      'Solicitud de información adicional',
+      'Confirmación de próximos pasos',
+      'Recordatorio amable de pendientes',
+      'Presentación de nuevo servicio'
+    ];
+
+    let currentTipIndex = 0;
+    let tipsRotationInterval = null;
+
+    function rotateTips() {
+      const tips = contextualTips[currentMode] || contextualTips.compose;
+      const tipsContent = document.querySelector('.tips-content');
+      if (!tipsContent) return;
+
+      tipsContent.classList.add('fade-out');
+      
+      setTimeout(() => {
+        currentTipIndex = (currentTipIndex + 1) % tips.length;
+        tipsContent.textContent = tips[currentTipIndex];
+        tipsContent.classList.remove('fade-out');
+        tipsContent.classList.add('fade-in');
+        
+        setTimeout(() => {
+          tipsContent.classList.remove('fade-in');
+        }, 400);
+      }, 200);
+    }
+
+    function startTipsRotation() {
+      stopTipsRotation();
+      tipsRotationInterval = setInterval(rotateTips, 5000);
+    }
+
+    function stopTipsRotation() {
+      if (tipsRotationInterval) {
+        clearInterval(tipsRotationInterval);
+        tipsRotationInterval = null;
+      }
+    }
+
+    function getRandomExamples(count = 4) {
+      const shuffled = [...useCaseExamples].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    function renderEmptyState() {
+      hideSelectionPopover();
+      
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
+      // Ocultar panel derecho
+      mainContent.classList.remove('has-results');
+      
+      outputEl.innerHTML = `
+        <div class="empty-state">
+          <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" 
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          
+          <h3 class="empty-state-title">Genera tu primer email</h3>
+          <p class="empty-state-subtitle">
+            Escribe qué tipo de email necesitas y haz clic en generar
+          </p>
+          
+          <div class="example-prompts">
+            <div class="example-item" data-example="felicitar a un empleado por su cumpleaños">
+              <span class="example-icon">🎂</span>
+              <span>Felicitar cumpleaños a un empleado</span>
+            </div>
+            <div class="example-item" data-example="seguimiento de reunión con cliente y resumir próximos pasos">
+              <span class="example-icon">💼</span>
+              <span>Seguimiento de reunión con cliente</span>
+            </div>
+            <div class="example-item" data-example="solicitar documentos pendientes de forma cordial">
+              <span class="example-icon">📄</span>
+              <span>Solicitar documentos pendientes</span>
+            </div>
+            <div class="example-item" data-example="rechazar amablemente una solicitud de descuento">
+              <span class="example-icon">💬</span>
+              <span>Rechazar solicitud de descuento</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    let loadingMessageInterval = null;
+    
+    function renderLoadingState() {
+      hideSelectionPopover();
+      stopTipsRotation();
+      
+      // Clear any existing interval
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
+      // Mostrar panel derecho con loading
+      mainContent.classList.add('has-results');
+      
+      const messages = [
+        'Pensando en la mejor forma de decirlo...',
+        'Ajustando el tono...',
+        'Refinando el mensaje...'
+      ];
+      
+      let currentMessageIndex = 0;
+      
+      outputEl.innerHTML = `
+        <div class="skeleton-loader">
+          <div class="skeleton-progress">
+            <div class="skeleton-spinner"></div>
+            <div class="skeleton-status" id="loadingMessage">${messages[0]}</div>
+          </div>
+        </div>
+      `;
+      
+      // Rotate messages every 2.5 seconds
+      loadingMessageInterval = setInterval(() => {
+        currentMessageIndex = (currentMessageIndex + 1) % messages.length;
+        const messageEl = document.getElementById('loadingMessage');
+        if (messageEl) {
+          messageEl.style.opacity = '0';
+          setTimeout(() => {
+            messageEl.textContent = messages[currentMessageIndex];
+            messageEl.style.opacity = '1';
+          }, 150);
+        }
+      }, 2500);
+    }
+
+    function renderPlaceholder(message, loading = false) {
+      if (loading) {
+        renderLoadingState();
+      } else {
+        renderEmptyState();
+      }
+    }
+
+    function handleCopyClick(event) {
+      const button = event.target.closest('.version-copy-btn');
+      if (!button) return;
+
+      // Find the card containing this button
+      const card = button.closest('.version-card');
+      if (!card) return;
+
+      // Get current content from editable elements
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const bodyEl = card.querySelector('[data-role="email-body"]');
+      
+      const subject = subjectEl ? subjectEl.innerText.trim() : '';
+      const body = bodyEl ? bodyEl.innerText.trim() : '';
+      
+      const content = `Asunto: ${subject}
+
+${body}`.trim();
+
+      navigator.clipboard.writeText(content).then(() => {
+        const originalHtml = button.innerHTML;
+        button.innerHTML = '<i data-lucide="check"></i>';
+        button.classList.add('copied');
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+        setTimeout(() => {
+          button.innerHTML = originalHtml;
+          button.classList.remove('copied');
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        }, 2000);
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+      });
+    }
+
+    function normalizeHtmlForClipboard(el) {
+      // Clone the element to avoid mutating the DOM
+      const clone = el.cloneNode(true);
+      // Convert text nodes with newlines to <br> tags
+      function walk(node) {
+        const children = Array.from(node.childNodes);
+        for (const child of children) {
+          if (child.nodeType === Node.TEXT_NODE) {
+            const text = child.textContent;
+            if (text.includes('\n')) {
+              const parts = text.split('\n');
+              const frag = document.createDocumentFragment();
+              parts.forEach((part, i) => {
+                if (i > 0) frag.appendChild(document.createElement('br'));
+                if (part) frag.appendChild(document.createTextNode(part));
+              });
+              child.replaceWith(frag);
+            }
+          } else if (child.nodeType === Node.ELEMENT_NODE) {
+            walk(child);
+          }
+        }
+      }
+      walk(clone);
+      return clone.innerHTML.trim();
+    }
+
+    function handleInlineCopyClick(event) {
+      const button = event.target.closest('.inline-copy-btn');
+      if (!button) return;
+
+      const section = button.closest('.version-section');
+      if (!section) return;
+
+      const contentEl = section.querySelector('.version-content');
+      if (!contentEl) return;
+
+      const isBody = contentEl.dataset.role === 'email-body';
+      
+      let copyPromise;
+      if (isBody) {
+        // Copy with HTML formatting for body
+        try {
+          const html = normalizeHtmlForClipboard(contentEl);
+          const htmlBlob = new Blob([html], { type: 'text/html' });
+          const textBlob = new Blob([contentEl.innerText.trim()], { type: 'text/plain' });
+          copyPromise = navigator.clipboard.write([new ClipboardItem({
+            'text/html': htmlBlob,
+            'text/plain': textBlob
+          })]);
+        } catch (e) {
+          copyPromise = navigator.clipboard.writeText(contentEl.innerText.trim());
+        }
+      } else {
+        copyPromise = navigator.clipboard.writeText(contentEl.innerText.trim());
+      }
+
+      copyPromise.then(() => {
+        const originalHtml = button.innerHTML;
+        button.innerHTML = '<i data-lucide="check"></i>';
+        button.classList.add('copied');
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+        setTimeout(() => {
+          button.innerHTML = originalHtml;
+          button.classList.remove('copied');
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        }, 2000);
+      }).catch((err) => {
+        console.error('Error al copiar:', err);
+      });
+    }
+
+    function sendViaGmail(emailContainer) {
+      if (!emailContainer) {
+        alert('Primero genera un email.');
+        return;
+      }
+
+      const bodyHtml = normalizeHtmlForClipboard(emailContainer);
+      const bodyText = emailContainer.innerText.trim();
+
+      if (!bodyText) {
+        alert('El mensaje está vacío.');
+        return;
+      }
+
+      // Find the card containing this email
+      const card = emailContainer.closest('.version-card');
+      const subjectEl = card ? card.querySelector('[data-role="email-subject"]') : null;
+      const subject = subjectEl ? subjectEl.innerText.trim() : 'Mensaje';
+
+      let to = '';
+      const toInput =
+        document.querySelector('#toEmail') ||
+        document.querySelector('input[name="to"]') ||
+        document.querySelector('input[placeholder*="Para"]');
+
+      if (toInput && toInput.value) {
+        to = toInput.value.trim();
+      }
+
+      // Copy formatted HTML to clipboard so user can paste with Ctrl+V
+      try {
+        const blob = new Blob([bodyHtml], { type: 'text/html' });
+        const textBlob = new Blob([bodyText], { type: 'text/plain' });
+        const clipboardItem = new ClipboardItem({
+          'text/html': blob,
+          'text/plain': textBlob
+        });
+        navigator.clipboard.write([clipboardItem]);
+      } catch (e) {
+        // Fallback: copy plain text
+        navigator.clipboard.writeText(bodyText).catch(() => {});
+      }
+
+      // Build Gmail URL with plain text body (Gmail compose doesn't support HTML in URL)
+      const gmailURL =
+        'https://mail.google.com/mail/?view=cm&fs=1' +
+        '&to=' + encodeURIComponent(to) +
+        '&su=' + encodeURIComponent(subject) +
+        '&body=' + encodeURIComponent(bodyText);
+
+      const win = window.open(gmailURL, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        alert('Tu navegador bloqueó la ventana emergente. Permite popups para este sitio y vuelve a intentar.');
+      }
+    }
+
+    function closeAllTranslateMenus() {
+      outputEl.querySelectorAll('.translate-menu.open').forEach((menu) => menu.classList.remove('open'));
+      outputEl.querySelectorAll('.translate-btn[aria-expanded="true"]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    }
+
+    function closeAllToneMenus() {
+      outputEl.querySelectorAll('.tone-menu.open').forEach((menu) => menu.classList.remove('open'));
+      outputEl.querySelectorAll('.tone-btn[aria-expanded="true"]').forEach((btn) => btn.setAttribute('aria-expanded', 'false'));
+    }
+
+    function createSelectionPopover() {
+      if (selectionPopoverEl) return selectionPopoverEl;
+
+      selectionPopoverEl = document.createElement('div');
+      selectionPopoverEl.className = 'selection-popover';
+      selectionPopoverEl.innerHTML = `
+        <div class="selection-actions">
+          <button type="button" class="selection-action-btn" data-mode="improve">Mejorar texto</button>
+          <button type="button" class="selection-action-btn" data-mode="expand">Expandir</button>
+          <button type="button" class="selection-action-btn" data-mode="simplify">Simplificar</button>
+        </div>
+        <div class="selection-status" data-role="status"></div>
+        <div class="selection-proposal" data-role="proposal-wrap">
+          <div class="selection-proposal-label">Propuesta</div>
+          <div class="selection-proposal-text" data-role="proposal-text"></div>
+          <div class="selection-proposal-actions">
+            <button type="button" class="selection-action-btn" data-action="replace">Reemplazar</button>
+            <button type="button" class="selection-action-btn" data-action="cancel">Cancelar</button>
+          </div>
+        </div>
+      `;
+
+      selectionPopoverEl.addEventListener('mousedown', (event) => {
+        isInteractingWithPopover = true;
+        event.preventDefault();
+        event.stopPropagation();
+      });
+      selectionPopoverEl.addEventListener('mouseup', () => {
+        setTimeout(() => {
+          isInteractingWithPopover = false;
+        }, 0);
+      });
+      selectionPopoverEl.addEventListener('click', (event) => {
+        event.stopPropagation();
+        handleSelectionPopoverClick(event);
+      });
+      document.body.appendChild(selectionPopoverEl);
+      return selectionPopoverEl;
+    }
+
+    function hideSelectionPopover() {
+      if (!selectionPopoverEl) return;
+      selectionPopoverEl.classList.remove('visible');
+      const proposalWrap = selectionPopoverEl.querySelector('[data-role="proposal-wrap"]');
+      const statusEl = selectionPopoverEl.querySelector('[data-role="status"]');
+      if (proposalWrap) proposalWrap.classList.remove('visible');
+      if (statusEl) statusEl.textContent = '';
+      currentSelectionState = null;
+      currentRange = null;
+    }
+
+    function showSelectionPopover(rect) {
+      const popover = createSelectionPopover();
+      const viewportWidth = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+      popover.classList.add('visible');
+
+      const tentativeLeft = rect.left + (rect.width / 2);
+      const tentativeTop = rect.bottom + 10;
+      const maxLeft = viewportWidth - popover.offsetWidth - 12;
+      const left = Math.min(maxLeft, Math.max(12, tentativeLeft - (popover.offsetWidth / 2)));
+      const top = Math.min(viewportHeight - popover.offsetHeight - 12, Math.max(12, tentativeTop));
+
+      popover.style.left = `${left}px`;
+      popover.style.top = `${top}px`;
+    }
+
+    function isValidSelectionTarget(node) {
+      if (!node) return false;
+      if (node.nodeType === Node.TEXT_NODE) {
+        return isValidSelectionTarget(node.parentElement);
+      }
+      if (!(node instanceof HTMLElement)) return false;
+      
+      // Check if it's in the email body first
+      const inEmailBody = Boolean(node.closest('.version-content[data-role="email-body"]'));
+      if (inEmailBody) return true;
+      
+      // Block other contenteditable elements
+      if (node.closest('input, textarea, [contenteditable="true"]')) return false;
+      return false;
+    }
+
+    function getSelectionDetails() {
+      const selection = window.getSelection();
+      if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+        return null;
+      }
+
+      const range = selection.getRangeAt(0);
+      const selectedText = selection.toString().trim();
+      if (selectedText.length <= SELECTION_MIN_LENGTH) {
+        return null;
+      }
+
+      const anchorNode = selection.anchorNode;
+      const focusNode = selection.focusNode;
+      if (!isValidSelectionTarget(anchorNode) || !isValidSelectionTarget(focusNode)) {
+        return null;
+      }
+
+      const bodyEl = (anchorNode.nodeType === Node.TEXT_NODE ? anchorNode.parentElement : anchorNode)?.closest('.version-content[data-role="email-body"]');
+      if (!bodyEl) {
+        return null;
+      }
+
+      if (!bodyEl.contains(range.commonAncestorContainer)) {
+        return null;
+      }
+
+      const rangeRect = range.getBoundingClientRect();
+      const targetRect = (rangeRect.width || rangeRect.height) ? rangeRect : bodyEl.getBoundingClientRect();
+
+      return {
+        text: selectedText,
+        range,
+        bodyEl,
+        targetRect
+      };
+    }
+
+    function hasValidSelection() {
+      return Boolean(getSelectionDetails());
+    }
+
+    function matchCase(original, result) {
+      if (!original) return result;
+      if (original[0] === original[0].toLowerCase()) {
+        return result.charAt(0).toLowerCase() + result.slice(1);
+      }
+      return result;
+    }
+
+    function handleSelection() {
+      // No procesar selecciones si hay una propuesta visible
+      const proposalWrap = selectionPopoverEl?.querySelector('[data-role="proposal-wrap"]');
+      if (proposalWrap?.classList.contains('visible')) {
+        return;
+      }
+      
+      const selectionDetails = getSelectionDetails();
+      if (!selectionDetails) {
+        if (!isMouseSelectionActive) {
+          hideSelectionPopover();
+        }
+        return;
+      }
+
+      currentRange = selectionDetails.range.cloneRange();
+      currentSelectionState = {
+        text: selectionDetails.text,
+        bodyEl: selectionDetails.bodyEl,
+        improvedText: ''
+      };
+
+      const popover = createSelectionPopover();
+      const statusEl = popover.querySelector('[data-role="status"]');
+      if (proposalWrap) proposalWrap.classList.remove('visible');
+      if (statusEl) statusEl.textContent = '';
+      showSelectionPopover(selectionDetails.targetRect);
+    }
+
+    function setPopoverLoading(isLoading, message = '') {
+      if (!selectionPopoverEl) return;
+      selectionPopoverEl.querySelectorAll('[data-mode]').forEach((button) => {
+        button.disabled = isLoading;
+      });
+      const statusEl = selectionPopoverEl.querySelector('[data-role="status"]');
+      if (statusEl) statusEl.textContent = message;
+    }
+
+    function syncCardAfterBodyEdit(bodyEl) {
+      const card = bodyEl.closest('.version-card');
+      if (!card) return;
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const copyButton = card.querySelector('.version-copy-btn');
+      const currentSubject = subjectEl?.textContent?.trim() || '';
+      const currentBody = bodyEl.textContent.trim();
+
+      if (copyButton) {
+        copyButton.dataset.subject = encodeURIComponent(currentSubject);
+        copyButton.dataset.body = encodeURIComponent(currentBody);
+      }
+
+      const isTranslated = card.dataset.isTranslated === 'true';
+      if (!isTranslated) {
+        card.dataset.originalSubject = encodeURIComponent(currentSubject);
+        card.dataset.originalBody = encodeURIComponent(currentBody);
+      }
+    }
+
+    function replaceSelectedTextWithProposal() {
+      if (!currentSelectionState?.improvedText || !currentSelectionState.bodyEl || !currentSelectionState.text) {
+        return;
+      }
+
+      const { improvedText, bodyEl, text } = currentSelectionState;
+      const currentContent = bodyEl.textContent;
+      
+      // Reemplazar la primera ocurrencia del texto seleccionado
+      const newContent = currentContent.replace(text, improvedText);
+      bodyEl.textContent = newContent;
+
+      window.getSelection().removeAllRanges();
+      syncCardAfterBodyEdit(bodyEl);
+      hideSelectionPopover();
+    }
+
+    async function requestSelectionImprovement(mode) {
+      if (!currentSelectionState?.text) return;
+      setPopoverLoading(true, 'Procesando...');
+
+      try {
+        const res = await fetch('/api/improve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: currentSelectionState.text, mode })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok || typeof data?.improvedText !== 'string') {
+          throw new Error('No se pudo mejorar el texto seleccionado');
+        }
+
+        const improvedText = data.improvedText.trim();
+        currentSelectionState.improvedText = matchCase(currentSelectionState.text, improvedText);
+        const proposalWrap = selectionPopoverEl?.querySelector('[data-role="proposal-wrap"]');
+        const proposalText = selectionPopoverEl?.querySelector('[data-role="proposal-text"]');
+        if (proposalText) {
+          proposalText.textContent = currentSelectionState.improvedText || currentSelectionState.text;
+        }
+        if (proposalWrap) proposalWrap.classList.add('visible');
+        setPopoverLoading(false, '');
+      } catch (error) {
+        console.error('Error en mejora de selección:', error);
+        setPopoverLoading(false, 'No se pudo generar propuesta.');
+      }
+    }
+
+    function handleSelectionPopoverClick(event) {
+      const modeButton = event.target.closest('[data-mode]');
+      if (modeButton) {
+        requestSelectionImprovement(modeButton.dataset.mode);
+        return;
+      }
+
+      const actionButton = event.target.closest('[data-action]');
+      if (!actionButton) return;
+      
+      if (actionButton.dataset.action === 'replace') {
+        replaceSelectedTextWithProposal();
+      }
+      if (actionButton.dataset.action === 'cancel') {
+        hideSelectionPopover();
+      }
+    }
+
+    async function translateVersion(button, targetLang) {
+      const card = button.closest('.version-card');
+      if (!card || !targetLang) return;
+
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const bodyEl = card.querySelector('[data-role="email-body"]');
+      if (!subjectEl || !bodyEl) return;
+
+      const subjectText = subjectEl.textContent.trim();
+      const bodyText = bodyEl.textContent.trim();
+      if (!subjectText || !bodyText) return;
+
+      if (!card.dataset.originalSubject) {
+        card.dataset.originalSubject = encodeURIComponent(subjectText);
+      }
+      if (!card.dataset.originalBody) {
+        card.dataset.originalBody = encodeURIComponent(bodyText);
+      }
+
+      button.disabled = true;
+      button.classList.add('translating');
+
+      try {
+        const res = await fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            subject: subjectText,
+            body: bodyText,
+            language: targetLang
+          })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.translatedSubject || !data?.translatedBody) {
+          throw new Error('No se pudo traducir');
+        }
+
+        const translatedSubject = data.translatedSubject.trim();
+        const translatedBody = data.translatedBody.trim();
+        subjectEl.textContent = translatedSubject;
+        bodyEl.textContent = translatedBody;
+        card.dataset.isTranslated = 'true';
+
+        const copyButton = card.querySelector('.version-copy-btn');
+        if (copyButton) {
+          copyButton.dataset.subject = encodeURIComponent(translatedSubject);
+          copyButton.dataset.body = encodeURIComponent(translatedBody);
+        }
+
+        const restoreButton = card.querySelector('.restore-original-btn');
+        if (restoreButton) {
+          restoreButton.classList.add('visible');
+        }
+
+        // Quitar spinner, vuelve al ícono normal
+        button.classList.remove('translating');
+      } catch (err) {
+        console.error('Error al traducir:', err);
+        // Quitar spinner, vuelve al ícono normal
+        button.classList.remove('translating');
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function restoreOriginalVersion(button) {
+      const card = button.closest('.version-card');
+      if (!card) return;
+
+      const originalSubject = decodeURIComponent(card.dataset.originalSubject || '').trim();
+      const originalBody = decodeURIComponent(card.dataset.originalBody || '').trim();
+      if (!originalSubject || !originalBody) return;
+
+      const subjectEl = card.querySelector('[data-role="email-subject"]');
+      const bodyEl = card.querySelector('[data-role="email-body"]');
+      if (!subjectEl || !bodyEl) return;
+
+      subjectEl.textContent = originalSubject;
+      bodyEl.textContent = originalBody;
+      card.dataset.isTranslated = 'false';
+
+      const copyButton = card.querySelector('.version-copy-btn');
+      if (copyButton) {
+        copyButton.dataset.subject = encodeURIComponent(originalSubject);
+        copyButton.dataset.body = encodeURIComponent(originalBody);
+      }
+
+      button.classList.remove('visible');
+    }
+
+    async function handleOutputClick(event) {
+      // Handle inline copy buttons
+      const inlineCopyBtn = event.target.closest('.inline-copy-btn');
+      if (inlineCopyBtn) {
+        handleInlineCopyClick(event);
+        return;
+      }
+
+      const toneOption = event.target.closest('.tone-option');
+      if (toneOption) {
+        const dropdown = toneOption.closest('.tone-dropdown');
+        const menu = dropdown?.querySelector('.tone-menu');
+        const trigger = dropdown?.querySelector('.tone-btn');
+        closeAllToneMenus();
+        if (trigger) {
+          const card = trigger.closest('.version-card');
+          const contentEl = card?.querySelector('.version-content[data-role="email-body"]');
+          if (contentEl) {
+            const originalText = contentEl.innerText;
+            trigger.classList.add('retoning');
+            trigger.disabled = true;
+            contentEl.style.opacity = 0.5;
+            try {
+              const res = await fetch('/api/improve', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: originalText, mode: toneOption.dataset.tone })
+              });
+              const data = await res.json().catch(() => null);
+              if (res.ok && typeof data?.improvedText === 'string') {
+                contentEl.innerText = data.improvedText.trim();
+                syncCardAfterBodyEdit(contentEl);
+              }
+            } catch (err) {
+              console.error('Retone error:', err);
+            } finally {
+              contentEl.style.opacity = 1;
+              trigger.classList.remove('retoning');
+              trigger.disabled = false;
+            }
+          }
+        }
+        if (menu) menu.classList.remove('open');
+        return;
+      }
+
+      const toneButton = event.target.closest('.tone-btn');
+      if (toneButton) {
+        const menu = toneButton.parentElement?.querySelector('.tone-menu');
+        if (!menu) return;
+        const shouldOpen = !menu.classList.contains('open');
+        closeAllToneMenus();
+        closeAllTranslateMenus();
+        if (shouldOpen) {
+          menu.classList.add('open');
+          toneButton.setAttribute('aria-expanded', 'true');
+        }
+        return;
+      }
+
+      const translateOption = event.target.closest('.translate-option');
+      if (translateOption) {
+        const dropdown = translateOption.closest('.translate-dropdown');
+        const menu = dropdown?.querySelector('.translate-menu');
+        const trigger = dropdown?.querySelector('.translate-btn');
+        closeAllTranslateMenus();
+        if (trigger) {
+          await translateVersion(trigger, translateOption.dataset.lang);
+        }
+        if (menu) menu.classList.remove('open');
+        return;
+      }
+
+      const translateButton = event.target.closest('.translate-btn');
+      if (translateButton) {
+        const menu = translateButton.parentElement?.querySelector('.translate-menu');
+        if (!menu) return;
+        const shouldOpen = !menu.classList.contains('open');
+        closeAllTranslateMenus();
+        closeAllToneMenus();
+        if (shouldOpen) {
+          menu.classList.add('open');
+          translateButton.setAttribute('aria-expanded', 'true');
+        }
+        return;
+      }
+
+      const restoreButton = event.target.closest('.restore-original-btn');
+      if (restoreButton) {
+        restoreOriginalVersion(restoreButton);
+        return;
+      }
+
+      const gmailBtn = event.target.closest('.send-gmail-btn');
+      if (gmailBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        const emailCard = gmailBtn.closest('.version-card');
+        if (emailCard) {
+          const emailContainer = emailCard.querySelector('.generated-email');
+          sendViaGmail(emailContainer);
+        }
+        return;
+      }
+
+      handleCopyClick(event);
+    }
+
+    function renderVersions(versions) {
+      hideSelectionPopover();
+      
+      // Clear loading message rotation
+      if (loadingMessageInterval) {
+        clearInterval(loadingMessageInterval);
+        loadingMessageInterval = null;
+      }
+      
+      // Mostrar panel derecho
+      mainContent.classList.add('has-results');
+      
+      outputEl.innerHTML = '';
+      versions.forEach((item, index) => {
+        const card = document.createElement('article');
+        card.className = 'version-card fade-in';
+        card.innerHTML = `
+          <span class="version-label">Versión ${index + 1}</span>
+          <div class="version-section">
+            <div class="version-title">Asunto</div>
+            <div class="version-content-wrapper">
+              <div class="version-content" data-role="email-subject" contenteditable="true">${escapeHtml(item.subject)}</div>
+              <button class="inline-copy-btn copy-subject-btn" type="button" title="Copiar asunto">
+                <i data-lucide="copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="version-section">
+            <div class="version-title">Cuerpo</div>
+            <div class="version-content-wrapper">
+              <div class="version-content generated-email" data-role="email-body" contenteditable="true">${escapeHtml(item.body)}</div>
+              <button class="inline-copy-btn copy-body-btn" type="button" title="Copiar cuerpo">
+                <i data-lucide="copy"></i>
+              </button>
+            </div>
+          </div>
+          <div class="version-actions">
+
+            <button class="icon-btn expand-btn" type="button" data-tooltip="Expandir">
+              <i data-lucide="maximize-2"></i>
+              <span>Expandir</span>
+            </button>
+
+            <button class="icon-btn shorten-btn" type="button" data-tooltip="Acortar">
+              <i data-lucide="minimize-2"></i>
+              <span>Acortar</span>
+            </button>
+
+            <div class="tone-dropdown">
+              <button class="icon-btn tone-btn" type="button" data-tooltip="Tono" aria-haspopup="true" aria-expanded="false">
+                <span class="tone-spinner" style="display:none;"></span>
+                <i data-lucide="palette"></i>
+                <span>Tono</span>
+              </button>
+              <ul class="tone-menu" role="menu" aria-label="Tonos disponibles">
+                <li role="none"><button class="tone-option" type="button" role="menuitem" data-tone="retone_profesional">Profesional</button></li>
+                <li role="none"><button class="tone-option" type="button" role="menuitem" data-tone="retone_cordial">Cordial</button></li>
+                <li role="none"><button class="tone-option" type="button" role="menuitem" data-tone="retone_firme">Firme</button></li>
+                <li role="none"><button class="tone-option" type="button" role="menuitem" data-tone="retone_casual">Casual</button></li>
+              </ul>
+            </div>
+
+            <div class="translate-dropdown">
+              <button class="icon-btn translate-btn" type="button" data-tooltip="Traducir" aria-haspopup="true" aria-expanded="false">
+                <span class="translate-spinner" style="display:none;"></span>
+                <i data-lucide="languages"></i>
+                <span>Traducir</span>
+              </button>
+              <ul class="translate-menu" role="menu" aria-label="Idiomas de traducción">
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="English">Inglés</button></li>
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="French">Francés</button></li>
+                <li role="none"><button class="translate-option" type="button" role="menuitem" data-lang="German">Alemán</button></li>
+              </ul>
+            </div>
+            <button class="icon-btn action-btn send-gmail-btn" type="button" data-tooltip="Enviar por Gmail">
+              <i data-lucide="send"></i>
+              <span>Enviar por Gmail</span>
+            </button>
+            <button class="icon-btn restore-original-btn" type="button" data-tooltip="Volver al original">
+              <i data-lucide="undo-2"></i>
+              <span>Volver al original</span>
+            </button>
+          </div>
+        `;
+        outputEl.appendChild(card);
+      });
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+    }
+
+    async function generateEmailFromAI({ instruction, context, isRewrite }) {
+      const mode = instruction.includes('Expande') ? 'expand' : 'simplify';
+      const res = await fetch('/api/improve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: context, mode, isRewrite })
+      });
+
+      const data = await res.json().catch(() => null);
+      if (!res.ok || typeof data?.improvedText !== 'string') {
+        throw new Error('No se pudo regenerar el contenido');
+      }
+
+      return data.improvedText.trim();
+    }
+
+    async function regenerateVersion(originalText, mode) {
+      const instruction = mode === 'expand'
+        ? "Expande el siguiente email manteniendo el mismo mensaje pero con mayor claridad, contexto y profesionalismo. No inventes información."
+        : "Reduce el siguiente email manteniendo el mensaje clave pero más directo y conciso.";
+
+      return generateEmailFromAI({
+        instruction,
+        context: originalText,
+        isRewrite: true
+      });
+    }
+
+    instructionEl.addEventListener('focus', () => {
+      stopInstructionHint();
+    });
+
+    instructionEl.addEventListener('blur', () => {
+      if (!instructionEl.value.trim()) {
+        queueInstructionHintResume();
+      }
+    });
+
+    instructionEl.addEventListener('input', () => {
+      charCount.textContent = instructionEl.value.length;
+      if (instructionEl.value.trim()) {
+        stopInstructionHint();
+      } else {
+        queueInstructionHintResume();
+      }
+      updateGenerateButtonState();
+    });
+
+    originalEmailEl?.addEventListener('input', () => {
+      updateGenerateButtonState();
+    });
+
+
+    versionsControl?.addEventListener('click', (event) => {
+      const option = event.target.closest('.versions-option');
+      if (option) {
+        setVersionsSelection(option);
+        return;
+      }
+
+      if (event.target.closest('#versionsButton')) {
+        toggleVersionsMenu();
+      }
+    });
+
+    versionsControl?.addEventListener('keydown', (event) => {
+      const button = event.target.closest('#versionsButton');
+      if (button && (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault();
+        openVersionsMenu();
+        versionsMenu?.querySelector('.versions-option')?.focus();
+        return;
+      }
+
+      const menu = event.target.closest('#versionsMenu');
+      if (!menu) return;
+
+      const options = Array.from(menu.querySelectorAll('.versions-option'));
+      const currentIndex = options.indexOf(document.activeElement);
+
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        options[(currentIndex + 1) % options.length]?.focus();
+      }
+
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        options[(currentIndex - 1 + options.length) % options.length]?.focus();
+      }
+
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        const focusedOption = document.activeElement.closest('.versions-option');
+        if (focusedOption) {
+          setVersionsSelection(focusedOption);
+        }
+      }
+
+      if (event.key === 'Escape') {
+        closeVersionsMenu();
+      }
+    });
+
+    async function generateEmail() {
+      const instruction = instructionEl.value.trim();
+      const originalEmail = originalEmailEl.value.trim();
+      const profile = loadProfile();
+      const senderInput = profile.name || '';
+      const senderRole = profile.role || '';
+      const formality = formalidadValue;
+      const tone = tonoValue;
+
+      const senderName = senderInput || 'El equipo';
+      const clientName = 'cliente';
+      const recipientRole = '';
+      const versions = selectedVersions;
+      const isReplyMode = currentMode === 'reply';
+
+      if (!instruction || (isReplyMode && !originalEmail)) return;
+
+      isGenerating = true;
+      generateButton.disabled = true;
+      versionsButton.disabled = true;
+      renderPlaceholder(null, true);
+
+      try {
+        const res = await fetch('/api/email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode: isReplyMode ? 'reply' : 'compose',
+            instruction,
+            ...(isReplyMode ? { originalEmail } : {}),
+            senderName,
+            clientName,
+            recipientRegion: regionValue,
+            senderRole,
+            recipientRole,
+            formalidad: formality,
+            tone,
+            versions
+          })
+        });
+
+        if (!res.ok) {
+          renderPlaceholder('No se pudieron generar los emails.');
+          return;
+        }
+
+        const data = await res.json().catch(() => null);
+        const parsedVersions = Array.isArray(data?.versions)
+          ? data.versions
+              .map((item, index) => ({
+                version: index + 1,
+                subject: typeof item?.subject === 'string' ? item.subject.trim() : '',
+                body: typeof item?.body === 'string' ? item.body.trim() : ''
+              }))
+              .filter((item) => item.subject && item.body)
+          : [];
+
+        if (parsedVersions.length === 0) {
+          renderPlaceholder('No se recibió contenido para mostrar.');
+          return;
+        }
+        renderVersions(parsedVersions);
+        const historyEntry = {
+          id: createHistoryId(),
+          createdAt: Date.now(),
+          instruction,
+          mode: currentMode,
+          senderName,
+          clientName,
+          versions: parsedVersions
+        };
+        saveToHistory(historyEntry);
+      } catch {
+        renderPlaceholder('Error de conexión.');
+      } finally {
+        isGenerating = false;
+        versionsButton.disabled = false;
+        updateGenerateButtonState();
+      }
+    }
+
+
+    generateButton.addEventListener('click', () => {
+      if (generateButton.disabled) return;
+      generateEmail();
+    });
+    outputEl.addEventListener('click', handleOutputClick);
+
+    // Event delegation para ejemplos clicables
+    outputEl.addEventListener('click', (event) => {
+      const exampleItem = event.target.closest('.example-item');
+      if (exampleItem && exampleItem.dataset.example) {
+        instructionEl.value = exampleItem.dataset.example;
+        stopInstructionHint();
+        instructionEl.focus();
+        charCount.textContent = instructionEl.value.length;
+      }
+    });
+
+    outputEl.addEventListener('click', async (event) => {
+      const expandBtn = event.target.closest('.expand-btn');
+      const shortenBtn = event.target.closest('.shorten-btn');
+
+      if (!expandBtn && !shortenBtn) return;
+
+      const card = event.target.closest('.version-card');
+      if (!card) return;
+
+      const contentEl = card.querySelector('.version-content[data-role="email-body"]');
+      if (!contentEl) return;
+
+      const originalText = contentEl.innerText;
+
+      contentEl.style.opacity = 0.5;
+
+      try {
+        const mode = expandBtn ? 'expand' : 'shorten';
+        const newText = await regenerateVersion(originalText, mode);
+        contentEl.innerText = newText;
+        syncCardAfterBodyEdit(contentEl);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        contentEl.style.opacity = 1;
+      }
+    });
+
+    modeButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setMode(button.dataset.mode);
+      });
+    });
+
+    function countWords(text) {
+      return text.trim().split(/\s+/).filter(Boolean).length;
+    }
+
+    instructionEl.addEventListener('input', () => {
+      const value = instructionEl.value.trim();
+
+      if (!value) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      if (countWords(value) < 3) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      if (templateExists(value)) {
+        saveBtn.classList.remove('visible');
+        return;
+      }
+
+      saveBtn.classList.add('visible');
+    });
+
+    saveBtn?.addEventListener('click', () => {
+      openSaveTemplateModal();
+    });
+
+    templatesBtn?.addEventListener('click', (event) => {
+      event.stopPropagation();
+      toggleTemplatesMenu();
+    });
+
+
+    document.addEventListener('click', (event) => {
+      if (event.target.closest('.selection-popover')) return;
+
+      if (!event.target.closest('.translate-dropdown')) {
+        closeAllTranslateMenus();
+      }
+      if (!event.target.closest('.tone-dropdown')) {
+        closeAllToneMenus();
+      }
+      if (!event.target.closest('#templatesBtn') && !event.target.closest('#templatesMenu')) {
+        closeTemplatesMenu();
+      }
+      if (!event.target.closest('.strategy-dropdown')) {
+        closeAllStrategyMenus();
+      }
+      if (!event.target.closest('.versions-control')) {
+        closeVersionsMenu();
+      }
+      if (selectionPopoverEl && !event.target.closest('.selection-popover')) {
+        if (!hasValidSelection()) {
+          hideSelectionPopover();
+        } else {
+          handleSelection();
+        }
+      }
+    });
+
+    document.addEventListener('mousedown', (event) => {
+      if (event.target.closest('.selection-popover')) return;
+      isMouseSelectionActive = true;
+    });
+
+    document.addEventListener('mouseup', () => {
+      isMouseSelectionActive = false;
+      handleSelection();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
+        closeAllStrategyMenus();
+        closeVersionsMenu();
+        closeTemplatesMenu();
+        hideSelectionPopover();
+      }
+    });
+
+    document.addEventListener('selectionchange', () => {
+      if (isInteractingWithPopover) return;
+      window.requestAnimationFrame(handleSelection);
+    });
+
+    instructionEl.addEventListener('keydown', (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') {
+        generateEmail();
+      }
+    });
+
+    startInstructionHint();
+    setMode('compose');
+    initOutputTabs();
+    renderTemplateMenu();
+    renderEmptyState(); // Inicializar con el estado vacío mejorado
+    updateGenerateButtonState();
+    initProfile(); // Initialize profile data
+
+    // Initialize versions UI with saved preference
+    function initVersionsUI() {
+      // Validate selectedVersions
+      if (![1, 3].includes(selectedVersions)) {
+        selectedVersions = 1;
+      }
+      
+      // Update label
+      versionsLabel.textContent = selectedVersions === 3 ? '×3' : '×1';
+      
+      // Update options and checks
+      versionsOptions.forEach((opt) => {
+        const optValue = Number(opt.dataset.value);
+        const selected = optValue === selectedVersions;
+        opt.classList.toggle('selected', selected);
+        opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+        
+        const icon = opt.querySelector('.check');
+        if (icon) {
+          if (selected) {
+            icon.classList.remove('hidden');
+          } else {
+            icon.classList.add('hidden');
+          }
+        }
+      });
+    }
+    
+    initVersionsUI();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderTemplateMenu();
+    });
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    // ── Theme: auto (system) + manual override ──────────────────────────
+    (function () {
+      const stored = localStorage.getItem('redactar-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = stored ? stored === 'dark' : prefersDark;
+      if (isDark) document.documentElement.classList.add('dark');
+    })();
+
+    function applyThemeIcons(isDark) {
+      const moon = document.getElementById('themeIconMoon');
+      const sun  = document.getElementById('themeIconSun');
+      if (!moon || !sun) return;
+      moon.style.display = isDark ? 'none' : 'block';
+      sun.style.display  = isDark ? 'block' : 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const isDark = document.documentElement.classList.contains('dark');
+      applyThemeIcons(isDark);
+
+      document.getElementById('themeToggleBtn').addEventListener('click', function () {
+        const nowDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('redactar-theme', nowDark ? 'dark' : 'light');
+        applyThemeIcons(nowDark);
+        if (window.lucide) window.lucide.createIcons();
+      });
+
+      // Escucha cambios del sistema (si no hay preferencia manual)
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+        if (!localStorage.getItem('redactar-theme')) {
+          document.documentElement.classList.toggle('dark', e.matches);
+          applyThemeIcons(e.matches);
+          if (window.lucide) window.lucide.createIcons();
+        }
+      });
+    });
+  </script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

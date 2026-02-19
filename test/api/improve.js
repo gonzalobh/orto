@@ -5,6 +5,14 @@ const MODE_PROMPTS = {
     "Expande el siguiente texto agregando más detalle y claridad sin cambiar su intención. Mantén el idioma original.",
   simplify:
     "Simplifica y reduce el siguiente texto haciéndolo más breve y claro sin cambiar su significado. Mantén el idioma original.",
+  retone_profesional:
+    "Reescribe el siguiente email con un tono PROFESIONAL: informativo, neutro, sin carga emocional. Usa verbos como 'informar', 'comunicar', 'notificar'. Cierre neutro y disponible. Sin disculpas ni urgencia. Conciso, solo los hechos necesarios. Mantén el significado, la estructura y el idioma original.",
+  retone_cordial:
+    "Reescribe el siguiente email con un tono CORDIAL: empático, cálido, orientado a preservar la relación. Reconoce al destinatario, muestra comprensión. Usa verbos como 'agradecer', 'valorar', 'acompañar'. Cierre cálido y comprometido. Mantén el significado, la estructura y el idioma original.",
+  retone_firme:
+    "Reescribe el siguiente email con un tono FIRME: directo, claro, orientado a la acción. Sin rodeos ni excusas. Ve al punto desde la primera frase. Usa verbos como 'necesitar', 'requerir', 'confirmar'. Cierre concreto con próximo paso. Breve y denso. Mantén el significado, la estructura y el idioma original.",
+  retone_casual:
+    "Reescribe el siguiente email con un tono CASUAL: relajado, cercano, como entre colegas o conocidos. Lenguaje natural y conversacional, sin formalidades excesivas. Puedes usar contracciones y expresiones coloquiales profesionales. Cierre simple e informal. Mantén el significado, la estructura y el idioma original.",
 };
 
 export default async function handler(req, res) {
@@ -38,7 +46,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "gpt-4o",
-        temperature: safeMode === "improve" ? 0.7 : 0.3,
+        temperature: safeMode === "improve" ? 0.7 : safeMode.startsWith("retone_") ? 0.5 : 0.3,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
